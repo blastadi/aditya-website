@@ -410,6 +410,19 @@ function createGame(canvas, onHudSync) {
     incidentMoments: [],
     endResult: null,
 
+    // V3 behavioral signals (Phase 1)
+    openingBricks: {},          // { brickId: count } for first 60s only
+    openingComplications: {},   // { compKind: count } for first 60s only
+    openingDrops: 0,            // ball drops in first 60s
+    windowBricks: {},           // accumulator for current 30s window
+    windowStartTime: 0,         // start ts of current window (absolute)
+    dominantByWindow: [],       // category per finalized 30s window (may include null)
+    incidentMeterStates: [],    // meter snapshot at each drop
+    postDropBricks: [{}, {}, {}],
+    postDropTotal: [0, 0, 0],
+    complicationResponses: [],  // [{type,time,categoryBefore,droppedWithin10s,sameCategoryAfter,resolved}]
+    lastBrickCategoryBeforeComp: null,
+
     // Time-based timers
     nextBrickRefillAt: 0,
     nextDayUpAt: 0,
@@ -527,6 +540,18 @@ function createGame(canvas, onHudSync) {
     state.complicationCounts = {};
     state.incidentMoments = [];
     state.endResult = null;
+    // V3 behavioral resets
+    state.openingBricks = {};
+    state.openingComplications = {};
+    state.openingDrops = 0;
+    state.windowBricks = {};
+    state.windowStartTime = 0;          // will be set to runStart below
+    state.dominantByWindow = [];
+    state.incidentMeterStates = [];
+    state.postDropBricks = [{}, {}, {}];
+    state.postDropTotal = [0, 0, 0];
+    state.complicationResponses = [];
+    state.lastBrickCategoryBeforeComp = null;
     state.paddle.speed = 9;
     initBricks();
     state.balls = [];
@@ -534,6 +559,7 @@ function createGame(canvas, onHudSync) {
     const now = performance.now();
     state.runStart = now;
     state.runEnd = 0;
+    state.windowStartTime = now;
     state.nextBrickRefillAt = now + 9000 + Math.random() * 4000;
     state.nextDayUpAt = now + 22000;
     state.nextComplicationAt = now + 12000;
@@ -646,6 +672,21 @@ function createGame(canvas, onHudSync) {
       setFlash("capability", "CAPABILITY ONLINE", "Throughput ×1.15 · score ×2");
     }
     countComplication(kind);
+
+    // ── V3 behavioral tracking ──
+    const elapsedMs = now - state.runStart;
+    if (elapsedMs <= 60000) {
+      state.openingComplications[kind] = (state.openingComplications[kind] || 0) + 1;
+    }
+    state.complicationResponses.push({
+      type: kind,
+      time: now,
+      categoryBefore: state.lastBrickCategoryBeforeComp,
+      droppedWithin10s: false,
+      sameCategoryAfter: null,
+      resolved: false,
+    });
+    // ── end V3 tracking ──
   };
 
   const onBrickBreak = (brick) => {
@@ -655,6 +696,50 @@ function createGame(canvas, onHudSync) {
     applyEffect(brick.challenge.effect);
     pushEvent(brick.challenge.label);
     state.brickCounts[brick.challenge.id] = (state.brickCounts[brick.challenge.id] || 0) + 1;
+
+    // ── V3 behavioral tracking ──
+    const elapsedMs = now - state.runStart;
+    const brickId = brick.challenge.id;
+    const category = brick.challenge.category || 'loss';
+
+    // Opening signature
+    if (elapsedMs <= 60000) {
+      state.openingBricks[brickId] = (state.openingBricks[brickId] || 0) + 1;
+    }
+
+    // 30s sliding window: finalize when window age >= 30s, then start new
+    if (now - state.windowStartTime >= 30000) {
+      let max = 0, dom = null;
+      for (const cat in state.windowBricks) {
+        if (state.windowBricks[cat] > max) { max = state.windowBricks[cat]; dom = cat; }
+      }
+      state.dominantByWindow.push(dom);
+      state.windowBricks = {};
+      state.windowStartTime = now;
+    }
+    state.windowBricks[category] = (state.windowBricks[category] || 0) + 1;
+
+    // Post-drop tracking (within 30s of each incident, by absolute time)
+    for (let i = 0; i < state.incidentMoments.length && i < 3; i++) {
+      const incidentTimeAbs = state.runStart + state.incidentMoments[i];
+      if (now > incidentTimeAbs && now - incidentTimeAbs <= 30000) {
+        state.postDropBricks[i][category] = (state.postDropBricks[i][category] || 0) + 1;
+        state.postDropTotal[i]++;
+      }
+    }
+
+    // Resolve any complication-response entries within 10s
+    for (const resp of state.complicationResponses) {
+      if (!resp.resolved && now - resp.time <= 10000) {
+        resp.sameCategoryAfter = (category === resp.categoryBefore);
+        resp.resolved = true;
+      }
+    }
+
+    // Set composure context for a complication that may fire from this brick's trigger
+    state.lastBrickCategoryBeforeComp = category;
+    // ── end V3 tracking ──
+
     if (brick.challenge.trigger) triggerEffect(brick.challenge.trigger);
   };
 
@@ -679,6 +764,21 @@ function createGame(canvas, onHudSync) {
     };
     state.balls = [];
     state.respawnAt = 0;
+
+    // ── V3 Phase 1 verification — dev log of behavioral telemetry ──
+    if (typeof console !== "undefined") {
+      console.log("[V3 telemetry]", {
+        openingBricks: state.openingBricks,
+        openingComplications: state.openingComplications,
+        openingDrops: state.openingDrops,
+        dominantByWindow: state.dominantByWindow,
+        postDropBricks: state.postDropBricks,
+        postDropTotal: state.postDropTotal,
+        complicationResponses: state.complicationResponses,
+        incidentMeterStates: state.incidentMeterStates,
+        lastBrickCategoryBeforeComp: state.lastBrickCategoryBeforeComp,
+      });
+    }
   };
 
   const onBallDrop = (now) => {
@@ -686,6 +786,18 @@ function createGame(canvas, onHudSync) {
     if (penalty && penalty.effect) applyEffect(penalty.effect);
     pushEvent(penalty.log);
     state.incidentMoments.push(now - state.runStart);
+
+    // ── V3 behavioral tracking ──
+    const elapsedMs = now - state.runStart;
+    if (elapsedMs <= 60000) state.openingDrops++;
+    state.incidentMeterStates.push({ ...state.meters });
+    for (const resp of state.complicationResponses) {
+      if (!resp.resolved && now - resp.time <= 10000) {
+        resp.droppedWithin10s = true;
+      }
+    }
+    // ── end V3 tracking ──
+
     state.livesUsed++;
     if (state.livesUsed >= state.livesMax) {
       finishRun();
