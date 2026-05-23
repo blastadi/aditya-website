@@ -685,7 +685,7 @@ function createGame(canvas, onHudSync) {
       setFlash("moat", "MOAT DEEPENS", "Competitive cushion holding");
     } else if (kind === "capability") {
       state.capabilityUntil = now + 5000;
-      setFlash("capability", "CAPABILITY ONLINE", "Throughput ×1.15 · score ×2");
+      setFlash("capability", "CAPABILITY ONLINE", "Throughput ×1.15");
     }
     countComplication(kind);
 
@@ -707,8 +707,7 @@ function createGame(canvas, onHudSync) {
 
   const onBrickBreak = (brick) => {
     const now = performance.now();
-    const mult = now < state.capabilityUntil ? 2 : 1;
-    state.score += 3 * mult;
+    state.score += 1;
     applyEffect(brick.challenge.effect);
     pushEvent(brick.challenge.label);
     state.brickCounts[brick.challenge.id] = (state.brickCounts[brick.challenge.id] || 0) + 1;
