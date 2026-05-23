@@ -3001,3 +3001,389 @@ main.page-fade .section > div[style*="grid-template-columns: 200px 1fr"] {
 }
 
 
+
+/* ════════════════════════════════════════════════════════════════
+   V4.6 Phase 7 — Game primer (loading screen + in-game help overlay)
+   ════════════════════════════════════════════════════════════════ */
+
+/* "?" help icon on canvas */
+.help-icon {
+  position: absolute;
+  top: 12px;
+  left: 18px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--fg-2);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  z-index: 4;
+  padding: 0;
+  line-height: 1;
+}
+.help-icon:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+/* Full-page primer screen (used by both LoadingScreen and HelpOverlay) */
+.primer-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  animation: primer-in 0.35s ease-out;
+}
+@keyframes primer-in {
+  from { opacity: 0; transform: scale(0.995); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.primer-screen .primer-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 60px 7vw 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  max-width: 1180px;
+  margin: 0 auto;
+  width: 100%;
+}
+.primer-help .primer-close {
+  position: fixed;
+  top: 18px;
+  right: 24px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 400;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1201;
+  padding: 0;
+  line-height: 1;
+}
+.primer-help .primer-close:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+/* Sticky footer "SPACE — BEGIN" / "ESC — RETURN" */
+.primer-footer {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(to top, var(--bg) 60%, transparent);
+  padding: 28px 7vw 24px;
+  text-align: right;
+  cursor: pointer;
+  z-index: 1;
+}
+.primer-footer-text {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 500;
+  animation: primer-pulse 1.6s ease-in-out infinite;
+}
+@keyframes primer-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+@media (max-width: 600px) {
+  .primer-footer { text-align: center; }
+}
+
+/* Section structure */
+.primer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.primer-section p,
+.primer-section li {
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--fg);
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+.primer-section ul.primer-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.primer-list em { font-family: var(--mono); font-style: normal; letter-spacing: 0.12em; text-transform: uppercase; font-size: 11.5px; }
+.primer-list em.cat-build   { color: var(--accent); }
+.primer-list em.cat-defend  { color: var(--accent); }
+.primer-list em.cat-repair  { color: var(--fg); }
+.primer-list em.cat-invest  { color: var(--accent); font-style: italic; }
+.primer-list-clean li {
+  padding-left: 20px;
+  position: relative;
+}
+.primer-list-clean li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 12px;
+  height: 1px;
+  background: var(--fg-3);
+}
+
+.primer-h {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+
+/* Section 1 — Premise */
+.primer-premise { gap: 18px; }
+.primer-title {
+  font-family: var(--serif);
+  font-size: clamp(36px, 5.5vw, 56px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  color: var(--fg);
+  margin: 0;
+  text-transform: none;
+}
+.primer-lede {
+  font-family: var(--serif);
+  font-size: clamp(16px, 1.7vw, 19px);
+  line-height: 1.5;
+  color: var(--fg);
+  margin: 0;
+}
+.primer-lede-emphasis { font-style: italic; color: var(--accent); }
+
+/* Section 3 — Layer table */
+.primer-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.primer-layer {
+  display: grid;
+  grid-template-columns: 130px 220px 1fr;
+  gap: 22px;
+  align-items: center;
+}
+@media (max-width: 700px) {
+  .primer-layer { grid-template-columns: 1fr; gap: 6px; }
+  .primer-layer-visual { max-width: 280px; }
+}
+.primer-layer-name {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 500;
+}
+.primer-layer-visual {
+  display: flex;
+  position: relative;
+}
+.primer-foundation-pill {
+  display: flex;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.primer-foundation-pill span {
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  color: var(--fg-3);
+}
+.primer-foundation-pill span.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.primer-bar {
+  height: 8px;
+  width: 100%;
+  border: 1px solid var(--line);
+  position: relative;
+  background: var(--bg-2);
+}
+.primer-bar-dot {
+  position: absolute;
+  top: -4px;
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+.primer-layer-desc {
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+
+/* Section 4 — Brick grid */
+.primer-bricks-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 8px;
+}
+@media (max-width: 800px) {
+  .primer-bricks-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .primer-bricks-grid { grid-template-columns: 1fr; }
+}
+.primer-brick-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.primer-brick-cat {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 500;
+}
+.primer-brick {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+}
+.primer-brick-vis-build  { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.primer-brick-vis-defend { background: var(--bg); border-color: var(--accent); }
+.primer-brick-vis-repair {
+  background: repeating-linear-gradient(45deg, var(--bg-2) 0 4px, transparent 4px 7px);
+  border-color: var(--line);
+}
+.primer-brick-vis-invest { border-style: dashed; border-color: var(--accent); }
+.primer-brick-id {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.primer-brick-vis-build .primer-brick-id { color: var(--bg); }
+.primer-brick-vis-defend .primer-brick-id { color: var(--accent); }
+.primer-brick-vis-repair .primer-brick-id { color: var(--fg); }
+.primer-brick-vis-invest .primer-brick-id { color: var(--accent); font-style: italic; }
+.primer-brick-blurb {
+  font-family: var(--serif);
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: inherit;
+  opacity: 0.85;
+}
+.primer-brick-vis-build .primer-brick-blurb { color: var(--bg); }
+.primer-brick-effects {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  opacity: 0.65;
+  color: inherit;
+  margin-top: 2px;
+}
+.primer-brick-vis-build .primer-brick-effects { color: var(--bg); }
+
+/* Section 5 — Attacks */
+.primer-lede-attack {
+  font-family: var(--serif);
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--fg-2);
+  max-width: 64ch;
+}
+.primer-attacks {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 28px;
+  margin-top: 8px;
+}
+@media (max-width: 700px) {
+  .primer-attacks { grid-template-columns: 1fr; }
+}
+.primer-attack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 14px;
+  border-left: 2px solid var(--accent);
+}
+.primer-attack-name {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 500;
+}
+.primer-attack-trigger {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--fg-3);
+}
+.primer-attack-anim {
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--fg);
+}
+
+/* Section 6/7 — taglines */
+.primer-tagline {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--fg);
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  max-width: 60ch;
+}
+
+@media (max-width: 600px) {
+  .primer-screen .primer-scroll { padding: 36px 18px 80px; gap: 40px; }
+  .primer-title { font-size: 36px; }
+  .primer-h { font-size: 12px; }
+  .primer-section p, .primer-section li { font-size: 15px; }
+  .primer-footer { padding: 18px; }
+  .primer-footer-text { font-size: 12px; }
+}
