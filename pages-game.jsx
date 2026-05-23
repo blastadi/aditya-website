@@ -910,6 +910,17 @@ function createGame(canvas, onHudSync) {
       state.incidentsThisQuarter = 0;
       state.quarter = closingQuarter + 1;
       state.nextQuarterAt = state.timeMs + QUARTER_LENGTH_MS;
+
+      // Fresh quarter — full wall refresh. Every slot becomes a new brick,
+      // staggered fade-in so the wall builds visibly during the board-review pause.
+      state.bricks.forEach((b, i) => {
+        b.alive = true;
+        b.challenge = pickPlayerBrick();
+        b.fadeInAt = now + i * 35;
+        b.telegraphUntil = 0;
+      });
+      // Postpone the next regular refill so the fresh wall has room to breathe.
+      state.nextBrickRefillAt = now + 8000 + Math.random() * 4000;
     }
 
     // Wall refill — Foundation degraded amplifies + ball-count escalates (V4.6 §5)
