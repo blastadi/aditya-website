@@ -848,7 +848,7 @@ function createGame(canvas, onHudSync) {
         b.vy *= 1.10;
       });
       state.paddle.speed = 9 + state.day * 0.18;
-      pushEvent(`Day ${state.day} begins — pace increases`);
+      pushEvent(`Quarter ${state.day} begins — pace increases`);
     }
 
     // Wall refill (Moat event slows refills ×1.5 while active)
@@ -1201,7 +1201,7 @@ function createGame(canvas, onHudSync) {
     ctx.font = '9px "JetBrains Mono", ui-monospace, monospace';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
-    ctx.fillText(`DAY ${String(state.day).padStart(2,"0")}  ·  CLEARED ${String(state.score).padStart(3,"0")}  ·  BALLS ${state.balls.filter(b=>!b.ghost).length}`, 10, H() - 8);
+    ctx.fillText(`Q${String(state.day).padStart(2,"0")}  ·  CLEARED ${String(state.score).padStart(3,"0")}  ·  BALLS ${state.balls.filter(b=>!b.ghost).length}`, 10, H() - 8);
 
     // Resuming-operation held-breath banner
     if (state.status === "playing" && state.respawnAt > 0 && now < state.respawnAt) {
@@ -1411,7 +1411,7 @@ function EndScreen({ result, onRestart }) {
           <div className="end-record-summary">
             <div className="ers-cell"><span className="k">Bricks broken</span><span className="v">{totalBricks}</span></div>
             <div className="ers-cell"><span className="k">Run duration</span><span className="v">{fmtDuration(durationMs)}</span></div>
-            <div className="ers-cell"><span className="k">Final day</span><span className="v">Day {String(day).padStart(2, "0")}</span></div>
+            <div className="ers-cell"><span className="k">Final quarter</span><span className="v">Q{String(day).padStart(2, "0")}</span></div>
           </div>
         </section>
 
@@ -1517,7 +1517,7 @@ function GamePage({ navigate }) {
 
           <div className="game-board">
             <div className="game-stats">
-              <div className="game-stat"><span className="k">Day</span><span className="v">{String(hud.day).padStart(2,"0")}</span></div>
+              <div className="game-stat"><span className="k">Quarter</span><span className="v">{String(hud.day).padStart(2,"0")}</span></div>
               <div className="game-stat"><span className="k">Cleared</span><span className="v">{String(hud.score).padStart(3,"0")}</span></div>
               <div className="game-stat"><span className="k">Balls</span><span className="v">{hud.balls}</span></div>
               <div className="game-stat"><span className="k">Incidents</span><span className="v">{hud.livesUsed} / {hud.livesMax}</span></div>
@@ -1527,7 +1527,7 @@ function GamePage({ navigate }) {
               <canvas ref={canvasRef} className="game-canvas" />
               {status === "ready" && (
                 <div className="game-overlay game-overlay-start">
-                  <span className="overlay-eyebrow">— Day 1</span>
+                  <span className="overlay-eyebrow">— Quarter 1</span>
                   <h2>Press <em>spacebar</em> to deploy.</h2>
                   <p>← → paddle · P pause · R restart</p>
                   <p className="overlay-fine">Three incidents per run. Wins and problems mix in the wall. Bricks marked with a blue dot trigger events when broken.</p>
