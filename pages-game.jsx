@@ -79,6 +79,43 @@ function pickPlayerBrick() {
   return PLAYER_BRICKS[PLAYER_BRICK_IDS[Math.floor(Math.random() * PLAYER_BRICK_IDS.length)]];
 }
 
+/* ───────── V4.6 attack bricks (6) — cascade-spawned, not in random pool ─────────
+   Each has a restored V1 animation tag. Effect values authoritative against v4_6_sim.py. */
+const ATTACK_BRICKS = {
+  DRIFT: {
+    id: "DRIFT", label: "DRIFT", isAttack: true, animation: "curveRight",
+    effects: { foundationPush: +1, trust: -4, capacity: -3 },
+    flashTitle: "DRIFT", flashNote: "Balls curving right",
+  },
+  OUTAGE: {
+    id: "OUTAGE", label: "OUTAGE", isAttack: true, animation: "flash",
+    effects: { foundationToDegraded: true, capital: -5, capacity: -8,
+               ballSpeedBoost: { mult: 0.20, durationMs: 10000 } },
+    flashTitle: "OUTAGE", flashNote: "System down — ball accelerating",
+  },
+  BREACH: {
+    id: "BREACH", label: "BREACH", isAttack: true, animation: "shake",
+    effects: { trustBandDrop: true, friction: +20, capacity: -5 },
+    flashTitle: "BREACH", flashNote: "Trust collapsed — friction spiked",
+  },
+  ROGUE: {
+    id: "ROGUE", label: "ROGUE", isAttack: true, animation: "jitter",
+    effects: { capacity: -10, trust: -5 },
+    flashTitle: "ROGUE AGENT", flashNote: "Unpredictable trajectories",
+  },
+  HALLUCINATION: {
+    id: "HALLUCINATION", label: "HALLUCINATION", isAttack: true, animation: "ghostBall",
+    effects: { trust: -5, capacity: -3 },
+    flashTitle: "HALLUCINATION", flashNote: "Phantom output — looks real",
+  },
+  REVOLT: {
+    id: "REVOLT", label: "REVOLT", isAttack: true, animation: "driftRight",
+    effects: { wallRefillBoost: { mult: 0.5, durationMs: 60000 },
+               capacityDrainBoost: { mult: 2.0, durationMs: 60000 } },
+    flashTitle: "REVOLT", flashNote: "The org rebels — wall accelerates",
+  },
+};
+
 /* ───────── Apply effects to the five layers ─────────
    Called from onBrickBreak (player bricks) and Phase 3 attack-brick handler. */
 function applyBrickEffects(state, brickDef, isAttack = false) {
@@ -349,6 +386,16 @@ function createGame(canvas, onHudSync) {
     timeAt2Balls: 0,
     timeAt3Balls: 0,
 
+    // V4.6 attack animations (all relative to state.timeMs)
+    driftAnimUntil: 0,
+    outageFlashUntil: 0,
+    breachShakeUntil: 0,
+    rogueAnimUntil: 0,
+    revoltAnimUntil: 0,
+    ghostBalls: [],
+    lastAttackSpawnAt: -100000,
+    nextAttackCheckAt: 0,
+
     // V4.6 record
     layerHistory: [],            // quarter-end snapshots filled in Phase 4
     notableMoments: [],
@@ -470,9 +517,10 @@ function createGame(canvas, onHudSync) {
 
     // V4.6 layer reset — vulnerable opening
     Object.assign(state, INITIAL_LAYERS);
-    // Cascade clocks tick from t=0 because Foundation begins stressed and Trust begins eroded.
-    state.foundationStressedSince = now;
-    state.trustErodedSince = now;
+    // Cascade clocks in relative time (state.timeMs). Foundation begins stressed
+    // and Trust begins eroded → both clocks tick from t=0.
+    state.foundationStressedSince = 0;
+    state.trustErodedSince = 0;
     state.crisisActive = false;
     state.crisesEntered = 0;
     state.crisesRecovered = 0;
@@ -496,6 +544,17 @@ function createGame(canvas, onHudSync) {
     state.lastSpaceTap = -100000;
     state.timeAt2Balls = 0;
     state.timeAt3Balls = 0;
+
+    // V4.6 attack animations
+    state.driftAnimUntil = 0;
+    state.outageFlashUntil = 0;
+    state.breachShakeUntil = 0;
+    state.rogueAnimUntil = 0;
+    state.revoltAnimUntil = 0;
+    state.ghostBalls = [];
+    state.lastAttackSpawnAt = -100000;
+    state.nextAttackCheckAt = 500;          // first check 0.5s into the run
+
     state.layerHistory = [];
     state.notableMoments = [];
 
@@ -550,14 +609,114 @@ function createGame(canvas, onHudSync) {
     state.flashUntil = performance.now() + 1500;
   };
 
+  /* ───────── Attack-brick cascade spawn (V4.6 §4) ─────────
+     Conditions tuned in v4_6_sim.py. Ball-count attack-skew set in Phase 4
+     when SPACE-stacking lands. */
+  const checkAttackSpawns = () => {
+    const spawns = [];
+    const tNow = state.timeMs;
+
+    // Ball-count attack-skew multipliers (Phase 4 stacks balls; placeholder uses 1×)
+    let driftMult, outageMult, breachMult, rogueMult, hallMult, revoltMult;
+    if (state.ballsLive >= 3) {
+      driftMult = 2.0; outageMult = 1.5; breachMult = 1.0;
+      rogueMult = 1.5; hallMult = 2.0; revoltMult = 1.0;
+    } else {
+      driftMult = outageMult = breachMult = rogueMult = hallMult = revoltMult = 1.0;
+    }
+
+    // DRIFT — Foundation stressed > 30s
+    if (state.foundation === "stressed" && state.foundationStressedSince != null) {
+      if (tNow - state.foundationStressedSince > 30000) {
+        if (Math.random() < 0.6 * driftMult) {
+          spawns.push("DRIFT");
+          state.foundationStressedSince = tNow;
+        }
+      }
+    }
+
+    // OUTAGE — Foundation degraded (probabilistic), OR 4+ Build streak
+    if (state.foundation === "degraded" && Math.random() < 0.025 * outageMult) {
+      spawns.push("OUTAGE");
+    }
+    if (state.buildStreak >= 4) {
+      spawns.push("OUTAGE");
+      state.buildStreak = 0;
+    }
+
+    // BREACH — Low Friction + Stressed Foundation, OR 5+ incidents this quarter
+    if (state.friction < 25 && state.foundation === "stressed" && Math.random() < 0.03 * breachMult) {
+      spawns.push("BREACH");
+    }
+    if (state.incidentsThisQuarter >= 5 && Math.random() < 0.10 * breachMult) {
+      spawns.push("BREACH");
+      state.incidentsThisQuarter = 0;
+    }
+
+    // ROGUE — Foundation degraded + Trust eroded + Friction > 60
+    if (state.foundation === "degraded" && state.trust < 26 && state.friction > 60
+        && Math.random() < 0.04 * rogueMult) {
+      spawns.push("ROGUE");
+    }
+
+    // HALLUCINATION — Foundation stressed + Trust eroded (probabilistic)
+    if (state.foundation === "stressed" && state.trust < 26
+        && Math.random() < 0.025 * hallMult) {
+      spawns.push("HALLUCINATION");
+    }
+
+    // REVOLT — Friction > 70 + Trust eroded > 60s
+    if (state.friction > 70 && state.trust < 26 && state.trustErodedSince != null) {
+      if (tNow - state.trustErodedSince > 60000) {
+        if (Math.random() < 0.6 * revoltMult) {
+          spawns.push("REVOLT");
+          state.trustErodedSince = tNow;
+        }
+      }
+    }
+
+    return spawns;
+  };
+
+  const spawnAttackBrick = (attackName) => {
+    const aliveBricks = state.bricks.filter(b => b.alive);
+    if (aliveBricks.length === 0) return;
+    const target = aliveBricks[Math.floor(Math.random() * aliveBricks.length)];
+    const def = ATTACK_BRICKS[attackName];
+    if (!def) return;
+    target.challenge = def;
+    target.fadeInAt = performance.now();
+    target.telegraphUntil = state.timeMs + 1000;          // 1s pulse before active
+    state.lastAttackSpawnAt = state.timeMs;
+    state.notableMoments.push({
+      quarter: state.quarter,
+      timeMs: state.timeMs,
+      description: `${attackName} attack spawned`,
+    });
+    pushEvent(`⚠ ${attackName} — attack brick on the wall`);
+  };
+
+  const spawnGhostBall = () => {
+    const baseSpeed = 3.2;
+    state.ghostBalls.push({
+      x: 40 + Math.random() * Math.max(40, W() - 80),
+      y: H() / 3,
+      vx: (Math.random() > 0.5 ? 1 : -1) * baseSpeed,
+      vy: baseSpeed,
+      r: 7,
+      expireAt: state.timeMs + 6000,
+    });
+  };
+
   const onBrickBreak = (brick) => {
     const brickDef = brick.challenge;
     const isAttack = !!brickDef.isAttack;
 
-    // MONITOR shield absorbs the next attack brick entirely (Phase 3 makes attacks fire)
+    // MONITOR shield absorbs the next attack brick entirely (effects and animation skipped)
     if (isAttack && (state.incidentShields || 0) > 0) {
       state.incidentShields -= 1;
       state.score += 1;
+      setFlash("shield", "MONITOR SHIELDED", `${brickDef.label} absorbed`);
       pushEvent(`MONITOR shield absorbed ${brickDef.label}`);
       state.brickCounts.MONITOR_SHIELDS = (state.brickCounts.MONITOR_SHIELDS || 0) + 1;
       return;
@@ -573,6 +732,18 @@ function createGame(canvas, onHudSync) {
     }
 
     applyBrickEffects(state, brickDef, isAttack);
+
+    // V4.6 §4 restored V1 animations — trigger after effects apply.
+    if (isAttack) {
+      setFlash(brickDef.id.toLowerCase(), brickDef.flashTitle, brickDef.flashNote);
+      const anim = brickDef.animation;
+      if (anim === "curveRight")   state.driftAnimUntil   = state.timeMs + 6000;
+      else if (anim === "flash")   state.outageFlashUntil = state.timeMs + 200;
+      else if (anim === "shake")   state.breachShakeUntil = state.timeMs + 600;
+      else if (anim === "jitter")  state.rogueAnimUntil   = state.timeMs + 5000;
+      else if (anim === "ghostBall") spawnGhostBall();
+      else if (anim === "driftRight") state.revoltAnimUntil = state.timeMs + 60000;
+    }
   };
 
   // Phase 1 placeholder end-screen result. Phase 5 builds the verdict layout.
@@ -654,10 +825,34 @@ function createGame(canvas, onHudSync) {
       state.nextPassiveTickAt += 30000;
     }
 
+    // V4.6 attack-spawn check (every 500ms; 5s cooldown between actual spawns)
+    if (state.timeMs >= state.nextAttackCheckAt) {
+      state.nextAttackCheckAt = state.timeMs + 500;
+      if (state.timeMs - state.lastAttackSpawnAt >= 5000) {
+        const spawns = checkAttackSpawns();
+        if (spawns.length > 0) {
+          // Pick one (sim semantics: first match each tick)
+          spawnAttackBrick(spawns[0]);
+        }
+      }
+    }
+
+    // Active V4.6 animation flags (drive ball physics + paddle distractions below)
+    const inDrift  = state.timeMs < state.driftAnimUntil;
+    const inRogue  = state.timeMs < state.rogueAnimUntil;
+    const inRevolt = state.timeMs < state.revoltAnimUntil;
+
     // Ball movement — Foundation health modifies ball speed (V4.6 §2.1)
     const ballMult = state.ballSpeedMultiplier * getFoundationBallMult(state);
     state.balls = state.balls.filter(b => {
       if (b.expireAt && now > b.expireAt) return false;
+
+      // V4.6 attack animations applied to ball velocity
+      if (inDrift)  b.vx += 0.013;                          // gradual rightward curve
+      if (inRogue) { b.vx += (Math.random() - 0.5) * 0.4;
+                     b.vy += (Math.random() - 0.5) * 0.4; }
+      if (inRevolt) b.vx += 0.005;                          // gentler drift right
+      // HALLUCINATION distraction handled in ghost-ball block (slows on paddle contact)
 
       const sp = Math.hypot(b.vx, b.vy);
       const maxSp = 5.0 + state.quarter * 1.05;
@@ -704,6 +899,25 @@ function createGame(canvas, onHudSync) {
       return true;
     });
 
+    // HALLUCINATION ghost balls — visual distraction; if paddle touches one,
+    // the real balls slow briefly (the operator was disambiguating phantom output).
+    state.ghostBalls = state.ghostBalls.filter(g => {
+      if (state.timeMs >= g.expireAt) return false;
+      g.x += g.vx;
+      g.y += g.vy;
+      if (g.x < g.r) { g.x = g.r; g.vx = -g.vx; }
+      if (g.x > W() - g.r) { g.x = W() - g.r; g.vx = -g.vx; }
+      if (g.y < g.r) { g.y = g.r; g.vy = Math.abs(g.vy); }
+      if (g.y > H() + 30) return false;
+
+      const py = H() - 26;
+      if (g.y + g.r > py && g.y + g.r < py + p.h + 4 && g.x > p.x - 2 && g.x < p.x + p.w + 2 && g.vy > 0) {
+        g.vy = -Math.abs(g.vy);
+        state.balls.forEach(b => { b.vx *= 0.75; b.vy *= 0.75; });
+      }
+      return true;
+    });
+
     // Ball respawn after incident
     if (state.status === "playing" && state.respawnAt > 0 && now >= state.respawnAt) {
       if (state.balls.length === 0) {
@@ -726,13 +940,18 @@ function createGame(canvas, onHudSync) {
     const line   = styles.getPropertyValue('--line').trim()  || '#d9d9d9';
 
     const now = performance.now();
-    // V2 complication overlays removed in Phase 1; V4.6 attack animations land in Phase 3.
-    const inBias = false, inGov = false, inRogue = false, inAudit = false, inMoat = false, inCapa = false;
 
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, W(), H());
+    // BREACH shake — translate the entire scene each frame during the shake window
+    let shakeX = 0, shakeY = 0;
+    if (state.timeMs < state.breachShakeUntil) {
+      const intensity = ((state.breachShakeUntil - state.timeMs) / 600) * 8;
+      shakeX = (Math.random() - 0.5) * intensity;
+      shakeY = (Math.random() - 0.5) * intensity;
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, shakeX * dpr, shakeY * dpr);
+    ctx.clearRect(-20, -20, W() + 40, H() + 40);
     ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, W(), H());
+    ctx.fillRect(-20, -20, W() + 40, H() + 40);
 
     // φ-grid reference lines
     ctx.strokeStyle = line;
@@ -766,8 +985,14 @@ function createGame(canvas, onHudSync) {
       const cat = def.category;
       const label = def.label || def.short || "";
 
+      // Attack-brick 1-second telegraph pulse (V4.6 §3.3)
+      if (def.isAttack && brick.telegraphUntil && state.timeMs < brick.telegraphUntil) {
+        const pulse = 0.55 + 0.45 * Math.sin(state.timeMs * 0.018);
+        ctx.globalAlpha = fadeT * pulse;
+      }
+
       if (def.isAttack) {
-        // Attack brick — solid accent fill, bold label (Phase 3 paints these in)
+        // Attack brick — solid accent fill, bold label
         ctx.fillStyle = accent;
         ctx.fillRect(brick.x, brick.y, brick.w, brick.h);
         ctx.fillStyle = bg;
@@ -847,9 +1072,55 @@ function createGame(canvas, onHudSync) {
     state.balls.forEach(b => {
       ctx.beginPath();
       ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-      ctx.fillStyle = fg;
+      // ROGUE renders balls in accent during the jitter window
+      ctx.fillStyle = (state.timeMs < state.rogueAnimUntil) ? accent : fg;
       ctx.fill();
     });
+
+    // HALLUCINATION ghost balls — dashed circles, accent stroke
+    if (state.ghostBalls.length > 0) {
+      ctx.save();
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 1.4;
+      state.ghostBalls.forEach(g => {
+        const expireFade = Math.min(1, Math.max(0, (g.expireAt - state.timeMs) / 800));
+        ctx.globalAlpha = expireFade;
+        ctx.beginPath();
+        ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    // REVOLT — canvas tint + diagonal lines for the 60s duration
+    if (state.timeMs < state.revoltAnimUntil) {
+      const tRemain = (state.revoltAnimUntil - state.timeMs) / 60000;
+      ctx.save();
+      ctx.fillStyle = accent;
+      ctx.globalAlpha = 0.07 * tRemain;
+      ctx.fillRect(0, 0, W(), H());
+      ctx.strokeStyle = accent;
+      ctx.globalAlpha = 0.14 * tRemain;
+      ctx.lineWidth = 0.6;
+      for (let s = -H(); s < W() + H(); s += 22) {
+        ctx.beginPath();
+        ctx.moveTo(s, 0);
+        ctx.lineTo(s + H(), H());
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // OUTAGE — 200ms full-canvas white flash
+    if (state.timeMs < state.outageFlashUntil) {
+      const t = (state.outageFlashUntil - state.timeMs) / 200;
+      ctx.save();
+      ctx.fillStyle = '#ffffff';
+      ctx.globalAlpha = 0.65 * t;
+      ctx.fillRect(0, 0, W(), H());
+      ctx.restore();
+    }
 
     // Footer text strip
     ctx.fillStyle = fg3;
