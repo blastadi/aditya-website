@@ -583,9 +583,32 @@ function createGame(canvas, onHudSync) {
   };
 
   const onSpace = () => {
-    if (state.status === "ready")  startGame();
-    else if (state.status === "ended") startGame();
-    else if (state.status === "playing" && state.balls.length === 0 && state.respawnAt === 0) spawnBall();
+    if (state.status === "ready")  { startGame(); return; }
+    if (state.status === "ended")  { startGame(); return; }
+    if (state.status !== "playing") return;
+
+    if (state.balls.length === 0 && state.respawnAt === 0) { spawnBall(); return; }
+
+    // V4.7 §5 — parallel workstream stacking, blocked during Crisis
+    if (state.crisisActive) return;
+    if (state.balls.length === 0) return;
+    if (state.ballsLive >= 3) return;
+    if (state.timeMs - state.lastSpaceTap < 5000) return;
+
+    state.ballsLive += 1;
+    state.parallelTaps += 1;
+    state.lastSpaceTap = state.timeMs;
+    spawnBall({ parallel: true });
+
+    if (state.ballsLive === 2) {
+      setFlash("parallel-2", "+ 1 WORKSTREAM", "Wall refill 1.25× · soft drain");
+      state.notableMoments.push({ quarter: state.quarter, timeMs: state.timeMs,
+                                  description: "Tapped SPACE — 2 workstreams" });
+    } else if (state.ballsLive === 3) {
+      setFlash("parallel-3", "PARALLEL OVERLOAD", "Wall 1.45× · heavy drain · attacks ×");
+      state.notableMoments.push({ quarter: state.quarter, timeMs: state.timeMs,
+                                  description: "Tapped SPACE — 3 workstreams" });
+    }
   };
 
   const onKeyDown = (e) => {
@@ -868,11 +891,79 @@ function createGame(canvas, onHudSync) {
     if (state.keys["ArrowRight"]) p.x += pSpeed;
     p.x = Math.max(0, Math.min(W() - p.w, p.x));
 
-    // Wall refill — base + transient REVOLT mult (ball-count refill comes in Phase 4)
+    // V4.7 §4 quarter transition — board review every 60s of game time
+    if (state.timeMs >= state.nextQuarterAt) {
+      const closingQ = state.quarter;
+      state.layerHistory.push({
+        quarter: closingQ, timeMs: state.timeMs,
+        capital: state.capital, capacity: state.capacity,
+        trust: state.trust, friction: state.friction, safety: state.safety,
+        breaks: state.breaks, incidents: state.incidents, ballsLive: state.ballsLive,
+      });
+      state.notableMoments.push({ quarter: closingQ, timeMs: state.timeMs,
+                                  description: `Q${closingQ} closed` });
+      if (closingQ >= 4) {
+        finishRun();
+        return;
+      }
+      setFlash("board-review", `Q${closingQ} CLOSED — BOARD REVIEW`,
+        `T ${Math.round(state.trust)} ${trustBand(state.trust)} · S ${Math.round(state.safety)} ${safetyBand(state.safety)}`);
+      state.pauseUntil = now + 1500;
+      state.incidentsThisQuarter = 0;
+      state.quarter = closingQ + 1;
+      state.nextQuarterAt = state.timeMs + QUARTER_LENGTH_MS;
+      // Fresh wall on board review
+      state.bricks.forEach((b, i) => {
+        b.alive = true;
+        b.challenge = pickBrickForWall();
+        b.fadeInAt = now + i * 35;
+        b.telegraphUntil = 0;
+      });
+      state.nextBrickRefillAt = now + 8000 + Math.random() * 4000;
+    }
+
+    // Crisis duration + terminal end at 30s
+    if (state.crisisActive) {
+      const last = state._lastCrisisTickTime != null ? state._lastCrisisTickTime : state.timeMs;
+      state.crisisDurationMs += Math.max(0, state.timeMs - last);
+      state._lastCrisisTickTime = state.timeMs;
+      if (state.crisisDurationMs > CRISIS_TERMINAL_MS) {
+        state.gameEndedEarly = true;
+        state.earlyEndReason = "CRISIS_TERMINAL";
+        finishRun();
+        return;
+      }
+    } else {
+      state.crisisDurationMs = 0;
+      state._lastCrisisTickTime = state.timeMs;
+    }
+
+    // Wall refill — base + REVOLT + ball-count + Crisis slow
     if (now > state.nextBrickRefillAt) {
       refillBricks();
       const base = 8000 + Math.random() * 6000;
-      state.nextBrickRefillAt = now + base / state.wallRefillExtraMultiplier;
+      const ballMult = state.ballsLive === 3 ? 1.45 : state.ballsLive === 2 ? 1.25 : 1.0;
+      const crisisMult = state.crisisActive ? 0.5 : 1.0;   // Crisis SLOWS the wall
+      state.nextBrickRefillAt = now + base / (state.wallRefillExtraMultiplier * ballMult * crisisMult);
+    }
+
+    // V4.7 §5 ball-count continuous drain + 2/3-ball time tracking
+    if (state.timeMs >= state.nextBallCountDrainAt) {
+      state.nextBallCountDrainAt = state.timeMs + 1000;
+      if (state.ballsLive === 2) {
+        updateCapital(state, -0.2 * 1);    // -0.2/s (rounded by clamp)
+        updateCapacity(state, -0.4 * 1);
+      } else if (state.ballsLive === 3) {
+        updateCapital(state, -2);
+        updateCapacity(state, -3);
+      }
+    }
+    {
+      const last = state._lastBallTrackTime != null ? state._lastBallTrackTime : state.timeMs;
+      const dtMs = Math.max(0, state.timeMs - last);
+      state._lastBallTrackTime = state.timeMs;
+      if (state.ballsLive === 2) state.timeAt2Balls += dtMs;
+      else if (state.ballsLive === 3) state.timeAt3Balls += dtMs;
     }
 
     // Passive ticks every 30s of game time (Phase 4 fully wires this; safe stub here)
