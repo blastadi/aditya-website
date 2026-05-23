@@ -430,10 +430,11 @@ function createGame(canvas, onHudSync) {
   state.paddle.x = (W() - state.paddle.w) / 2;
 
   /* ───────── Bricks ───────── */
-  // V4.7: uniform draw over the 12 player bricks (Crisis pool narrowing
-  // comes in Phase 5; for Phase 2 the pool is always all 12).
+  // V4.7 §5 — Crisis narrows the pool to recovery-oriented bricks only.
+  const CRISIS_POOL = ["AUTOMATE", "APOLOGIZE", "TRAIN"];
   const pickBrickForWall = () => {
-    const name = pickPlayerBrickName();
+    const pool = state.crisisActive ? CRISIS_POOL : PLAYER_BRICK_IDS;
+    const name = pool[Math.floor(Math.random() * pool.length)];
     return { id: name, label: PLAYER_BRICKS[name].label, category: PLAYER_BRICKS[name].category };
   };
 
