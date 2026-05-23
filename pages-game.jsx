@@ -11,7 +11,7 @@ const { useState: useStateGame, useEffect: useEffectGame, useRef: useRefGame, us
 const CHALLENGES = [
   { id: "data-val",     kind: "problem", label: "Data validation failures", short: "DATA VAL",   effect: { reliability: -8 } },
   { id: "bias",         kind: "problem", label: "Bias outcomes",            short: "BIAS",       effect: { trust: -10, safety: -2 },                trigger: "bias" },
-  { id: "outage",       kind: "problem", label: "Software outages",         short: "OUTAGE",     effect: { reliability: -12, trust: -4 },           trigger: "outage" },
+  { id: "outage",       kind: "problem", label: "Software outages",         short: "OUTAGE",     effect: { reliability: -10, trust: -4 },           trigger: "outage" },
   { id: "rogue",        kind: "problem", label: "Rogue AI agents",          short: "ROGUE",      effect: { safety: -10, trust: -6 },                trigger: "rogue" },
   { id: "org-resist",   kind: "problem", label: "Organizational resistance",short: "ORG",        effect: { speed: -6, trust: +2 } },
   { id: "governance",   kind: "problem", label: "Governance friction",      short: "GOV",        effect: { governance: +8, speed: -5, safety: +2 }, trigger: "governance" },
@@ -44,9 +44,21 @@ const WINS = [
   { id: "uplift",  kind: "win", category: "human",       label: "Employee uplift",          short: "UPLIFT",  effect: { trust: +8, speed: +4, cost: -3 } },
   { id: "talent",  kind: "win", category: "human",       label: "Talent retained",          short: "TALENT",  effect: { trust: +7, reliability: +5, governance: +3 } },
 
-  // Capability & innovation (2) — filled diamond
-  { id: "capa",    kind: "win", category: "capability",  label: "Capability unlock",        short: "CAPA",    effect: { speed: +8, reliability: +4, cost: +5 }, trigger: "capability" },
-  { id: "audit",   kind: "win", category: "capability",  label: "Successful audit",         short: "AUDIT",   effect: { governance: +8, trust: +6, safety: +4 }, trigger: "audit" },
+  // Capability & innovation (2 base + 1 patch-P1) — filled diamond
+  { id: "capa",      kind: "win", category: "capability",  label: "Capability unlock",        short: "CAPA",    effect: { speed: +8, reliability: +4, cost: +5 }, trigger: "capability" },
+  { id: "audit",     kind: "win", category: "capability",  label: "Successful audit",         short: "AUDIT",   effect: { governance: +8, trust: +6, safety: +4 }, trigger: "audit" },
+  { id: "infra",     kind: "win", category: "capability",  label: "Infrastructure investment",short: "INFRA",   effect: { reliability: +8, safety: +3, cost: +3 } },
+
+  // Decision quality (1 patch-P1 addition) — filled triangle up
+  { id: "eval",      kind: "win", category: "decision",    label: "Eval suite improvement",   short: "EVAL",    effect: { reliability: +6, safety: +4, governance: +2 } },
+
+  // Safety (2 patch-P1) — filled hexagon
+  { id: "guardrail", kind: "win", category: "safety",      label: "Guardrails installed",     short: "GUARDRAIL", effect: { safety: +8, reliability: +4, trust: +3, cost: +1 } },
+  { id: "redteam",   kind: "win", category: "safety",      label: "Red team review",          short: "REDTEAM", effect: { safety: +6, reliability: +5, governance: +2 } },
+
+  // Governance (2 patch-P1) — filled plus
+  { id: "gov-inv",   kind: "win", category: "governance",  label: "Governance investment",    short: "GOV INV", effect: { governance: +6, safety: +5, trust: +3, cost: +2 } },
+  { id: "transp",    kind: "win", category: "governance",  label: "Transparency report",      short: "TRANSP",  effect: { trust: +9, governance: +3, safety: +2 } },
 ];
 
 const METER_KEYS = ["speed", "reliability", "governance", "safety", "cost", "trust"];
@@ -66,9 +78,11 @@ function pickBrickChallenge() {
 const WIN_CATEGORIES = {
   efficiency: ["auto", "save", "thru"],
   revenue:    ["rev", "market", "moat"],
-  decision:   ["fcst", "insight"],
+  decision:   ["fcst", "insight", "eval"],
   human:      ["uplift", "talent"],
-  capability: ["capa", "audit"],
+  capability: ["capa", "audit", "infra"],
+  safety:     ["guardrail", "redteam"],
+  governance: ["gov-inv", "transp"],
 };
 const ALL_WIN_IDS = Object.values(WIN_CATEGORIES).flat();
 const LOSS_IDS    = CHALLENGES.map(c => c.id);
@@ -1059,6 +1073,21 @@ function createGame(canvas, onHudSync) {
           ctx.lineTo(mx - 2.6, my);
           ctx.closePath();
           ctx.fill();
+        } else if (cat === "safety") {
+          // pointed-top hexagon
+          ctx.beginPath();
+          ctx.moveTo(mx,        my - 2.6);
+          ctx.lineTo(mx + 2.25, my - 1.3);
+          ctx.lineTo(mx + 2.25, my + 1.3);
+          ctx.lineTo(mx,        my + 2.6);
+          ctx.lineTo(mx - 2.25, my + 1.3);
+          ctx.lineTo(mx - 2.25, my - 1.3);
+          ctx.closePath();
+          ctx.fill();
+        } else if (cat === "governance") {
+          // plus / cross
+          ctx.fillRect(mx - 2.4, my - 0.7, 4.8, 1.4);
+          ctx.fillRect(mx - 0.7, my - 2.4, 1.4, 4.8);
         }
         ctx.restore();
         ctx.globalAlpha = fadeT;
