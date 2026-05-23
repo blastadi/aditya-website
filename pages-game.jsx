@@ -467,26 +467,6 @@ function createGame(canvas, onHudSync) {
     }
   };
 
-  const addNewRow = () => {
-    const cols = 7, gap = 6;
-    const bw = (W() - gap * (cols + 1)) / cols;
-    const bh = 30;
-    const aliveYs = state.bricks.filter(b => b.alive).map(b => b.y);
-    const topY = aliveYs.length ? Math.min(...aliveYs) : 20;
-    const newY = Math.max(20, topY - (bh + gap));
-    const now = performance.now();
-    for (let c = 0; c < cols; c++) {
-      state.bricks.push({
-        x: gap + c * (bw + gap),
-        y: newY,
-        w: bw, h: bh,
-        alive: true,
-        challenge: pickPlayerBrick(),
-        fadeInAt: now + c * (180 + Math.random() * 220),
-      });
-    }
-  };
-
   /* ───────── Ball ───────── */
   const spawnBall = (opts = {}) => {
     const baseSpeed = 4.4 * (state.ballSpeedMultiplier || 1);
