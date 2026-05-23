@@ -1472,31 +1472,204 @@ function computeTradeoff(result) {
   return { gainLayer, gainAmt, lossLayer, lossAmt, dominantCat };
 }
 
-/* Phase 1 placeholder end screen — Phase 7 ships the V4.7 verdict + trajectory + tradeoff. */
+/* V4.7 §7 verdict — 17 patterns from v4_7_stress.py, ordered. */
+function computeVerdict(result) {
+  if (result.gameEndedEarly && result.earlyEndReason === "CRISIS_TERMINAL") {
+    return "Your deployment was shut down before Q4. The board pulled funding when both budget and team capacity hit zero with no recovery in sight. Your successor inherits the lessons — and a cleared roadmap.";
+  }
+
+  const cats = { build: 0, defend: 0, repair: 0, invest: 0 };
+  for (const [n, c] of Object.entries(result.brickCounts || {})) {
+    if (PLAYER_BRICKS[n]) cats[PLAYER_BRICKS[n].category] += c;
+  }
+  const total = Math.max(1, Object.values(cats).reduce((a, b) => a + b, 0));
+  const buildR  = cats.build / total;
+  const defendR = cats.defend / total;
+  const investR = cats.invest / total;
+
+  const cap = result.capital, cpc = result.capacity, fr = result.friction;
+  const tBand = trustBand(result.trust), sBand = safetyBand(result.safety);
+
+  if (cap <= 10 && cpc <= 10) {
+    if (defendR > 0.5) return "You hand off a deployment that reviewed itself into the ground. Your successor inherits a culture that mistook caution for safety.";
+    if (buildR  > 0.5) return "You hand off a deployment that shipped itself into exhaustion. Your successor inherits the cleanup.";
+    return "You hand off a deployment with empty coffers and burned-out staff. Your successor inherits a recovery project.";
+  }
+  if ((result.crisesEntered || 0) >= 6)
+    return "You hand off a deployment that survived through reflexes more than choices. Your successor inherits the same firefighting habit unless they break it.";
+  if (result.safety > 70 && (cap + cpc) < 30 && cap > 5 && cpc > 5)
+    return "You hand off a safe deployment that ran out of fuel. Your successor inherits the right values and an empty tank.";
+  if (["skeptical","earned","endorsed"].includes(tBand) && sBand === "unmitigated")
+    return "You hand off a deployment users trust but engineers fear. Your successor inherits the gap between perception and reality.";
+  if (["proactive","robust"].includes(sBand) && tBand === "eroded")
+    return "You hand off a robust deployment that nobody noticed was robust. Your successor inherits a marketing problem.";
+  if (["proactive","robust"].includes(sBand) && fr > 65 && tBand !== "endorsed")
+    return "You hand off a deployment that's robust, calm, and ignored. Your successor inherits over-engineered safety theater that users don't care about.";
+  if (investR > 0.5 && cpc > 70 && cap <= 15)
+    return "You hand off a well-staffed deployment that hasn't shipped enough to pay for itself. Your successor inherits potential, and an empty bank account.";
+  if (defendR > 0.5 && fr > 65 && ["earned","endorsed"].includes(tBand))
+    return "You hand off a deployment that everyone trusts but nothing moves. Your successor inherits a culture problem.";
+  if (result.safety >= 70)
+    return "You hand off a safer deployment than the one you started with. The work doesn't show on a dashboard but your successor will feel it.";
+  if (buildR > 0.5 && result.safety < 30)
+    return "You hand off a deployment that shipped fast and never paused to look. Your successor inherits the consequences.";
+  if (result.safety > 50 && ["earned","endorsed"].includes(tBand) && fr < 65 && (cap + cpc) > 40)
+    return "You hand off a trusted, safe, well-resourced deployment with room to grow. Your successor inherits something durable.";
+  if (result.safety > 40 && tBand === "eroded")
+    return "You hand off a technically sound deployment that no one trusts. Your successor inherits a perception problem.";
+  if (result.safety < 30 && tBand === "eroded")
+    return "You hand off a deployment that almost survived. Your successor inherits debt.";
+  if (cap <= 10 && cpc > 50)
+    return "You hand off a deployment with motivated people and no budget. Your successor inherits a fundraising problem.";
+  if (cpc <= 10 && cap > 50)
+    return "You hand off a well-funded deployment with no one left to run it. Your successor inherits a hiring problem.";
+  return "You hand off a deployment that operated. Whether that's enough is for your successor to decide.";
+}
+
+/* Five-layer trajectory chart — 5 sparklines (Start + Q1..Q4 ends) */
+function LayerTrajectoryChart({ history }) {
+  const layers = [
+    { key: "capital",  label: "CAPITAL" },
+    { key: "capacity", label: "CAPACITY" },
+    { key: "trust",    label: "TRUST" },
+    { key: "friction", label: "FRICTION" },
+    { key: "safety",   label: "SAFETY" },
+  ];
+  const padded = history && history.length > 0 ? history : [];
+  const W = 140, H = 56, PAD = 6;
+  return (
+    <div className="trajectory-grid">
+      {layers.map(({ key, label }) => {
+        const pts = padded.map((snap, i) => {
+          const v = snap[key];
+          const x = padded.length > 1 ? PAD + (i / (padded.length - 1)) * (W - PAD * 2) : W / 2;
+          const y = H - PAD - (Math.max(0, Math.min(100, v)) / 100) * (H - PAD * 2);
+          return `${x.toFixed(1)},${y.toFixed(1)}`;
+        }).join(" ");
+        const last = padded[padded.length - 1];
+        const lastV = last ? Math.max(0, Math.min(100, last[key])) : 0;
+        return (
+          <div key={key} className="traj-cell">
+            <svg viewBox={`0 0 ${W} ${H}`} className="traj-svg" preserveAspectRatio="none">
+              <line x1={0} y1={H/2} x2={W} y2={H/2} className="traj-grid" />
+              {padded.length > 1 && pts && <polyline points={pts} className="traj-line" />}
+              {padded.length > 0 && (
+                <circle
+                  cx={padded.length > 1 ? W - PAD : W / 2}
+                  cy={H - PAD - (lastV / 100) * (H - PAD * 2)}
+                  r="2.4" className="traj-point" />
+              )}
+            </svg>
+            <div className="traj-foot">
+              <span className="traj-label">{label}</span>
+              <span className="traj-value">{Math.round(last ? last[key] : 0)}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function pickThreeMoments(moments) {
+  if (!moments || moments.length === 0) return [];
+  const distinctive = moments.filter(m => !m.description.includes("closed"));
+  const seen = new Map();
+  const selected = [];
+  for (const m of distinctive) {
+    if (selected.length >= 3) break;
+    const t = m.description.split(" ")[0];
+    const cur = seen.get(m.quarter) || new Set();
+    if (!cur.has(t)) {
+      const qUsed = new Set(selected.map(s => s.quarter));
+      if (!qUsed.has(m.quarter) || selected.length >= 2) {
+        selected.push(m);
+        cur.add(t);
+        seen.set(m.quarter, cur);
+      }
+    }
+  }
+  for (const m of moments) {
+    if (selected.length >= 3) break;
+    if (!selected.includes(m)) selected.push(m);
+  }
+  return selected;
+}
+
+const LAYER_HUMAN = {
+  trust: "TRUST", safety: "SAFETY", capital: "CAPITAL",
+  capacity: "CAPACITY", friction: "FRICTION",
+};
+
+function TradeoffLine({ result }) {
+  const t = computeTradeoff(result);
+  if (!t) return null;
+  const gain = t.gainLayer
+    ? `Biggest gain: ${LAYER_HUMAN[t.gainLayer]} +${t.gainAmt}.`
+    : `No single layer climbed meaningfully.`;
+  const loss = t.lossLayer
+    ? `Biggest cost: ${LAYER_HUMAN[t.lossLayer]} ${t.lossAmt}, from sustained ${t.dominantCat} choices.`
+    : `No single layer fell meaningfully.`;
+  return (
+    <div className="tradeoff-line">
+      <div className="tradeoff-label">WHAT YOU TRADED FOR WHAT</div>
+      <div className="tradeoff-text">{gain}</div>
+      <div className="tradeoff-text">{loss}</div>
+    </div>
+  );
+}
+
 function EndScreen({ result, onRestart }) {
   if (!result) return null;
+  const verdict = computeVerdict(result);
+  const crisisStr = (result.crisesEntered || 0) > 0
+    ? `${result.crisesEntered} CRISES SURVIVED`
+    : "NO CRISES";
+  const pct2 = Math.round(100 * (result.timeAt2Balls || 0) / TOTAL_GAME_LENGTH_MS);
+  const pct3 = Math.round(100 * (result.timeAt3Balls || 0) / TOTAL_GAME_LENGTH_MS);
+  const moments = pickThreeMoments(result.notableMoments || []);
+  const earlyEnd = result.gameEndedEarly && result.earlyEndReason === "CRISIS_TERMINAL";
+
   return (
     <div className="game-overlay game-overlay-end">
       <div className="end-grid">
         <header className="handoff-header">
-          <span className="overlay-eyebrow">— Handoff (Phase 1 placeholder) · {fmtDuration(result.durationMs)}</span>
+          <span className="overlay-eyebrow">
+            — The Handoff · {fmtDuration(result.durationMs)}
+            {earlyEnd ? " · TERMINAL CRISIS" : ""}
+          </span>
           <h2 className="handoff-title">The <em>Handoff</em></h2>
         </header>
-        <p className="verdict">
-          Five layers wired. Bricks don't apply effects yet — Phase 2 hooks the 12 conditional bricks.
-          Phase 5 wires Crisis consequences. Phase 7 ships the full verdict.
-        </p>
+
+        <p className="verdict">{verdict}</p>
+
+        <TradeoffLine result={result} />
+
+        <LayerTrajectoryChart history={result.layerHistory || []} />
+
         <div className="handoff-stats">
           <span className="stats-line">
-            CAPITAL {Math.round(result.capital || 0)} · CAPACITY {Math.round(result.capacity || 0)} ·
-            TRUST {Math.round(result.trust || 0)} {trustBand(result.trust || 0)} ·
-            FRICTION {Math.round(result.friction || 0)} ·
-            SAFETY {Math.round(result.safety || 0)} {safetyBand(result.safety || 0)}
+            4 QUARTERS · {result.breaks || 0} BREAKS · {result.incidents || 0} INCIDENTS · {crisisStr}
           </span>
-          <span className="stats-line">
-            {result.breaks || 0} BREAKS · {result.incidents || 0} INCIDENTS · {result.crisesEntered || 0} CRISES
-          </span>
+          {(result.parallelTaps > 0 || pct2 > 0 || pct3 > 0) && (
+            <span className="stats-line stats-parallel">
+              SPACE TAPS {result.parallelTaps || 0} · 2-BALL {pct2}% · 3-BALL {pct3}%
+            </span>
+          )}
         </div>
+
+        {moments.length > 0 && (
+          <div className="moments-list">
+            {moments.map((m, i) => (
+              <div key={i} className="moment-row">
+                <span className="moment-q">Q{m.quarter}</span>
+                <span className="moment-t">{Math.round(m.timeMs / 1000)}s</span>
+                <span className="moment-desc">{m.description}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className="end-footer">
           RUN ANOTHER DEPLOYMENT — PRESS <span className="kbd">SPACE</span>
         </div>
