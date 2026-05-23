@@ -38,14 +38,10 @@ const PLAYER_BRICKS = {
     effects: { friction: +5, trust: +3, foundationPush: -1, capital: -2, capacity: -3 },
   },
 
-  // ─ REPAIR — recover from problems, heavy Capacity cost
+  // ─ REPAIR — recover from problems, heavy Capacity cost (APOLOGIZE removed per balance pass)
   PATCH: {
     id: "PATCH", label: "PATCH", category: "repair",
     effects: { foundationPush: -1, capacity: -4 },
-  },
-  APOLOGIZE: {
-    id: "APOLOGIZE", label: "APOLOGIZE", category: "repair",
-    effects: { trust: +4, capacity: -2 },
   },
   REBUILD: {
     id: "REBUILD", label: "REBUILD", category: "repair",
@@ -56,12 +52,12 @@ const PLAYER_BRICKS = {
   TRAIN: {
     id: "TRAIN", label: "TRAIN", category: "invest",
     effects: { capital: -4, capacity: -2, trust: +1,
-               delayedTrustBonus:    { amount: +4, delayMs: 10000 },
+               delayedTrustBonus:    { amount: +3, delayMs: 10000 },
                delayedCapacityBonus: { amount: +8, delayMs: 15000 } },
   },
   HIRE: {
     id: "HIRE", label: "HIRE", category: "invest",
-    effects: { capital: -10, capacity: -3, capacityPassiveBoost: +1 },
+    effects: { capital: -10, capacity: +8, capacityPassiveBoost: +1 },
   },
   ALIGN: {
     id: "ALIGN", label: "ALIGN", category: "invest",
@@ -248,9 +244,17 @@ function pushFoundation(state, direction) {
 }
 
 function updateTrust(state, delta) {
-  // Diminishing returns above 80 — mandatory. Without this, defend/invest pegs Trust.
-  if (delta > 0 && state.trust >= 80) {
-    delta = delta >= 2 ? Math.max(1, Math.floor(delta / 2)) : 1;
+  // Tiered diminishing returns — Trust skews flat without an aggressive curve.
+  //   0–50 : full gain
+  //   50–70: gain halved
+  //   70–85: gain quartered (min 1)
+  //   85–95: hard cap +1 per call
+  //   95+  : no gain
+  if (delta > 0) {
+    if (state.trust >= 95)      delta = 0;
+    else if (state.trust >= 85) delta = 1;
+    else if (state.trust >= 70) delta = Math.max(1, Math.floor(delta / 4));
+    else if (state.trust >= 50) delta = Math.max(1, Math.floor(delta / 2));
   }
   state.trust = Math.max(0, Math.min(100, state.trust + delta));
   if (state.trust < 26 && state.trustErodedSince == null) {
@@ -275,19 +279,27 @@ function updateCapacity(state, delta) {
 }
 
 function checkCrisis(state) {
-  const inCrisis = state.capital <= 5 && state.capacity <= 5;
+  // V4.6-Aditya: either resource at 0 triggers crisis (was: both ≤ 5).
+  // Recovery requires both back above 10 — symmetric AND threshold.
+  const inCrisis = state.capital <= 0 || state.capacity <= 0;
   if (inCrisis && !state.crisisActive) {
     state.crisisActive = true;
     state.crisesEntered = (state.crisesEntered || 0) + 1;
-  } else if (state.crisisActive && (state.capital > 20 || state.capacity > 20)) {
+  } else if (state.crisisActive && state.capital > 10 && state.capacity > 10) {
     state.crisisActive = false;
     state.crisesRecovered = (state.crisesRecovered || 0) + 1;
   }
 }
 
+// Starvation: when Capital or Capacity hit 0, ball + paddle move at 10% speed.
+// Conveys "the team can't move" without ending the run.
+function getStarvationMult(state) {
+  return (state.capital <= 0 || state.capacity <= 0) ? 0.1 : 1.0;
+}
+
 function getPaddleSpeed(state) {
   // Friction throttles paddle linearly: 0 → full speed, 100 → 50% speed.
-  return 9 * (1 - state.friction / 200);
+  return 9 * (1 - state.friction / 200) * getStarvationMult(state);
 }
 
 // V4.6 §2.1: Foundation health modifies physics directly.
@@ -311,8 +323,8 @@ function tickPassiveEffects(state) {
   else if (state.friction > 50) trustDrift = -2;
   if (state.trust > 30) updateTrust(state, trustDrift);
 
-  // Healthy foundation slowly earns Trust (capped at 70 — passive can't peg you at endorsed)
-  if (state.foundation === "healthy" && state.trust < 70) updateTrust(state, +1);
+  // Healthy foundation slowly earns Trust (capped at 60 — passive stays below "earned")
+  if (state.foundation === "healthy" && state.trust < 60) updateTrust(state, +1);
 
   // Passive capacity recovery from HIRE bricks
   if (state.capacityPassiveBoost > 0) updateCapacity(state, state.capacityPassiveBoost);
@@ -787,20 +799,20 @@ function createGame(canvas, onHudSync) {
       else if (anim === "ghostBall") spawnGhostBall();
       else if (anim === "driftRight") state.revoltAnimUntil = state.timeMs + 60000;
     } else {
-      // V2-restored visual texture on player-brick triggers
+      // V2-restored visual texture on player-brick triggers — bumped for visibility
       if (willAlignCompound) {
-        state.auditTintUntil = state.timeMs + 3000;
+        state.auditTintUntil = state.timeMs + 4000;
         setFlash("align-compound", "ALIGN × ALIGN", "All layers boost");
       }
       if (brickDef.id === "REBUILD") {
-        state.moatVignetteUntil = state.timeMs + 3500;
+        state.moatVignetteUntil = state.timeMs + 4500;
         setFlash("rebuild", "FOUNDATION RESET", "Vignette deepens");
       }
       if (brickDef.id === "GOVERN") {
-        state.govScanUntil = state.timeMs + 2500;
+        state.govScanUntil = state.timeMs + 3500;
       }
       if (brickDef.id === "AUTOMATE") {
-        state.capabilityRingUntil = state.timeMs + 5000;
+        state.capabilityRingUntil = state.timeMs + 6000;
       }
     }
   };
@@ -951,13 +963,19 @@ function createGame(canvas, onHudSync) {
       state.nextBrickRefillAt = now + base / (state.wallRefillMultiplier * foundationMult * ballCountMult);
     }
 
-    // V4.6 §5 continuous drain at 3 balls — 1Hz tick, -2 Capital, -3 Capacity per second
+    // V4.6 §5 continuous drain at 3 balls + tiered Capital income from positive breaks.
+    // Both fire on a shared 1Hz tick.
     if (state.timeMs >= (state.nextBallCountDrainAt || 0)) {
       state.nextBallCountDrainAt = state.timeMs + 1000;
       if (state.ballsLive === 3) {
         updateCapital(state, -2);
         updateCapacity(state, -3);
       }
+      // Aditya tweak: every 10 positive bricks broken raises the per-second
+      // Capital tier by +1. (10 breaks → +1/s, 20 → +2/s, 30 → +3/s, ...)
+      const positiveBreaks = Object.values(state.brickCounts).reduce((s, n) => s + n, 0);
+      const tier = Math.floor(positiveBreaks / 10);
+      if (tier > 0) updateCapital(state, tier);
     }
 
     // Per-frame ballsLive-duration tracking (for end-screen parallel usage line)
@@ -992,8 +1010,8 @@ function createGame(canvas, onHudSync) {
     const inRogue  = state.timeMs < state.rogueAnimUntil;
     const inRevolt = state.timeMs < state.revoltAnimUntil;
 
-    // Ball movement — Foundation health modifies ball speed (V4.6 §2.1)
-    const ballMult = state.ballSpeedMultiplier * getFoundationBallMult(state);
+    // Ball movement — Foundation health modifies ball speed; starvation slows everything to 10%
+    const ballMult = state.ballSpeedMultiplier * getFoundationBallMult(state) * getStarvationMult(state);
     state.balls = state.balls.filter(b => {
       if (b.expireAt && now > b.expireAt) return false;
 
@@ -1222,12 +1240,13 @@ function createGame(canvas, onHudSync) {
     state.balls.forEach(b => {
       // V2-restored CAPABILITY shimmer — accent ring around the ball
       if (inCapaRing) {
+        const t = (state.capabilityRingUntil - state.timeMs) / 6000;
         ctx.save();
         ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r + 3, 0, Math.PI * 2);
+        ctx.arc(b.x, b.y, b.r + 4, 0, Math.PI * 2);
         ctx.strokeStyle = accent;
-        ctx.globalAlpha = 0.45 * ((state.capabilityRingUntil - state.timeMs) / 5000);
-        ctx.lineWidth = 1.2;
+        ctx.globalAlpha = 0.75 * t;
+        ctx.lineWidth = 1.6;
         ctx.stroke();
         ctx.restore();
       }
@@ -1285,25 +1304,25 @@ function createGame(canvas, onHudSync) {
 
     // V2-restored AUDIT warm tint — ALIGN compound bonus reward
     if (state.timeMs < state.auditTintUntil) {
-      const t = (state.auditTintUntil - state.timeMs) / 3000;
+      const t = (state.auditTintUntil - state.timeMs) / 4000;
       ctx.save();
       ctx.fillStyle = accent;
-      ctx.globalAlpha = 0.09 * t;
+      ctx.globalAlpha = 0.18 * t;
       ctx.fillRect(0, 0, W(), H());
       ctx.restore();
     }
 
     // V2-restored MOAT vignette — REBUILD foundation reset
     if (state.timeMs < state.moatVignetteUntil) {
-      const t = (state.moatVignetteUntil - state.timeMs) / 3500;
+      const t = (state.moatVignetteUntil - state.timeMs) / 4500;
       const cx = W() / 2, cy = H() / 2;
-      const inner = Math.min(W(), H()) * 0.25;
+      const inner = Math.min(W(), H()) * 0.20;
       const outer = Math.hypot(cx, cy);
       const grad = ctx.createRadialGradient(cx, cy, inner, cx, cy, outer);
       grad.addColorStop(0, 'rgba(0,0,0,0)');
       grad.addColorStop(1, accent);
       ctx.save();
-      ctx.globalAlpha = 0.12 * t;
+      ctx.globalAlpha = 0.28 * t;
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W(), H());
       ctx.restore();
@@ -1311,12 +1330,12 @@ function createGame(canvas, onHudSync) {
 
     // V2-restored GOVERNANCE scan-lines — GOVERN brick break
     if (state.timeMs < state.govScanUntil) {
-      const t = (state.govScanUntil - state.timeMs) / 2500;
+      const t = (state.govScanUntil - state.timeMs) / 3500;
       ctx.save();
       ctx.strokeStyle = accent;
-      ctx.globalAlpha = 0.14 * t;
-      ctx.lineWidth = 0.5;
-      for (let y = 0; y < H(); y += 8) {
+      ctx.globalAlpha = 0.28 * t;
+      ctx.lineWidth = 0.6;
+      for (let y = 0; y < H(); y += 6) {
         ctx.beginPath();
         ctx.moveTo(0, y); ctx.lineTo(W(), y);
         ctx.stroke();
@@ -1701,12 +1720,11 @@ const PRIMER_BRICKS = {
   ],
   repair: [
     { id: "PATCH",     blurb: "fix what broke.",         effects: "foundation- capacity--" },
-    { id: "APOLOGIZE", blurb: "mend trust with users.",  effects: "trust+ capacity--" },
     { id: "REBUILD",   blurb: "reset foundation healthy.", effects: "capital-- capacity--" },
   ],
   invest: [
     { id: "TRAIN",     blurb: "team learning.",          effects: "delayed trust + capacity++" },
-    { id: "HIRE",      blurb: "expand team.",            effects: "capital--- capacity passive+" },
+    { id: "HIRE",      blurb: "expand team.",            effects: "capital--- capacity++ passive+" },
     { id: "ALIGN",     blurb: "stakeholder alignment.",  effects: "chain two in 30s for bonus" },
   ],
 };
