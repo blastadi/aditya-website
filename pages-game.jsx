@@ -1342,31 +1342,236 @@ function fmtDuration(ms) {
   return `${m}m ${String(s).padStart(2, "0")}s`;
 }
 
-/* Phase 1 placeholder end screen — Phase 5 ships the V4.6 verdict layout. */
+/* ════════════════════════════════════════════════════════════════
+   V4.6 verdict — 13 rule-based patterns, simulator-ordered.
+   Do NOT reorder without re-running v4_6_sim.py.
+   ════════════════════════════════════════════════════════════════ */
+function computeVerdict(result) {
+  const f   = result.foundation;
+  const t   = trustBand(result.trust);
+  const fr  = result.friction;
+  const cap = result.capital;
+  const cpc = result.capacity;
+  const brickCounts = result.brickCounts || {};
+
+  // Category ratios over player-brick breaks only
+  const totalBreaks = Object.values(brickCounts).reduce((a, b) => a + b, 0);
+  const cats = { build: 0, defend: 0, repair: 0, invest: 0 };
+  for (const [name, count] of Object.entries(brickCounts)) {
+    const c = PLAYER_BRICKS[name]?.category;
+    if (c) cats[c] += count;
+  }
+  const denom = Math.max(1, totalBreaks);
+  const buildRatio  = cats.build  / denom;
+  const defendRatio = cats.defend / denom;
+  const repairRatio = cats.repair / denom;
+  const investRatio = cats.invest / denom;
+
+  // 1 — CRISIS pattern (both resources depleted), with cause sub-patterns
+  if (cap <= 10 && cpc <= 10) {
+    if (defendRatio > 0.5)
+      return "You hand off a deployment that reviewed itself into the ground. Your successor inherits a culture that mistook caution for safety.";
+    if (buildRatio > 0.5)
+      return "You hand off a deployment that shipped itself into exhaustion. Your successor inherits the cleanup.";
+    return "You hand off a deployment with empty coffers and burned-out staff. Your successor inherits a recovery project.";
+  }
+
+  // 2 — REACTIVE (multiple crises survived; sim moves this above Investor)
+  if ((result.crisesEntered || 0) >= 4)
+    return "You hand off a deployment that survived through reflexes more than choices. Your successor inherits the same firefighting habit unless they break it.";
+
+  // 3 — INVESTOR — heavy investment, capacity built, capital not yet returning
+  if (investRatio > 0.5 && cpc > 70 && cap <= 15) {
+    if (f === "stressed")
+      return "You hand off a well-staffed deployment that hasn't shipped enough to pay for itself. Your successor inherits potential, and an empty bank account.";
+    return "You hand off a deployment built for tomorrow at the cost of today. Your successor inherits capacity to act — and pressure to start using it.";
+  }
+
+  // 4 — VELOCITY — build-heavy AND foundation hurt
+  if (buildRatio > 0.5 && f !== "healthy")
+    return "You hand off a deployment that shipped fast and never paused to look. Your successor inherits the consequences.";
+
+  // 5 — BUREAUCRACY — defend-heavy AND friction high
+  if (defendRatio > 0.5 && fr > 65)
+    return "You hand off a deployment that everyone trusts but nothing moves. Your successor inherits a culture problem.";
+
+  // 6 — IDEAL — healthy + trusted + sustainable
+  if (f === "healthy" && (t === "earned" || t === "endorsed") && fr < 60 && (cap + cpc) > 60)
+    return "You hand off a healthy, trusted, well-resourced deployment. Your successor inherits something durable.";
+
+  // 7 — PERCEPTION — sound system but trust eroded
+  if (f === "healthy" && t === "eroded")
+    return "You hand off a technically sound deployment that no one trusts. Your successor inherits a perception problem.";
+
+  // 8 — GOODWILL AND DEADLINE — degraded but still believed in
+  if (f === "degraded" && (t === "earned" || t === "endorsed"))
+    return "You hand off a system the org still believes in, even as it's quietly cracking. Your successor inherits goodwill — and a deadline.";
+
+  // 9 — DEBT — degraded and untrusted
+  if (f === "degraded" && t === "eroded")
+    return "You hand off a deployment that almost survived. Your successor inherits debt.";
+
+  // 10 — CAPITAL-ONLY DEPLETION
+  if (cap <= 10 && cpc > 50)
+    return "You hand off a deployment with motivated people and no budget. Your successor inherits a fundraising problem.";
+
+  // 11 — CAPACITY-ONLY DEPLETION
+  if (cpc <= 10 && cap > 50)
+    return "You hand off a well-funded deployment with no one left to run it. Your successor inherits a hiring problem.";
+
+  // 12 — WOBBLE — foundation stressed but everything else holding
+  if (f === "stressed")
+    return "You hand off a deployment that's holding, but only just. Your successor inherits the wobble.";
+
+  // 13 — Fallback
+  return "You hand off a deployment that operated. Whether that's enough is for your successor to decide.";
+}
+
+/* Five-layer trajectory chart — 5 sparklines, 5 data points (Start + Q1-Q4 ends) */
+function LayerTrajectoryChart({ history }) {
+  const layers = [
+    { key: "foundation", label: "FOUNDATION", numeric: false },
+    { key: "trust",      label: "TRUST",      numeric: true },
+    { key: "friction",   label: "FRICTION",   numeric: true },
+    { key: "capital",    label: "CAPITAL",    numeric: true },
+    { key: "capacity",   label: "CAPACITY",   numeric: true },
+  ];
+  const toY = (snap, k) => {
+    if (k === "foundation") return ({ healthy: 100, stressed: 50, degraded: 0 })[snap.foundation] || 50;
+    return snap[k];
+  };
+
+  // Pad history to 5 entries (start + Q1..Q4) so layout stays consistent if the
+  // game ended early. If only `start` is present, render flat lines.
+  const padded = history && history.length > 0 ? history : [];
+
+  const W = 140, H = 56, PAD = 6;
+  return (
+    <div className="trajectory-grid">
+      {layers.map(({ key, label, numeric }) => {
+        const pts = padded.map((snap, i) => {
+          const v = toY(snap, key);
+          const x = padded.length > 1 ? PAD + (i / (padded.length - 1)) * (W - PAD * 2) : W / 2;
+          const y = H - PAD - (Math.max(0, Math.min(100, v)) / 100) * (H - PAD * 2);
+          return `${x.toFixed(1)},${y.toFixed(1)}`;
+        }).join(" ");
+        const lastSnap = padded[padded.length - 1];
+        const finalRaw = lastSnap ? toY(lastSnap, key) : 0;
+        const finalDisplay = numeric ? Math.round(lastSnap ? lastSnap[key] : 0)
+                                     : (lastSnap ? lastSnap.foundation : "?").toString().toUpperCase();
+        return (
+          <div key={key} className="traj-cell">
+            <svg viewBox={`0 0 ${W} ${H}`} className="traj-svg" preserveAspectRatio="none">
+              {/* 50-line gridline */}
+              <line x1={0} y1={H/2} x2={W} y2={H/2} className="traj-grid" />
+              {/* Quarter ticks */}
+              {padded.map((_, i) => {
+                if (padded.length < 2) return null;
+                const x = PAD + (i / (padded.length - 1)) * (W - PAD * 2);
+                return <line key={i} x1={x} y1={H - PAD - 1} x2={x} y2={H - PAD + 2} className="traj-tick" />;
+              })}
+              {/* Trajectory */}
+              {padded.length > 1 && pts && <polyline points={pts} className="traj-line" />}
+              {/* Final point */}
+              {padded.length > 0 && (
+                <circle
+                  cx={padded.length > 1 ? PAD + ((padded.length - 1) / (padded.length - 1)) * (W - PAD * 2) : W / 2}
+                  cy={H - PAD - (Math.max(0, Math.min(100, finalRaw)) / 100) * (H - PAD * 2)}
+                  r="2.4" className="traj-point"
+                />
+              )}
+            </svg>
+            <div className="traj-foot">
+              <span className="traj-label">{label}</span>
+              <span className="traj-value">{finalDisplay}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* Three characteristic moments — distinct event types, spread across quarters */
+function pickThreeMoments(moments) {
+  if (!moments || moments.length === 0) return [];
+  const distinctive = moments.filter(m => !m.description.includes("closed"));
+  const seenByQuarter = new Map();
+  const selected = [];
+
+  for (const m of distinctive) {
+    if (selected.length >= 3) break;
+    const evType = m.description.split(" ")[0];
+    const seenTypes = seenByQuarter.get(m.quarter) || new Set();
+    if (!seenTypes.has(evType)) {
+      const quartersUsed = new Set(selected.map(s => s.quarter));
+      if (!quartersUsed.has(m.quarter) || selected.length >= 2) {
+        selected.push(m);
+        seenTypes.add(evType);
+        seenByQuarter.set(m.quarter, seenTypes);
+      }
+    }
+  }
+  // Fallback: fill remaining slots with any leftover moments
+  for (const m of moments) {
+    if (selected.length >= 3) break;
+    if (!selected.includes(m)) selected.push(m);
+  }
+  return selected;
+}
+
+function CharacteristicMoments({ moments }) {
+  if (!moments || moments.length === 0) {
+    return <div className="moments-empty">No defining moments — a quiet tenure.</div>;
+  }
+  return (
+    <div className="moments-list">
+      {moments.map((m, i) => (
+        <div key={i} className="moment-row">
+          <span className="moment-q">Q{m.quarter}</span>
+          <span className="moment-t">{Math.round(m.timeMs / 1000)}s</span>
+          <span className="moment-desc">{m.description}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* V4.6 End screen — The Handoff */
 function EndScreen({ result, onRestart }) {
   if (!result) return null;
+  const verdict = computeVerdict(result);
+  const breaks = Object.values(result.brickCounts || {}).reduce((s, n) => s + n, 0);
+  const crisisStr = (result.crisesEntered || 0) > 0
+    ? `${result.crisesEntered} CRISES SURVIVED`
+    : "NO CRISES";
+  const pct2 = Math.round(100 * (result.timeAt2Balls || 0) / TOTAL_GAME_LENGTH_MS);
+  const pct3 = Math.round(100 * (result.timeAt3Balls || 0) / TOTAL_GAME_LENGTH_MS);
+  const moments = pickThreeMoments(result.notableMoments || []);
+
   return (
     <div className="game-overlay game-overlay-end">
-      <div className="end-grid v4-placeholder">
-        <section className="end-archetype">
-          <span className="overlay-eyebrow">— Handoff (Phase 1 placeholder)</span>
-          <h2 className="end-arch-name">Layer snapshot</h2>
-          <p className="end-arch-copy">
-            Five layers wired. Bricks don't apply effects yet — Phase 2 hooks the 12 player bricks.
-            Quarter clock, attacks, parallel workstreams, and the V4.6 verdict screen all land in later phases.
-            Duration: {fmtDuration(result.durationMs)}.
-          </p>
-          <div className="end-record-summary">
-            <div className="ers-cell"><span className="k">Foundation</span><span className="v">{(result.foundation || "").toUpperCase()}</span></div>
-            <div className="ers-cell"><span className="k">Trust</span><span className="v">{Math.round(result.trust || 0)} {trustBand(result.trust || 0)}</span></div>
-            <div className="ers-cell"><span className="k">Friction</span><span className="v">{Math.round(result.friction || 0)}</span></div>
-            <div className="ers-cell"><span className="k">Capital</span><span className="v">{Math.round(result.capital || 0)}</span></div>
-            <div className="ers-cell"><span className="k">Capacity</span><span className="v">{Math.round(result.capacity || 0)}</span></div>
-            <div className="ers-cell"><span className="k">Incidents</span><span className="v">{result.incidents || 0}</span></div>
-            <div className="ers-cell"><span className="k">Crises</span><span className="v">{result.crisesEntered || 0}</span></div>
-            <div className="ers-cell"><span className="k">Bricks broken</span><span className="v">{Object.values(result.brickCounts || {}).reduce((s,n) => s+n, 0)}</span></div>
-          </div>
-        </section>
+      <div className="end-grid">
+        <header className="handoff-header">
+          <span className="overlay-eyebrow">— The Handoff · {fmtDuration(result.durationMs)}</span>
+          <h2 className="handoff-title">The <em>Handoff</em></h2>
+        </header>
+
+        <LayerTrajectoryChart history={result.layerHistory || []} />
+
+        <p className="verdict">{verdict}</p>
+
+        <div className="handoff-stats">
+          <span className="stats-line">4 QUARTERS · {breaks} BREAKS · {result.incidents || 0} INCIDENTS · {crisisStr}</span>
+          {(result.parallelTaps > 0 || pct2 > 0 || pct3 > 0) && (
+            <span className="stats-line stats-parallel">
+              SPACE TAPS {result.parallelTaps || 0} · 2-BALL {pct2}% · 3-BALL {pct3}%
+            </span>
+          )}
+        </div>
+
+        <CharacteristicMoments moments={moments} />
+
         <div className="end-footer">
           RUN ANOTHER DEPLOYMENT — PRESS <span className="kbd">SPACE</span>
         </div>
