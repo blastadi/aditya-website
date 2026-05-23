@@ -174,6 +174,21 @@ function pickPlayerBrickName() {
 }
 
 /* ════════════════════════════════════════════════════════════════
+   V4.7 §6 — Conditional brick warning marks (rendered in brick corners
+   when the current effect would be unfavorable given the layer state).
+   ════════════════════════════════════════════════════════════════ */
+const SAFETY_SENSITIVE = ["SHIP", "SCALE", "REVIEW", "APOLOGIZE", "ALIGN"];
+
+function getBrickWarning(state, name) {
+  if (SAFETY_SENSITIVE.includes(name) && state.safety < 30) return "unsafe";
+  if (name === "AUTOMATE") return "delayed";
+  if (name === "HIRE" && state.hireCount >= 3) return "risky";
+  if (name === "REBUILD") return "heavy";
+  if (name === "PATCH" && state.safety > 50) return "unsafe";
+  return null;
+}
+
+/* ════════════════════════════════════════════════════════════════
    V4.7 attack bricks — Safety-driven cascade conditions
    ════════════════════════════════════════════════════════════════ */
 const ATTACK_BRICKS = {
@@ -1202,6 +1217,56 @@ function createGame(canvas, onHudSync) {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(label, brick.x + brick.w / 2, brick.y + brick.h / 2);
+
+      // V4.7 §6 conditional warning mark — mustard caret/dot in top-right corner
+      if (!def.isAttack) {
+        const warn = getBrickWarning(state, def.id || def.label);
+        if (warn) {
+          ctx.save();
+          ctx.fillStyle = accent;
+          ctx.globalAlpha = fadeT * 0.9;
+          const mx = brick.x + brick.w - 6, my = brick.y + 6;
+          if (warn === "unsafe") {
+            // caret/triangle
+            ctx.beginPath();
+            ctx.moveTo(mx, my - 2.6);
+            ctx.lineTo(mx + 2.4, my + 2);
+            ctx.lineTo(mx - 2.4, my + 2);
+            ctx.closePath();
+            ctx.fill();
+          } else if (warn === "delayed") {
+            // hourglass-ish — two stacked triangles
+            ctx.beginPath();
+            ctx.moveTo(mx - 2, my - 2.4);
+            ctx.lineTo(mx + 2, my - 2.4);
+            ctx.lineTo(mx, my);
+            ctx.closePath();
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(mx, my);
+            ctx.lineTo(mx - 2, my + 2.4);
+            ctx.lineTo(mx + 2, my + 2.4);
+            ctx.closePath();
+            ctx.fill();
+          } else if (warn === "risky") {
+            // question-mark glyph approximation — small circle
+            ctx.beginPath();
+            ctx.arc(mx, my, 2.4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = (def.category === "build") ? bg : bg;
+            ctx.font = '700 6px "JetBrains Mono", ui-monospace, monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText("?", mx, my);
+          } else if (warn === "heavy") {
+            // double-bang
+            ctx.fillRect(mx - 1.6, my - 2.6, 0.9, 4.2);
+            ctx.fillRect(mx + 0.7, my - 2.6, 0.9, 4.2);
+          }
+          ctx.restore();
+        }
+      }
+
       ctx.globalAlpha = 1;
     });
 
@@ -1374,6 +1439,37 @@ function fmtDuration(ms) {
   const m = Math.floor(total / 60);
   const s = total % 60;
   return `${m}m ${String(s).padStart(2, "0")}s`;
+}
+
+/* V4.7 §6 tradeoff explanation — biggest gain layer + sacrifice layer + dominant category */
+function computeTradeoff(result) {
+  const history = result.layerHistory || [];
+  if (history.length < 2) return null;
+  const start = history[0];
+  const end = history[history.length - 1];
+  const deltas = {
+    trust:    Math.round(end.trust - start.trust),
+    safety:   Math.round(end.safety - start.safety),
+    capital:  Math.round(end.capital - start.capital),
+    capacity: Math.round(end.capacity - start.capacity),
+    friction: Math.round(end.friction - start.friction),
+  };
+  const gains  = Object.entries(deltas).filter(([_, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+  const losses = Object.entries(deltas).filter(([_, v]) => v < 0).sort((a, b) => a[1] - b[1]);
+
+  // Dominant category
+  const cats = { build: 0, defend: 0, repair: 0, invest: 0 };
+  for (const [n, c] of Object.entries(result.brickCounts || {})) {
+    if (PLAYER_BRICKS[n]) cats[PLAYER_BRICKS[n].category] += c;
+  }
+  const dominantCat = Object.entries(cats).sort((a, b) => b[1] - a[1])[0]?.[0] || "operational";
+
+  const gainLayer = gains[0]?.[0] || null;
+  const lossLayer = losses[0]?.[0] || null;
+  const gainAmt = gains[0]?.[1] || 0;
+  const lossAmt = losses[0]?.[1] || 0;
+
+  return { gainLayer, gainAmt, lossLayer, lossAmt, dominantCat };
 }
 
 /* Phase 1 placeholder end screen — Phase 7 ships the V4.7 verdict + trajectory + tradeoff. */
