@@ -173,6 +173,24 @@ function pickPlayerBrickName() {
   return PLAYER_BRICK_IDS[Math.floor(Math.random() * PLAYER_BRICK_IDS.length)];
 }
 
+/* ════════════════════════════════════════════════════════════════
+   V4.7 attack bricks — Safety-driven cascade conditions
+   ════════════════════════════════════════════════════════════════ */
+const ATTACK_BRICKS = {
+  DRIFT:         { isAttack: true, label: "DRIFT",         animation: "curveRight",
+                   flashTitle: "DRIFT",         flashNote: "Balls curving right" },
+  OUTAGE:        { isAttack: true, label: "OUTAGE",        animation: "flash",
+                   flashTitle: "OUTAGE",        flashNote: "Service down · ball accelerating" },
+  BREACH:        { isAttack: true, label: "BREACH",        animation: "shake",
+                   flashTitle: "BREACH",        flashNote: "Trust collapsed · friction spiked" },
+  ROGUE:         { isAttack: true, label: "ROGUE",         animation: "jitter",
+                   flashTitle: "ROGUE AGENT",   flashNote: "Unpredictable trajectories" },
+  HALLUCINATION: { isAttack: true, label: "HALLUCINATION", animation: "ghostBall",
+                   flashTitle: "HALLUCINATION", flashNote: "Phantom output — looks real" },
+  REVOLT:        { isAttack: true, label: "REVOLT",        animation: "driftRight",
+                   flashTitle: "REVOLT",        flashNote: "Org rebels · wall accelerates" },
+};
+
 /* Inline conditional logic — effects depend on Safety state at break time. */
 function applyPlayerBrickEffect(state, name) {
   state.breaks += 1;
@@ -598,10 +616,157 @@ function createGame(canvas, onHudSync) {
 
   const applyPlayerBrick = applyPlayerBrickEffect;
 
-  // Phase 3 replaces this with the real attack-spawn + apply pipeline.
-  const checkAttackSpawns = () => [];
-  const spawnAttackBrick = (_name) => {};
-  const applyAttack = (_name) => {};
+  /* V4.7 §4 attack cascade spawn check — Safety-driven conditions. */
+  const checkAttackSpawns = () => {
+    const spawns = [];
+    const tNow = state.timeMs;
+
+    // Ball-count attack-skew multipliers
+    let driftM, outageM, breachM, rogueM, hallM, revoltM;
+    if (state.ballsLive === 1) {
+      driftM = outageM = breachM = rogueM = hallM = revoltM = 1.0;
+    } else if (state.ballsLive === 2) {
+      driftM = 1.5;  outageM = 1.25; breachM = 1.0;
+      rogueM = 1.25; hallM   = 1.5;  revoltM = 1.0;
+    } else {
+      driftM = 2.5;  outageM = 1.75; breachM = 1.0;
+      rogueM = 1.75; hallM   = 2.5;  revoltM = 1.0;
+    }
+
+    // DRIFT: Safety < 30 for > 30s
+    if (state.safety < 30 && state.safetyDegradedSince != null) {
+      if (tNow - state.safetyDegradedSince > 30000) {
+        if (Math.random() < 0.5 * driftM) {
+          spawns.push("DRIFT");
+          state.safetyDegradedSince = tNow;
+        }
+      }
+    }
+
+    // OUTAGE: 4+ Build streak OR (Safety < 20 probabilistic)
+    if (state.buildStreak >= 4) {
+      spawns.push("OUTAGE");
+      state.buildStreak = 0;
+    } else if (state.safety < 20 && Math.random() < 0.025 * outageM) {
+      spawns.push("OUTAGE");
+    }
+
+    // BREACH: Friction < 25 + Safety < 30, OR 5+ incidents this quarter
+    if (state.friction < 25 && state.safety < 30 && Math.random() < 0.04 * breachM) {
+      spawns.push("BREACH");
+    }
+    if (state.incidentsThisQuarter >= 5 && Math.random() < 0.10 * breachM) {
+      spawns.push("BREACH");
+      state.incidentsThisQuarter = 0;
+    }
+
+    // ROGUE: Safety < 20 + Trust < 26 + Friction > 60
+    if (state.safety < 20 && state.trust < 26 && state.friction > 60) {
+      if (Math.random() < 0.04 * rogueM) spawns.push("ROGUE");
+    }
+
+    // HALLUCINATION: Safety < 40 + Trust < 26
+    if (state.safety < 40 && state.trust < 26) {
+      if (Math.random() < 0.025 * hallM) spawns.push("HALLUCINATION");
+    }
+
+    // REVOLT: Friction > 70 + Trust eroded > 60s
+    if (state.friction > 70 && state.trust < 26 && state.trustErodedSince != null) {
+      if (tNow - state.trustErodedSince > 60000) {
+        if (Math.random() < 0.6 * revoltM) {
+          spawns.push("REVOLT");
+          state.trustErodedSince = tNow;
+        }
+      }
+    }
+    return spawns;
+  };
+
+  const spawnAttackBrick = (attackName) => {
+    const alive = state.bricks.filter(b => b.alive);
+    if (alive.length === 0) return;
+    const target = alive[Math.floor(Math.random() * alive.length)];
+    const def = ATTACK_BRICKS[attackName];
+    if (!def) return;
+    target.challenge = { id: attackName, label: def.label, isAttack: true };
+    target.fadeInAt = performance.now();
+    target.telegraphUntil = state.timeMs + 1000;
+    state.lastAttackSpawnAt = state.timeMs;
+    state.notableMoments.push({
+      quarter: state.quarter, timeMs: state.timeMs,
+      description: `${attackName} attack spawned`,
+    });
+    pushEvent(`⚠ ${attackName} on the wall`);
+  };
+
+  const spawnGhostBall = () => {
+    state.ghostBalls.push({
+      x: 40 + Math.random() * Math.max(40, W() - 80),
+      y: H() / 3,
+      vx: (Math.random() > 0.5 ? 1 : -1) * 3.2,
+      vy: 3.2,
+      r: 7,
+      expireAt: state.timeMs + 6000,
+    });
+  };
+
+  const applyAttack = (name) => {
+    state.breaks += 1;
+    state.attackBrickCounts[name] = (state.attackBrickCounts[name] || 0) + 1;
+    const def = ATTACK_BRICKS[name];
+    if (!def) return;
+
+    if (state.incidentShields > 0) {
+      state.incidentShields -= 1;
+      setFlash("shield", "REDTEAM SHIELD", `${name} absorbed`);
+      pushEvent(`REDTEAM shield absorbed ${name}`);
+      return;
+    }
+
+    setFlash(name.toLowerCase(), def.flashTitle, def.flashNote);
+
+    switch (name) {
+      case "DRIFT":
+        updateSafety(state, -5);
+        updateTrust(state, -4);
+        updateCapacity(state, -3);
+        state.driftAnimUntil = state.timeMs + 6000;
+        break;
+      case "OUTAGE":
+        updateSafety(state, -10);
+        updateCapital(state, -5);
+        updateCapacity(state, -8);
+        state.ballSpeedMultiplier = Math.max(state.ballSpeedMultiplier, 1.20);
+        state.ballSpeedUntil = state.timeMs + 10000;
+        state.outageFlashUntil = state.timeMs + 200;
+        break;
+      case "BREACH":
+        updateTrust(state, -30);
+        updateFriction(state, +20);
+        updateCapacity(state, -5);
+        state.breachShakeUntil = state.timeMs + 600;
+        break;
+      case "ROGUE":
+        updateSafety(state, -10);
+        updateCapacity(state, -10);
+        updateTrust(state, -5);
+        state.rogueAnimUntil = state.timeMs + 5000;
+        break;
+      case "HALLUCINATION":
+        updateSafety(state, -3);
+        updateTrust(state, -5);
+        updateCapacity(state, -3);
+        spawnGhostBall();
+        break;
+      case "REVOLT":
+        state.wallRefillExtraMultiplier = 1.5;
+        state.wallRefillExtraUntil = state.timeMs + 60000;
+        state.capacityDrainMultiplier = 2.0;
+        state.capacityDrainUntil = state.timeMs + 60000;
+        state.revoltAnimUntil = state.timeMs + 60000;
+        break;
+    }
+  };
 
   // Phase 5 may extend this with crisis-narrowed pool.
   const getBrickPool = () => ["SHIP","SCALE","AUTOMATE","REVIEW","REDTEAM","GOVERN",
