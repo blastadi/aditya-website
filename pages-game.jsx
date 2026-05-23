@@ -396,6 +396,12 @@ function createGame(canvas, onHudSync) {
     lastAttackSpawnAt: -100000,
     nextAttackCheckAt: 0,
 
+    // V2 visual texture restored onto V4.6 brick triggers
+    auditTintUntil: 0,         // ALIGN compound bonus  (warm accent tint)
+    moatVignetteUntil: 0,      // REBUILD               (radial accent vignette)
+    govScanUntil: 0,           // GOVERN                (horizontal scan-lines)
+    capabilityRingUntil: 0,    // AUTOMATE              (accent ring on balls)
+
     // V4.6 record
     layerHistory: [],            // quarter-end snapshots filled in Phase 4
     notableMoments: [],
@@ -539,6 +545,11 @@ function createGame(canvas, onHudSync) {
     state.nextAttackCheckAt = 500;
     state.nextBallCountDrainAt = 1000;
     state._lastBallTrackTime = 0;
+    // V2-restored brick-trigger visuals
+    state.auditTintUntil = 0;
+    state.moatVignetteUntil = 0;
+    state.govScanUntil = 0;
+    state.capabilityRingUntil = 0;
 
     state.layerHistory = [
       // V4.6 §8 trajectory chart starts from t=0 snapshot
@@ -758,9 +769,14 @@ function createGame(canvas, onHudSync) {
       state.brickCounts[id] = (state.brickCounts[id] || 0) + 1;
     }
 
+    // Detect ALIGN compound BEFORE applyBrickEffects mutates lastAlignTime.
+    const willAlignCompound = brickDef.id === "ALIGN"
+      && state.lastAlignTime != null
+      && (state.timeMs - state.lastAlignTime) < 30000;
+
     applyBrickEffects(state, brickDef, isAttack);
 
-    // V4.6 §4 restored V1 animations — trigger after effects apply.
+    // V4.6 §4 — attack-brick restored V1 animations
     if (isAttack) {
       setFlash(brickDef.id.toLowerCase(), brickDef.flashTitle, brickDef.flashNote);
       const anim = brickDef.animation;
@@ -770,6 +786,22 @@ function createGame(canvas, onHudSync) {
       else if (anim === "jitter")  state.rogueAnimUntil   = state.timeMs + 5000;
       else if (anim === "ghostBall") spawnGhostBall();
       else if (anim === "driftRight") state.revoltAnimUntil = state.timeMs + 60000;
+    } else {
+      // V2-restored visual texture on player-brick triggers
+      if (willAlignCompound) {
+        state.auditTintUntil = state.timeMs + 3000;
+        setFlash("align-compound", "ALIGN × ALIGN", "All layers boost");
+      }
+      if (brickDef.id === "REBUILD") {
+        state.moatVignetteUntil = state.timeMs + 3500;
+        setFlash("rebuild", "FOUNDATION RESET", "Vignette deepens");
+      }
+      if (brickDef.id === "GOVERN") {
+        state.govScanUntil = state.timeMs + 2500;
+      }
+      if (brickDef.id === "AUTOMATE") {
+        state.capabilityRingUntil = state.timeMs + 5000;
+      }
     }
   };
 
@@ -1185,9 +1217,20 @@ function createGame(canvas, onHudSync) {
     ctx.fillStyle = accent;
     ctx.fillRect(p.x, py, p.w, 2);
 
-    // Balls — Phase 3 will add attack-animation visual variants (ghost ball,
-    // rogue jitter, parallel-trail). Phase 1 is plain solid balls.
+    // Balls — ROGUE jitter, AUTOMATE capability ring, parallel trail
+    const inCapaRing = state.timeMs < state.capabilityRingUntil;
     state.balls.forEach(b => {
+      // V2-restored CAPABILITY shimmer — accent ring around the ball
+      if (inCapaRing) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r + 3, 0, Math.PI * 2);
+        ctx.strokeStyle = accent;
+        ctx.globalAlpha = 0.45 * ((state.capabilityRingUntil - state.timeMs) / 5000);
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.restore();
+      }
       ctx.beginPath();
       ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
       // ROGUE renders balls in accent during the jitter window
@@ -1237,6 +1280,47 @@ function createGame(canvas, onHudSync) {
       ctx.fillStyle = '#ffffff';
       ctx.globalAlpha = 0.65 * t;
       ctx.fillRect(0, 0, W(), H());
+      ctx.restore();
+    }
+
+    // V2-restored AUDIT warm tint — ALIGN compound bonus reward
+    if (state.timeMs < state.auditTintUntil) {
+      const t = (state.auditTintUntil - state.timeMs) / 3000;
+      ctx.save();
+      ctx.fillStyle = accent;
+      ctx.globalAlpha = 0.09 * t;
+      ctx.fillRect(0, 0, W(), H());
+      ctx.restore();
+    }
+
+    // V2-restored MOAT vignette — REBUILD foundation reset
+    if (state.timeMs < state.moatVignetteUntil) {
+      const t = (state.moatVignetteUntil - state.timeMs) / 3500;
+      const cx = W() / 2, cy = H() / 2;
+      const inner = Math.min(W(), H()) * 0.25;
+      const outer = Math.hypot(cx, cy);
+      const grad = ctx.createRadialGradient(cx, cy, inner, cx, cy, outer);
+      grad.addColorStop(0, 'rgba(0,0,0,0)');
+      grad.addColorStop(1, accent);
+      ctx.save();
+      ctx.globalAlpha = 0.12 * t;
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W(), H());
+      ctx.restore();
+    }
+
+    // V2-restored GOVERNANCE scan-lines — GOVERN brick break
+    if (state.timeMs < state.govScanUntil) {
+      const t = (state.govScanUntil - state.timeMs) / 2500;
+      ctx.save();
+      ctx.strokeStyle = accent;
+      ctx.globalAlpha = 0.14 * t;
+      ctx.lineWidth = 0.5;
+      for (let y = 0; y < H(); y += 8) {
+        ctx.beginPath();
+        ctx.moveTo(0, y); ctx.lineTo(W(), y);
+        ctx.stroke();
+      }
       ctx.restore();
     }
 

@@ -2274,7 +2274,9 @@ body:not(:has(.home-page)) .home-hud { display: none; }
 .game-flash.flash-parallel-3,
 .game-flash.flash-incident,
 .game-flash.flash-workstream-end,
-.game-flash.flash-shield {
+.game-flash.flash-shield,
+.game-flash.flash-align-compound,
+.game-flash.flash-rebuild {
   background: var(--bg);
   color: var(--accent);
   border: 1px solid var(--accent);
