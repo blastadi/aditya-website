@@ -2048,6 +2048,80 @@ body:not(:has(.home-page)) .home-hud { display: none; }
   .layer-value { font-size: 11px; }
 }
 
+/* V4.6 Phase 4 — quarter indicator + parallel-workstream + stakeholder pressure */
+.quarter-indicator {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  display: flex;
+  gap: 14px;
+  pointer-events: none;
+  z-index: 4;
+}
+.quarter-dot {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  color: var(--fg);
+  font-weight: 500;
+  opacity: 0.25;
+  transition: opacity 0.4s ease, color 0.4s ease;
+}
+.quarter-dot.quarter-active {
+  opacity: 1;
+  color: var(--accent);
+}
+.quarter-dot.quarter-past { opacity: 0.25; }
+.quarter-dot.quarter-future { opacity: 0.4; }
+
+.parallel-indicator {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  padding: 4px 10px;
+  pointer-events: none;
+  z-index: 4;
+  white-space: nowrap;
+}
+.parallel-indicator.parallel-3 {
+  animation: parallel-pulse 1.1s ease-in-out infinite;
+}
+@keyframes parallel-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+.stakeholder-pressure {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 14px;
+  pointer-events: none;
+  z-index: 4;
+}
+.stakeholder {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--fg-3);
+  opacity: 0.55;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+.stakeholder.stakeholder-pressing {
+  color: var(--accent);
+  opacity: 1;
+}
+
 /* Game board */
 .game-board {
   display: flex;

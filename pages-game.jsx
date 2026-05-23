@@ -553,9 +553,22 @@ function createGame(canvas, onHudSync) {
     state.revoltAnimUntil = 0;
     state.ghostBalls = [];
     state.lastAttackSpawnAt = -100000;
-    state.nextAttackCheckAt = 500;          // first check 0.5s into the run
+    state.nextAttackCheckAt = 500;
+    state.nextBallCountDrainAt = 1000;
+    state._lastBallTrackTime = 0;
 
-    state.layerHistory = [];
+    state.layerHistory = [
+      // V4.6 §8 trajectory chart starts from t=0 snapshot
+      {
+        quarter: 0, timeMs: 0,
+        foundation: INITIAL_LAYERS.foundation,
+        trust: INITIAL_LAYERS.trust,
+        friction: INITIAL_LAYERS.friction,
+        capital: INITIAL_LAYERS.capital,
+        capacity: INITIAL_LAYERS.capacity,
+        breaks: 0, incidents: 0, ballsLive: 1,
+      },
+    ];
     state.notableMoments = [];
 
     initBricks();
@@ -582,9 +595,36 @@ function createGame(canvas, onHudSync) {
   };
 
   const onSpace = () => {
-    if (state.status === "ready")  startGame();
-    else if (state.status === "ended") startGame();
-    else if (state.status === "playing" && state.balls.length === 0 && state.respawnAt === 0) spawnBall();
+    if (state.status === "ready")  { startGame(); return; }
+    if (state.status === "ended")  { startGame(); return; }
+    if (state.status !== "playing") return;
+
+    // After incident, deploy waiting ball if respawn timer hasn't fired yet
+    if (state.balls.length === 0 && state.respawnAt === 0) { spawnBall(); return; }
+
+    // V4.6 §5 parallel workstream stacking — no eligibility gate, 5s cooldown only
+    if (state.balls.length === 0) return;            // can't stack mid-respawn
+    if (state.ballsLive >= 3) return;                // 3-ball cap
+    if (state.timeMs - state.lastSpaceTap < 5000) return;  // cooldown
+
+    state.ballsLive += 1;
+    state.parallelTaps += 1;
+    state.lastSpaceTap = state.timeMs;
+    spawnBall({ parallel: true });
+
+    if (state.ballsLive === 2) {
+      setFlash("parallel-2", "+ 1 WORKSTREAM", "Wall refill 2.5×");
+      state.notableMoments.push({
+        quarter: state.quarter, timeMs: state.timeMs,
+        description: "Tapped SPACE — 2 workstreams",
+      });
+    } else if (state.ballsLive === 3) {
+      setFlash("parallel-3", "PARALLEL OVERLOAD", "Wall 4.5× · drain active");
+      state.notableMoments.push({
+        quarter: state.quarter, timeMs: state.timeMs,
+        description: "Tapped SPACE — 3 workstreams",
+      });
+    }
   };
 
   const onKeyDown = (e) => {
@@ -746,7 +786,7 @@ function createGame(canvas, onHudSync) {
     }
   };
 
-  // Phase 1 placeholder end-screen result. Phase 5 builds the verdict layout.
+  // Phase 5 builds the V4.6 verdict layout on top of this payload.
   const finishRun = () => {
     state.status = "ended";
     state.runEnd = performance.now();
@@ -759,28 +799,56 @@ function createGame(canvas, onHudSync) {
       friction: state.friction,
       capital: state.capital,
       capacity: state.capacity,
-      crisesEntered: state.crisesEntered,
+      crisesEntered: state.crisesEntered || 0,
+      crisesRecovered: state.crisesRecovered || 0,
       incidents: state.incidents,
       brickCounts: { ...state.brickCounts },
+      attackBrickCounts: { ...state.attackBrickCounts },
+      layerHistory: [...state.layerHistory],
+      notableMoments: [...state.notableMoments],
+      parallelTaps: state.parallelTaps,
+      timeAt2Balls: state.timeAt2Balls,
+      timeAt3Balls: state.timeAt3Balls,
     };
     state.balls = [];
     state.respawnAt = 0;
   };
 
-  // Phase 1 placeholder ball-drop. Phase 4 implements V4.6 unlimited drops with
-  // uniform penalty (Capital −3, Capacity −8, Foundation +1, Trust −2) and
-  // RESUMING OPERATION banner. For now: end after 3 to keep games short during phase work.
-  const onBallDrop = (now) => {
+  // V4.6 §7: unlimited drops. Parallel drops cost Capacity only; primary drops
+  // (last ball off the bottom) fire the uniform incident penalty and respawn after 1.5s.
+  const onBallDrop = (now, ball) => {
+    const ballsRemaining = state.balls.length - 1;  // excluding the one that just fell
+
+    if (ballsRemaining >= 1) {
+      // Parallel workstream concluded messily — not an incident
+      state.ballsLive = ballsRemaining;
+      updateCapacity(state, -3);
+      setFlash("workstream-end", "WORKSTREAM ENDED", `${state.ballsLive} active`);
+      pushEvent(`Workstream ended — ${state.ballsLive} active`);
+      return;
+    }
+
+    // Last ball dropped → incident
+    state.ballsLive = 1;
     state.incidents++;
     state.incidentsThisQuarter++;
     state.timeSinceLastIncident = 0;
-    state.incidentMoments.push(now - state.runStart);
+    state.incidentMoments.push(state.timeMs);
+
+    // V4.6 §7 uniform penalty
+    updateCapital(state, -3);
+    updateCapacity(state, -8);
+    pushFoundation(state, +1);
+    updateTrust(state, -2);
+
+    setFlash("incident", `INCIDENT #${state.incidents}`, "Resuming operation");
     pushEvent(`Incident #${state.incidents}`);
-    if (state.incidents >= 3) {
-      finishRun();
-    } else {
-      state.respawnAt = now + 1500;
-    }
+    state.notableMoments.push({
+      quarter: state.quarter, timeMs: state.timeMs,
+      description: `Incident — ball dropped`,
+    });
+
+    state.respawnAt = now + 1500;
   };
 
   /* ───────── Update ───────── */
@@ -811,12 +879,64 @@ function createGame(canvas, onHudSync) {
     if (state.keys["ArrowRight"]) p.x += pSpeed;
     p.x = Math.max(0, Math.min(W() - p.w, p.x));
 
-    // Wall refill — Foundation degraded amplifies refill rate (V4.6 §2.1)
+    // V4.6 §6 quarter transition — board review event at each 60s boundary
+    if (state.timeMs >= state.nextQuarterAt) {
+      const closingQuarter = state.quarter;
+      const snap = {
+        quarter: closingQuarter,
+        timeMs: state.timeMs,
+        foundation: state.foundation,
+        trust: state.trust,
+        friction: state.friction,
+        capital: state.capital,
+        capacity: state.capacity,
+        breaks: Object.values(state.brickCounts).reduce((s,n) => s+n, 0),
+        incidents: state.incidents,
+        ballsLive: state.ballsLive,
+      };
+      state.layerHistory.push(snap);
+      state.notableMoments.push({
+        quarter: closingQuarter, timeMs: state.timeMs,
+        description: `Q${closingQuarter} closed`,
+      });
+      if (closingQuarter >= 4) {
+        // V4.6 §7: game ends at end of Q4.
+        finishRun();
+        return;
+      }
+      setFlash("board-review", `Q${closingQuarter} CLOSED — BOARD REVIEW`,
+        `Foundation ${state.foundation} · Trust ${Math.round(state.trust)} ${trustBand(state.trust)}`);
+      state.pauseUntil = now + 1500;            // 1.5s mandatory pause
+      state.incidentsThisQuarter = 0;
+      state.quarter = closingQuarter + 1;
+      state.nextQuarterAt = state.timeMs + QUARTER_LENGTH_MS;
+    }
+
+    // Wall refill — Foundation degraded amplifies + ball-count escalates (V4.6 §5)
     if (now > state.nextBrickRefillAt) {
       refillBricks();
       const base = 8000 + Math.random() * 6000;
       const foundationMult = getFoundationWallMult(state);
-      state.nextBrickRefillAt = now + base / (state.wallRefillMultiplier * foundationMult);
+      const ballCountMult = state.ballsLive === 3 ? 4.5 : state.ballsLive === 2 ? 2.5 : 1.0;
+      state.nextBrickRefillAt = now + base / (state.wallRefillMultiplier * foundationMult * ballCountMult);
+    }
+
+    // V4.6 §5 continuous drain at 3 balls — 1Hz tick, -2 Capital, -3 Capacity per second
+    if (state.timeMs >= (state.nextBallCountDrainAt || 0)) {
+      state.nextBallCountDrainAt = state.timeMs + 1000;
+      if (state.ballsLive === 3) {
+        updateCapital(state, -2);
+        updateCapacity(state, -3);
+      }
+    }
+
+    // Per-frame ballsLive-duration tracking (for end-screen parallel usage line)
+    {
+      const last = state._lastBallTrackTime != null ? state._lastBallTrackTime : state.timeMs;
+      const dtMs = Math.max(0, state.timeMs - last);
+      state._lastBallTrackTime = state.timeMs;
+      if (state.ballsLive === 2) state.timeAt2Balls += dtMs;
+      else if (state.ballsLive === 3) state.timeAt3Balls += dtMs;
     }
 
     // Passive ticks every 30s of game time
@@ -876,7 +996,7 @@ function createGame(canvas, onHudSync) {
       }
 
       if (b.y > H() + 30) {
-        onBallDrop(now);
+        onBallDrop(now, b);
         return false;
       }
 
@@ -1351,11 +1471,47 @@ function GamePage({ navigate }) {
             </div>
             <div className="game-canvas-wrap" ref={wrapRef}>
               <canvas ref={canvasRef} className="game-canvas" />
+
+              {/* V4.6 §6 quarter indicator — Q1·Q2·Q3·Q4 dots, top-right */}
+              <div className="quarter-indicator">
+                {[1, 2, 3, 4].map(q => {
+                  const cur = hud.quarter || 1;
+                  const cls = q === cur ? "quarter-active" : (q < cur ? "quarter-past" : "quarter-future");
+                  return <span key={q} className={"quarter-dot " + cls}>Q{q}</span>;
+                })}
+              </div>
+
+              {/* V4.6 §5 parallel-workstream visual indicators */}
+              {hud.ballsLive === 2 && status === "playing" && (
+                <div className="parallel-indicator parallel-2">+1 WORKSTREAM · WALL ×2.5</div>
+              )}
+              {hud.ballsLive === 3 && status === "playing" && (
+                <div className="parallel-indicator parallel-3">PARALLEL OVERLOAD · WALL ×4.5 · DRAIN</div>
+              )}
+
+              {/* V4.6 §4.10 stakeholder pressure indicators, bottom */}
+              {status === "playing" && (
+                <div className="stakeholder-pressure">
+                  <span className={"stakeholder" + (hud.foundation !== "healthy" ? " stakeholder-pressing" : "")}>
+                    ENG{hud.foundation !== "healthy" ? " ⚠" : ""}
+                  </span>
+                  <span className={"stakeholder" + ((hud.capital <= 30 || hud.capacity <= 30) ? " stakeholder-pressing" : "")}>
+                    PRD{(hud.capital <= 30 || hud.capacity <= 30) ? " ⚠" : ""}
+                  </span>
+                  <span className={"stakeholder" + ((hud.friction || 0) < 30 ? " stakeholder-pressing" : "")}>
+                    LEG{(hud.friction || 0) < 30 ? " ⚠" : ""}
+                  </span>
+                  <span className={"stakeholder" + ((hud.trust || 0) < 50 ? " stakeholder-pressing" : "")}>
+                    USR{(hud.trust || 0) < 50 ? " ⚠" : ""}
+                  </span>
+                </div>
+              )}
+
               {status === "ready" && (
                 <div className="game-overlay game-overlay-start">
                   <span className="overlay-eyebrow">— Day 1 · Brand new deployment</span>
                   <h2>Press <em>spacebar</em> to deploy.</h2>
-                  <p>← → paddle · P pause · R restart</p>
+                  <p>← → paddle · P pause · R restart · SPACE again to stack workstreams</p>
                   <p className="overlay-fine">Untested infrastructure, no track record, small team. Four quarters of sixty seconds each. The wall is the work — choose which brick to break, keep the ball alive, hand off whatever you built.</p>
                 </div>
               )}
