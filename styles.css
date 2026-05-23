@@ -2054,11 +2054,13 @@ body:not(:has(.home-page)) .home-hud { display: none; }
 .game-canvas-wrap {
   position: relative;
   width: 100%;
+  flex: 1 1 auto;
   min-height: 320px;
 }
 .game-canvas {
   display: block;
   width: 100%;
+  height: 100%;
 }
 
 .game-stats {

@@ -1053,50 +1053,12 @@ function createGame(canvas, onHudSync) {
       ctx.globalAlpha = 1;
     }
 
-    // Lives indicator (top-right)
-    const padX = 14;
-    const padY = 16;
-    const dotR = 4;
-    const slotW = 36;
-    const xRight = W() - padX;
-    const xStart = xRight - slotW * state.livesMax;
-    const yLine = padY + 4;
-    for (let i = 0; i < state.livesMax; i++) {
-      const x = xStart + i * slotW + slotW / 2;
-      let opacity = 1;
-      let isUsed = i < state.livesUsed;
-      let isNext = i === state.livesUsed && state.status === "playing";
-      if (isUsed) opacity = 0.25;
-      else if (isNext) {
-        // pulse 1.5s cycle, 60-100%
-        opacity = 0.6 + 0.4 * (0.5 + 0.5 * Math.sin(now * (2 * Math.PI) / 1500));
-      }
-      ctx.globalAlpha = opacity;
-      ctx.fillStyle = isUsed ? fg3 : accent;
-      ctx.beginPath();
-      ctx.arc(x, yLine, dotR, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = isUsed ? fg3 : fg2;
-      ctx.font = '9px "JetBrains Mono", ui-monospace, monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
-      ctx.fillText('0' + (i + 1), x, yLine + 8);
-      ctx.globalAlpha = 1;
-    }
-    ctx.fillStyle = fg3;
-    ctx.font = '9px "JetBrains Mono", ui-monospace, monospace';
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'top';
-    ctx.fillText('INCIDENTS', xRight, yLine + 22);
-
     // Footer text strip
     ctx.fillStyle = fg3;
     ctx.font = '9px "JetBrains Mono", ui-monospace, monospace';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
     ctx.fillText(`DAY ${String(state.day).padStart(2,"0")}  ·  CLEARED ${String(state.score).padStart(3,"0")}  ·  BALLS ${state.balls.filter(b=>!b.ghost).length}`, 10, H() - 8);
-    ctx.textAlign = 'right';
-    ctx.fillText(`SPACE deploy · ← → paddle · P pause · R restart`, W() - 10, H() - 8);
 
     // Resuming-operation held-breath banner
     if (state.status === "playing" && state.respawnAt > 0 && now < state.respawnAt) {
@@ -1348,7 +1310,7 @@ function GamePage({ navigate }) {
     const dpr = window.devicePixelRatio || 1;
     const resize = () => {
       const cw = wrap.clientWidth;
-      const ch = Math.round(cw / 1.618);
+      const ch = Math.max(320, wrap.clientHeight);
       canvas.width = Math.round(cw * dpr);
       canvas.height = Math.round(ch * dpr);
       canvas.style.width = cw + "px";
@@ -1357,12 +1319,15 @@ function GamePage({ navigate }) {
     };
     resize();
     window.addEventListener("resize", resize);
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(resize) : null;
+    if (ro) ro.observe(wrap);
 
     const game = createGame(canvas, setHud);
     gameRef.current = game;
 
     return () => {
       window.removeEventListener("resize", resize);
+      if (ro) ro.disconnect();
       game.destroy();
     };
   }, []);
