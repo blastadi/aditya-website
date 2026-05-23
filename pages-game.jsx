@@ -152,6 +152,166 @@ function getPaddleSpeed(state) {
 }
 
 /* ════════════════════════════════════════════════════════════════
+   V4.7 brick catalogue — 12 player bricks, conditional effects
+   ════════════════════════════════════════════════════════════════ */
+const PLAYER_BRICKS = {
+  SHIP:      { category: "build",  label: "SHIP" },
+  SCALE:     { category: "build",  label: "SCALE" },
+  AUTOMATE:  { category: "build",  label: "AUTOMATE" },
+  REVIEW:    { category: "defend", label: "REVIEW" },
+  REDTEAM:   { category: "defend", label: "REDTEAM" },
+  GOVERN:    { category: "defend", label: "GOVERN" },
+  PATCH:     { category: "repair", label: "PATCH" },
+  APOLOGIZE: { category: "repair", label: "APOLOGIZE" },
+  REBUILD:   { category: "repair", label: "REBUILD" },
+  TRAIN:     { category: "invest", label: "TRAIN" },
+  HIRE:      { category: "invest", label: "HIRE" },
+  ALIGN:     { category: "invest", label: "ALIGN" },
+};
+const PLAYER_BRICK_IDS = Object.keys(PLAYER_BRICKS);
+function pickPlayerBrickName() {
+  return PLAYER_BRICK_IDS[Math.floor(Math.random() * PLAYER_BRICK_IDS.length)];
+}
+
+/* Inline conditional logic — effects depend on Safety state at break time. */
+function applyPlayerBrickEffect(state, name) {
+  state.breaks += 1;
+  state.score = state.breaks;
+  state.brickCounts[name] = (state.brickCounts[name] || 0) + 1;
+  const s = state.safety;
+
+  switch (name) {
+    case "SHIP":
+      updateCapacity(state, -4);
+      updateSafety(state, -5);
+      if (s > 50) updateTrust(state, +3);
+      else if (s < 26) updateTrust(state, -3);
+      break;
+
+    case "SCALE":
+      updateCapital(state, -4);
+      updateCapacity(state, -3);
+      updateSafety(state, -8);
+      if (s > 50) updateTrust(state, +2);
+      else if (s < 26) updateTrust(state, -4);
+      state.ballSpeedMultiplier = Math.max(state.ballSpeedMultiplier, 1.05);
+      state.ballSpeedUntil = state.timeMs + 8000;
+      break;
+
+    case "AUTOMATE":
+      updateCapital(state, -6);
+      updateCapacity(state, -5);
+      updateTrust(state, +1);
+      state.delayedEffects.push({ fireAt: state.timeMs + 15000, layer: "capital",  amount: +10 });
+      state.delayedEffects.push({ fireAt: state.timeMs + 15000, layer: "capacity", amount: +12 });
+      state.delayedEffects.push({ fireAt: state.timeMs + 15000, layer: "friction", amount: -4  });
+      break;
+
+    case "REVIEW":
+      updateFriction(state, +4);
+      updateCapacity(state, -2);
+      updateSafety(state, +2);
+      if (s > 50) updateTrust(state, +3);
+      else if (s < 26) updateTrust(state, -2);
+      break;
+
+    case "REDTEAM":
+      updateCapacity(state, -4);
+      updateCapital(state, -2);
+      updateSafety(state, +6);
+      updateFriction(state, +1);
+      state.incidentShields += 1;
+      break;
+
+    case "GOVERN":
+      updateFriction(state, +8);
+      updateCapacity(state, -3);
+      updateCapital(state, -2);
+      updateSafety(state, +3);
+      updateTrust(state, +2);
+      state.delayedEffects.push({ fireAt: state.timeMs + 20000, layer: "trust", amount: +3 });
+      break;
+
+    case "PATCH": {
+      const priorSafety = state.safety;
+      updateCapacity(state, -5);
+      updateSafety(state, +3);
+      if (priorSafety < 30) updateTrust(state, +1);
+      else if (priorSafety > 50) updateTrust(state, -2);
+      break;
+    }
+
+    case "APOLOGIZE": {
+      updateCapacity(state, -3);
+      const within30s = (state.timeMs - state.lastApologizeTime) < 30000;
+      const mult = within30s ? 0.5 : 1.0;
+      state.lastApologizeTime = state.timeMs;
+      if (s > 50) updateTrust(state, Math.round(5 * mult));
+      else if (s < 26) updateTrust(state, Math.round(-4 * mult));
+      else updateTrust(state, Math.max(1, Math.round(1 * mult)));
+      break;
+    }
+
+    case "REBUILD":
+      updateCapital(state, -12);
+      updateCapacity(state, -10);
+      state.safety = 60;
+      state.safetyDegradedSince = null;
+      updateTrust(state, -6);
+      updateFriction(state, +6);
+      break;
+
+    case "TRAIN":
+      updateCapital(state, -5);
+      updateCapacity(state, -3);
+      state.delayedEffects.push({ fireAt: state.timeMs + 12000, layer: "capacity", amount: +10 });
+      state.delayedEffects.push({ fireAt: state.timeMs + 20000, layer: "trust",    amount: +3  });
+      state.delayedEffects.push({ fireAt: state.timeMs + 25000, layer: "safety",   amount: +5  });
+      break;
+
+    case "HIRE": {
+      state.hireCount += 1;
+      updateCapital(state, -12);
+      updateCapacity(state, -5);
+      let payoffMult = 1.0;
+      if (state.hireCount > 5) payoffMult = 0.25;
+      else if (state.hireCount > 3) payoffMult = 0.50;
+      // 15% chance the hire doesn't work out
+      if (Math.random() < 0.85) {
+        const capAmt = Math.floor(15 * payoffMult);
+        const safAmt = Math.floor(3  * payoffMult);
+        if (capAmt > 0) state.delayedEffects.push({ fireAt: state.timeMs + 25000, layer: "capacity", amount: capAmt });
+        if (safAmt > 0) state.delayedEffects.push({ fireAt: state.timeMs + 30000, layer: "safety",   amount: safAmt });
+      }
+      break;
+    }
+
+    case "ALIGN":
+      updateCapacity(state, -4);
+      updateCapital(state, -1);
+      updateFriction(state, -3);
+      if (s > 50) updateTrust(state, +3);
+      else if (s < 26) updateTrust(state, -1);
+      else updateTrust(state, +1);
+      if (state.lastAlignTime != null && state.timeMs - state.lastAlignTime < 30000) {
+        updateTrust(state, +5);
+        updateCapital(state, +5);
+        updateCapacity(state, +5);
+        updateFriction(state, -5);
+      }
+      state.lastAlignTime = state.timeMs;
+      break;
+  }
+
+  // Build streak for OUTAGE cascade (Phase 3)
+  if (PLAYER_BRICKS[name] && PLAYER_BRICKS[name].category === "build") {
+    state.buildStreak += 1;
+  } else {
+    state.buildStreak = 0;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
    Canvas engine
    ════════════════════════════════════════════════════════════════ */
 function createGame(canvas, onHudSync) {
@@ -252,12 +412,11 @@ function createGame(canvas, onHudSync) {
   state.paddle.x = (W() - state.paddle.w) / 2;
 
   /* ───────── Bricks ───────── */
-  // Phase 1 placeholder — uniform draw from a small label list so the wall
-  // renders. Phase 2 replaces with PLAYER_BRICKS + conditional applyPlayerBrick.
-  const pickPlaceholderBrick = () => {
-    const labels = ["SHIP","SCALE","AUTOMATE","REVIEW","REDTEAM","GOVERN",
-                    "PATCH","APOLOGIZE","REBUILD","TRAIN","HIRE","ALIGN"];
-    return { id: labels[Math.floor(Math.random() * labels.length)], label: labels[Math.floor(Math.random() * labels.length)], category: "build" };
+  // V4.7: uniform draw over the 12 player bricks (Crisis pool narrowing
+  // comes in Phase 5; for Phase 2 the pool is always all 12).
+  const pickBrickForWall = () => {
+    const name = pickPlayerBrickName();
+    return { id: name, label: PLAYER_BRICKS[name].label, category: PLAYER_BRICKS[name].category };
   };
 
   const initBricks = () => {
@@ -274,7 +433,7 @@ function createGame(canvas, onHudSync) {
           y: topPad + r * (bh + gap),
           w: bw, h: bh,
           alive: true,
-          challenge: pickPlaceholderBrick(),
+          challenge: pickBrickForWall(),
           fadeInAt: now,
         });
       }
@@ -297,7 +456,7 @@ function createGame(canvas, onHudSync) {
       used.add(pick);
       const b = empties[pick];
       b.alive = true;
-      b.challenge = pickPlaceholderBrick();
+      b.challenge = pickBrickForWall();
       b.fadeInAt = now + i * (150 + Math.random() * 450);
     }
   };
@@ -437,12 +596,7 @@ function createGame(canvas, onHudSync) {
     state.flashUntil = performance.now() + 1500;
   };
 
-  // Phase 2 replaces this with the full applyPlayerBrick switch-statement.
-  const applyPlayerBrick = (state, name) => {
-    state.breaks += 1;
-    state.score = state.breaks;
-    state.brickCounts[name] = (state.brickCounts[name] || 0) + 1;
-  };
+  const applyPlayerBrick = applyPlayerBrickEffect;
 
   // Phase 3 replaces this with the real attack-spawn + apply pipeline.
   const checkAttackSpawns = () => [];
@@ -454,7 +608,12 @@ function createGame(canvas, onHudSync) {
                               "PATCH","APOLOGIZE","REBUILD","TRAIN","HIRE","ALIGN"];
 
   const onBrickBreak = (brick) => {
-    const def = brick.challenge;
+    const def = brick.challenge || {};
+    if (def.isAttack) {
+      applyAttack(def.id || def.label);
+      pushEvent(`⚠ ${def.label || def.id}`);
+      return;
+    }
     const name = def.id || def.label || "SHIP";
     applyPlayerBrick(state, name);
     pushEvent(name);
