@@ -7,70 +7,162 @@
 
 const { useState: useStateGame, useEffect: useEffectGame, useRef: useRefGame, useCallback: useCallbackGame } = React;
 
-/* ───────── Challenge catalogue ───────── */
-const CHALLENGES = [
-  { id: "data-val",     kind: "problem", label: "Data validation failures", short: "DATA VAL",   effect: { reliability: -8 } },
-  { id: "bias",         kind: "problem", label: "Bias outcomes",            short: "BIAS",       effect: { trust: -10, safety: -2 },                trigger: "bias" },
-  { id: "outage",       kind: "problem", label: "Software outages",         short: "OUTAGE",     effect: { reliability: -10, trust: -4 },           trigger: "outage" },
-  { id: "rogue",        kind: "problem", label: "Rogue AI agents",          short: "ROGUE",      effect: { safety: -7, trust: -6 },                 trigger: "rogue" },
-  { id: "org-resist",   kind: "problem", label: "Organizational resistance",short: "ORG",        effect: { speed: -6, trust: +2 } },
-  { id: "governance",   kind: "problem", label: "Governance friction",      short: "GOV",        effect: { governance: +8, speed: -5, safety: +2 }, trigger: "governance" },
-  { id: "security",     kind: "problem", label: "Security vulnerabilities", short: "SEC",        effect: { safety: -6, trust: -4 } },
-  { id: "compliance",   kind: "problem", label: "Compliance reviews",       short: "COMPLY",     effect: { governance: +6, speed: -3 },             trigger: "compliance" },
-  { id: "drift",        kind: "problem", label: "Model drift",              short: "DRIFT",      effect: { reliability: -6, trust: -3 },            trigger: "drift" },
-  { id: "scaling",      kind: "problem", label: "Scaling bottlenecks",      short: "SCALE",      effect: { speed: -4, cost: +6 } },
-  { id: "user-trust",   kind: "problem", label: "User trust issues",        short: "TRUST",      effect: { trust: -8 } },
-  { id: "integration",  kind: "problem", label: "Integration failures",     short: "INTEG",      effect: { reliability: -6, cost: +4 } },
-  { id: "cost",         kind: "problem", label: "Cost overruns",            short: "COST",       effect: { cost: +10, governance: -2 } },
-  { id: "halluc",       kind: "problem", label: "Hallucinated outputs",     short: "HALL",       effect: { trust: -6, reliability: -3 },            trigger: "halluc" },
-];
+/* ───────── V4.6 brick catalogue: 12 player bricks across 4 categories ─────────
+   Effect values authoritative against v4_6_sim.py. Attack bricks ship in Phase 3. */
+const PLAYER_BRICKS = {
+  // ─ BUILD — ship capability, costs Capacity, earns Capital when Foundation healthy
+  SHIP: {
+    id: "SHIP", label: "SHIP", category: "build",
+    effects: { foundationPush: +1, trust: +2, capital: +1, capacity: -3, capitalBonusIfHealthy: +2 },
+  },
+  SCALE: {
+    id: "SCALE", label: "SCALE", category: "build",
+    effects: { foundationPush: +1, capital: -3, capacity: -4, ballSpeedBoost: { mult: 0.05, durationMs: 8000 } },
+  },
+  AUTOMATE: {
+    id: "AUTOMATE", label: "AUTOMATE", category: "build",
+    effects: { friction: -6, capital: +4, capacity: +6, trust: +1 },
+  },
 
-const WINS = [
-  // Efficiency (3) — filled circle category mark
-  { id: "auto",    kind: "win", category: "efficiency",  label: "Automation breakthrough",  short: "AUTO",    effect: { speed: +8, cost: -6 } },
-  { id: "save",    kind: "win", category: "efficiency",  label: "Cost reduction",           short: "SAVE",    effect: { cost: -12, speed: +2 } },
-  { id: "thru",    kind: "win", category: "efficiency",  label: "Throughput scaling",       short: "THRU",    effect: { speed: +10, reliability: +4 } },
+  // ─ DEFEND — protect what exists, attention cost
+  REVIEW: {
+    id: "REVIEW", label: "REVIEW", category: "defend",
+    effects: { friction: +3, trust: +2, foundationPush: -1, capacity: -3 },
+  },
+  MONITOR: {
+    id: "MONITOR", label: "MONITOR", category: "defend",
+    effects: { foundationPush: -1, capacity: -2, grantsIncidentShield: true },
+  },
+  GOVERN: {
+    id: "GOVERN", label: "GOVERN", category: "defend",
+    effects: { friction: +5, trust: +3, foundationPush: -1, capital: -2, capacity: -3 },
+  },
 
-  // Revenue & strategic (3) — filled square
-  { id: "rev",     kind: "win", category: "revenue",     label: "New revenue stream",       short: "REV+",    effect: { trust: +6, speed: +4, cost: -4 } },
-  { id: "market",  kind: "win", category: "revenue",     label: "Market expansion",         short: "MARKET",  effect: { trust: +8, speed: +5, cost: -3 } },
-  { id: "moat",    kind: "win", category: "revenue",     label: "Competitive moat deepens", short: "MOAT",    effect: { trust: +6, reliability: +5, governance: +4 }, trigger: "moat" },
+  // ─ REPAIR — recover from problems, heavy Capacity cost
+  PATCH: {
+    id: "PATCH", label: "PATCH", category: "repair",
+    effects: { foundationPush: -1, capacity: -4 },
+  },
+  APOLOGIZE: {
+    id: "APOLOGIZE", label: "APOLOGIZE", category: "repair",
+    effects: { trust: +4, capacity: -2 },
+  },
+  REBUILD: {
+    id: "REBUILD", label: "REBUILD", category: "repair",
+    effects: { foundationToHealthy: true, friction: -4, capital: -8, capacity: -6 },
+  },
 
-  // Decision quality (2) — filled triangle up
-  { id: "fcst",    kind: "win", category: "decision",    label: "Forecasting improvement",  short: "FCST",    effect: { reliability: +8, trust: +5, cost: -2 } },
-  { id: "insight", kind: "win", category: "decision",    label: "Insight surfaced",         short: "INSIGHT", effect: { reliability: +6, trust: +4, speed: +3 } },
+  // ─ INVEST — delayed payoffs, heavy on Capital up front
+  TRAIN: {
+    id: "TRAIN", label: "TRAIN", category: "invest",
+    effects: { capital: -4, capacity: -2, trust: +1,
+               delayedTrustBonus:    { amount: +4, delayMs: 10000 },
+               delayedCapacityBonus: { amount: +8, delayMs: 15000 } },
+  },
+  HIRE: {
+    id: "HIRE", label: "HIRE", category: "invest",
+    effects: { capital: -10, capacity: -3, capacityPassiveBoost: +1 },
+  },
+  ALIGN: {
+    id: "ALIGN", label: "ALIGN", category: "invest",
+    effects: { friction: -2, trust: +2, capital: -1, capacity: -2, compoundCheck: true },
+  },
+};
 
-  // Human & organizational (2) — filled triangle down
-  { id: "uplift",  kind: "win", category: "human",       label: "Employee uplift",          short: "UPLIFT",  effect: { trust: +8, speed: +4, cost: -3 } },
-  { id: "talent",  kind: "win", category: "human",       label: "Talent retained",          short: "TALENT",  effect: { trust: +7, reliability: +5, governance: +3 } },
-
-  // Capability & innovation (2 base + 1 patch-P1) — filled diamond
-  { id: "capa",      kind: "win", category: "capability",  label: "Capability unlock",        short: "CAPA",    effect: { speed: +8, reliability: +4, cost: +5 }, trigger: "capability" },
-  { id: "audit",     kind: "win", category: "capability",  label: "Successful audit",         short: "AUDIT",   effect: { governance: +8, trust: +6, safety: +4 }, trigger: "audit" },
-  { id: "infra",     kind: "win", category: "capability",  label: "Infrastructure investment",short: "INFRA",   effect: { reliability: +8, safety: +3, cost: +3 } },
-
-  // Decision quality (1 patch-P1 + 1 patch-P2 additions) — filled triangle up
-  { id: "eval",      kind: "win", category: "decision",    label: "Eval suite improvement",   short: "EVAL",    effect: { reliability: +6, safety: +4, governance: +2 } },
-  { id: "monitor",   kind: "win", category: "decision",    label: "Production monitoring",    short: "MONITOR", effect: { reliability: +5, safety: +5, governance: +2 } },
-
-  // Safety (2 patch-P1) — filled hexagon
-  { id: "guardrail", kind: "win", category: "safety",      label: "Guardrails installed",     short: "GUARDRAIL", effect: { safety: +8, reliability: +4, trust: +3, cost: +1 } },
-  { id: "redteam",   kind: "win", category: "safety",      label: "Red team review",          short: "REDTEAM", effect: { safety: +6, reliability: +5, governance: +2 } },
-
-  // Governance (2 patch-P1 + 1 patch-P2) — filled plus
-  { id: "gov-inv",   kind: "win", category: "governance",  label: "Governance investment",    short: "GOV INV", effect: { governance: +6, safety: +5, trust: +3, cost: +2 } },
-  { id: "transp",    kind: "win", category: "governance",  label: "Transparency report",      short: "TRANSP",  effect: { trust: +9, governance: +3, safety: +2 } },
-  { id: "policy",    kind: "win", category: "governance",  label: "AI policy published",      short: "POLICY",  effect: { governance: +5, safety: +6, trust: +2 } },
-];
+const PLAYER_BRICK_IDS = Object.keys(PLAYER_BRICKS);
 
 function pickRand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-// Phase 1 leaves the V2 brick pool in place so the canvas renders bricks;
-// Phase 2 replaces this with PLAYER_BRICKS uniform draw.
-function pickBrickChallenge() {
-  return Math.random() < 0.6
-    ? CHALLENGES[Math.floor(Math.random() * CHALLENGES.length)]
-    : WINS[Math.floor(Math.random() * WINS.length)];
+// V4.6: uniform draw across 12 player bricks. Attack bricks (Phase 3) spawn from
+// cascade conditions, never from this pool.
+function pickPlayerBrick() {
+  return PLAYER_BRICKS[PLAYER_BRICK_IDS[Math.floor(Math.random() * PLAYER_BRICK_IDS.length)]];
+}
+
+/* ───────── Apply effects to the five layers ─────────
+   Called from onBrickBreak (player bricks) and Phase 3 attack-brick handler. */
+function applyBrickEffects(state, brickDef, isAttack = false) {
+  const e = brickDef.effects || {};
+
+  // Foundation
+  if (e.foundationPush != null) pushFoundation(state, e.foundationPush);
+  if (e.foundationToHealthy) {
+    state.foundation = "healthy";
+    state.foundationStressedSince = null;
+  }
+  if (e.foundationToDegraded) {
+    state.foundation = "degraded";
+    state.foundationStressedSince = state.timeMs;
+  }
+
+  // Trust
+  if (e.trust != null) updateTrust(state, e.trust);
+  if (e.trustBandDrop) updateTrust(state, -30);
+
+  // Friction
+  if (e.friction != null) updateFriction(state, e.friction);
+
+  // Capital
+  if (e.capital != null) updateCapital(state, e.capital);
+  if (e.capitalBonusIfHealthy != null && state.foundation === "healthy") {
+    updateCapital(state, e.capitalBonusIfHealthy);
+  }
+
+  // Capacity
+  if (e.capacity != null) updateCapacity(state, e.capacity);
+
+  // Transient effects
+  if (e.ballSpeedBoost) {
+    state.ballSpeedMultiplier = Math.max(state.ballSpeedMultiplier || 1, 1 + e.ballSpeedBoost.mult);
+    state.ballSpeedUntil = state.timeMs + e.ballSpeedBoost.durationMs;
+  }
+  if (e.wallRefillBoost) {
+    state.wallRefillMultiplier = Math.max(state.wallRefillMultiplier || 1, 1 + e.wallRefillBoost.mult);
+    state.wallRefillUntil = state.timeMs + e.wallRefillBoost.durationMs;
+  }
+  if (e.capacityDrainBoost) {
+    state.capacityDrainMultiplier = Math.max(state.capacityDrainMultiplier || 1, e.capacityDrainBoost.mult);
+    state.capacityDrainUntil = state.timeMs + e.capacityDrainBoost.durationMs;
+  }
+  if (e.grantsIncidentShield) {
+    state.incidentShields = (state.incidentShields || 0) + 1;
+  }
+  if (e.capacityPassiveBoost) {
+    state.capacityPassiveBoost = (state.capacityPassiveBoost || 0) + e.capacityPassiveBoost;
+  }
+
+  // Delayed bonuses — drained by main update loop
+  if (e.delayedTrustBonus) {
+    state.delayedTrustBonuses.push({
+      amount: e.delayedTrustBonus.amount,
+      fireAt: state.timeMs + e.delayedTrustBonus.delayMs,
+    });
+  }
+  if (e.delayedCapacityBonus) {
+    state.delayedCapacityBonuses.push({
+      amount: e.delayedCapacityBonus.amount,
+      fireAt: state.timeMs + e.delayedCapacityBonus.delayMs,
+    });
+  }
+
+  // ALIGN compound bonus — second tap within 30s fires all-layer kicker
+  if (e.compoundCheck && state.lastAlignTime != null && state.timeMs - state.lastAlignTime < 30000) {
+    pushFoundation(state, -1);
+    updateTrust(state, +5);
+    updateFriction(state, -5);
+    updateCapital(state, +3);
+    updateCapacity(state, +5);
+  }
+  if (e.compoundCheck) state.lastAlignTime = state.timeMs;
+
+  // Build streak — used by Phase 3 OUTAGE cascade
+  if (!isAttack) {
+    if (brickDef.category === "build") {
+      state.buildStreak = (state.buildStreak || 0) + 1;
+    } else {
+      state.buildStreak = 0;
+    }
+  }
 }
 
 const clamp01 = v => Math.max(0, Math.min(1, v));
@@ -300,7 +392,7 @@ function createGame(canvas, onHudSync) {
           w: bw,
           h: bh,
           alive: true,
-          challenge: pickBrickChallenge(),
+          challenge: pickPlayerBrick(),
           fadeInAt: now,
         });
       }
@@ -323,7 +415,7 @@ function createGame(canvas, onHudSync) {
       used.add(pick);
       const b = empties[pick];
       b.alive = true;
-      b.challenge = pickBrickChallenge();
+      b.challenge = pickPlayerBrick();
       b.fadeInAt = now + i * (150 + Math.random() * 450);
     }
   };
@@ -342,7 +434,7 @@ function createGame(canvas, onHudSync) {
         y: newY,
         w: bw, h: bh,
         alive: true,
-        challenge: pickBrickChallenge(),
+        challenge: pickPlayerBrick(),
         fadeInAt: now + c * (180 + Math.random() * 220),
       });
     }
@@ -458,11 +550,29 @@ function createGame(canvas, onHudSync) {
     state.flashUntil = performance.now() + 1500;
   };
 
-  // Phase 1 placeholder. Phase 2 wires applyBrickEffects(state, brickDef, isAttack).
   const onBrickBreak = (brick) => {
+    const brickDef = brick.challenge;
+    const isAttack = !!brickDef.isAttack;
+
+    // MONITOR shield absorbs the next attack brick entirely (Phase 3 makes attacks fire)
+    if (isAttack && (state.incidentShields || 0) > 0) {
+      state.incidentShields -= 1;
+      state.score += 1;
+      pushEvent(`MONITOR shield absorbed ${brickDef.label}`);
+      state.brickCounts.MONITOR_SHIELDS = (state.brickCounts.MONITOR_SHIELDS || 0) + 1;
+      return;
+    }
+
     state.score += 1;
-    pushEvent(brick.challenge.label);
-    state.brickCounts[brick.challenge.id] = (state.brickCounts[brick.challenge.id] || 0) + 1;
+    pushEvent(brickDef.label);
+    const id = brickDef.id || brickDef.label;
+    if (isAttack) {
+      state.attackBrickCounts[id] = (state.attackBrickCounts[id] || 0) + 1;
+    } else {
+      state.brickCounts[id] = (state.brickCounts[id] || 0) + 1;
+    }
+
+    applyBrickEffects(state, brickDef, isAttack);
   };
 
   // Phase 1 placeholder end-screen result. Phase 5 builds the verdict layout.
@@ -652,19 +762,75 @@ function createGame(canvas, onHudSync) {
       if (fadeT <= 0) return; // not yet faded in (staggered refill)
       ctx.globalAlpha = fadeT;
 
-      // Phase 1 placeholder render — neutral outlined brick. Phase 2 adds the
-      // four V4 category visual treatments (build solid / defend outlined /
-      // repair striped / invest dashed italic).
-      ctx.fillStyle = bg2;
-      ctx.fillRect(brick.x, brick.y, brick.w, brick.h);
-      ctx.strokeStyle = line;
-      ctx.lineWidth = 1;
-      ctx.strokeRect(brick.x + 0.5, brick.y + 0.5, brick.w - 1, brick.h - 1);
-      ctx.fillStyle = fg2;
-      ctx.font = '500 9.5px "JetBrains Mono", ui-monospace, monospace';
+      const def = brick.challenge;
+      const cat = def.category;
+      const label = def.label || def.short || "";
+
+      if (def.isAttack) {
+        // Attack brick — solid accent fill, bold label (Phase 3 paints these in)
+        ctx.fillStyle = accent;
+        ctx.fillRect(brick.x, brick.y, brick.w, brick.h);
+        ctx.fillStyle = bg;
+        ctx.font = '600 11px "JetBrains Mono", ui-monospace, monospace';
+      } else if (cat === "build") {
+        // BUILD — solid accent fill, ink label
+        ctx.fillStyle = accent;
+        ctx.fillRect(brick.x, brick.y, brick.w, brick.h);
+        ctx.fillStyle = bg;
+        ctx.font = '500 9.5px "JetBrains Mono", ui-monospace, monospace';
+      } else if (cat === "defend") {
+        // DEFEND — outlined, no fill, accent label
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 1.2;
+        ctx.strokeRect(brick.x + 0.6, brick.y + 0.6, brick.w - 1.2, brick.h - 1.2);
+        ctx.fillStyle = accent;
+        ctx.font = '500 9.5px "JetBrains Mono", ui-monospace, monospace';
+      } else if (cat === "repair") {
+        // REPAIR — diagonal stripes at 50% opacity over light bg, fg label
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(brick.x, brick.y, brick.w, brick.h);
+        ctx.clip();
+        ctx.fillStyle = bg2;
+        ctx.fillRect(brick.x, brick.y, brick.w, brick.h);
+        ctx.globalAlpha = fadeT * 0.5;
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 1;
+        for (let s = -brick.h; s < brick.w + brick.h; s += 5) {
+          ctx.beginPath();
+          ctx.moveTo(brick.x + s, brick.y);
+          ctx.lineTo(brick.x + s + brick.h, brick.y + brick.h);
+          ctx.stroke();
+        }
+        ctx.restore();
+        ctx.globalAlpha = fadeT;
+        ctx.strokeStyle = line;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(brick.x + 0.5, brick.y + 0.5, brick.w - 1, brick.h - 1);
+        ctx.fillStyle = fg;
+        ctx.font = '500 9.5px "JetBrains Mono", ui-monospace, monospace';
+      } else if (cat === "invest") {
+        // INVEST — dashed outline, accent italic label
+        ctx.save();
+        ctx.setLineDash([3, 2.5]);
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(brick.x + 0.5, brick.y + 0.5, brick.w - 1, brick.h - 1);
+        ctx.restore();
+        ctx.fillStyle = accent;
+        ctx.font = 'italic 500 9.5px "JetBrains Mono", ui-monospace, monospace';
+      } else {
+        // Fallback (shouldn't fire in V4.6)
+        ctx.strokeStyle = line;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(brick.x + 0.5, brick.y + 0.5, brick.w - 1, brick.h - 1);
+        ctx.fillStyle = fg2;
+        ctx.font = '500 9.5px "JetBrains Mono", ui-monospace, monospace';
+      }
+
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(brick.challenge.short, brick.x + brick.w / 2, brick.y + brick.h / 2);
+      ctx.fillText(label, brick.x + brick.w / 2, brick.y + brick.h / 2);
       ctx.globalAlpha = 1;
     });
 
