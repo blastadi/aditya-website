@@ -12,10 +12,10 @@ const CHALLENGES = [
   { id: "data-val",     kind: "problem", label: "Data validation failures", short: "DATA VAL",   effect: { reliability: -8 } },
   { id: "bias",         kind: "problem", label: "Bias outcomes",            short: "BIAS",       effect: { trust: -10, safety: -2 },                trigger: "bias" },
   { id: "outage",       kind: "problem", label: "Software outages",         short: "OUTAGE",     effect: { reliability: -10, trust: -4 },           trigger: "outage" },
-  { id: "rogue",        kind: "problem", label: "Rogue AI agents",          short: "ROGUE",      effect: { safety: -10, trust: -6 },                trigger: "rogue" },
+  { id: "rogue",        kind: "problem", label: "Rogue AI agents",          short: "ROGUE",      effect: { safety: -7, trust: -6 },                 trigger: "rogue" },
   { id: "org-resist",   kind: "problem", label: "Organizational resistance",short: "ORG",        effect: { speed: -6, trust: +2 } },
   { id: "governance",   kind: "problem", label: "Governance friction",      short: "GOV",        effect: { governance: +8, speed: -5, safety: +2 }, trigger: "governance" },
-  { id: "security",     kind: "problem", label: "Security vulnerabilities", short: "SEC",        effect: { safety: -8, trust: -4 } },
+  { id: "security",     kind: "problem", label: "Security vulnerabilities", short: "SEC",        effect: { safety: -6, trust: -4 } },
   { id: "compliance",   kind: "problem", label: "Compliance reviews",       short: "COMPLY",     effect: { governance: +6, speed: -3 },             trigger: "compliance" },
   { id: "drift",        kind: "problem", label: "Model drift",              short: "DRIFT",      effect: { reliability: -6, trust: -3 },            trigger: "drift" },
   { id: "scaling",      kind: "problem", label: "Scaling bottlenecks",      short: "SCALE",      effect: { speed: -4, cost: +6 } },
@@ -49,16 +49,18 @@ const WINS = [
   { id: "audit",     kind: "win", category: "capability",  label: "Successful audit",         short: "AUDIT",   effect: { governance: +8, trust: +6, safety: +4 }, trigger: "audit" },
   { id: "infra",     kind: "win", category: "capability",  label: "Infrastructure investment",short: "INFRA",   effect: { reliability: +8, safety: +3, cost: +3 } },
 
-  // Decision quality (1 patch-P1 addition) — filled triangle up
+  // Decision quality (1 patch-P1 + 1 patch-P2 additions) — filled triangle up
   { id: "eval",      kind: "win", category: "decision",    label: "Eval suite improvement",   short: "EVAL",    effect: { reliability: +6, safety: +4, governance: +2 } },
+  { id: "monitor",   kind: "win", category: "decision",    label: "Production monitoring",    short: "MONITOR", effect: { reliability: +5, safety: +5, governance: +2 } },
 
   // Safety (2 patch-P1) — filled hexagon
   { id: "guardrail", kind: "win", category: "safety",      label: "Guardrails installed",     short: "GUARDRAIL", effect: { safety: +8, reliability: +4, trust: +3, cost: +1 } },
   { id: "redteam",   kind: "win", category: "safety",      label: "Red team review",          short: "REDTEAM", effect: { safety: +6, reliability: +5, governance: +2 } },
 
-  // Governance (2 patch-P1) — filled plus
+  // Governance (2 patch-P1 + 1 patch-P2) — filled plus
   { id: "gov-inv",   kind: "win", category: "governance",  label: "Governance investment",    short: "GOV INV", effect: { governance: +6, safety: +5, trust: +3, cost: +2 } },
   { id: "transp",    kind: "win", category: "governance",  label: "Transparency report",      short: "TRANSP",  effect: { trust: +9, governance: +3, safety: +2 } },
+  { id: "policy",    kind: "win", category: "governance",  label: "AI policy published",      short: "POLICY",  effect: { governance: +5, safety: +6, trust: +2 } },
 ];
 
 const METER_KEYS = ["speed", "reliability", "governance", "safety", "cost", "trust"];
@@ -78,11 +80,11 @@ function pickBrickChallenge() {
 const WIN_CATEGORIES = {
   efficiency: ["auto", "save", "thru"],
   revenue:    ["rev", "market", "moat"],
-  decision:   ["fcst", "insight", "eval"],
+  decision:   ["fcst", "insight", "eval", "monitor"],
   human:      ["uplift", "talent"],
   capability: ["capa", "audit", "infra"],
   safety:     ["guardrail", "redteam"],
-  governance: ["gov-inv", "transp"],
+  governance: ["gov-inv", "transp", "policy"],
 };
 const ALL_WIN_IDS = Object.values(WIN_CATEGORIES).flat();
 const LOSS_IDS    = CHALLENGES.map(c => c.id);
