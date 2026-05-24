@@ -1679,6 +1679,183 @@ function EndScreen({ result, onRestart }) {
 }
 
 /* ════════════════════════════════════════════════════════════════
+   V4.7 §8 — game primer (loading screen + in-game help overlay)
+   ════════════════════════════════════════════════════════════════ */
+const PRIMER_BRICKS = {
+  build: [
+    { id: "SHIP",     blurb: "ship features.",         effects: "trust depends on safety. capacity-- safety--" },
+    { id: "SCALE",    blurb: "take on more load.",     effects: "capital-- capacity-- safety--" },
+    { id: "AUTOMATE", blurb: "reduce manual work.",    effects: "heavy upfront, delayed payoff" },
+  ],
+  defend: [
+    { id: "REVIEW",   blurb: "institutional review.",  effects: "friction+ capacity-- safety+" },
+    { id: "REDTEAM",  blurb: "adversarial testing.",   effects: "shields next attack. safety++" },
+    { id: "GOVERN",   blurb: "formal governance.",     effects: "trust+ but friction+++ safety+" },
+  ],
+  repair: [
+    { id: "PATCH",    blurb: "fix what broke.",        effects: "safety+ capacity--" },
+    { id: "APOLOGIZE",blurb: "mend trust.",            effects: "trust depends on safety. capacity--" },
+    { id: "REBUILD",  blurb: "reset safety.",          effects: "heavy cost across everything" },
+  ],
+  invest: [
+    { id: "TRAIN",    blurb: "team learning.",         effects: "delayed capacity and trust" },
+    { id: "HIRE",     blurb: "expand team.",           effects: "capital--- delayed capacity. risky." },
+    { id: "ALIGN",    blurb: "stakeholder alignment.", effects: "trust depends on safety. chain x2 in 30s for bonus" },
+  ],
+};
+
+const PRIMER_ATTACKS = [
+  { id: "DRIFT",         trigger: "Safety low for too long.",                             animation: "Balls curve right for 6 seconds." },
+  { id: "OUTAGE",        trigger: "Too much building without rest, or safety degraded.",  animation: "Screen flashes. Ball speeds up." },
+  { id: "HALLUCINATION", trigger: "Safety low + trust eroded.",                           animation: "A ghost ball spawns. It looks real. It isn't." },
+  { id: "ROGUE",         trigger: "Everything cracking simultaneously.",                  animation: "All balls jitter unpredictably for 5 seconds." },
+  { id: "BREACH",        trigger: "Low friction + low safety.",                           animation: "Trust collapses by 30. Friction spikes." },
+  { id: "REVOLT",        trigger: "High friction + sustained trust collapse.",            animation: "Canvas tints. Balls drift right. The org rebels." },
+];
+
+function PrimerContent() {
+  return (
+    <>
+      <section className="primer-section primer-premise">
+        <h1 className="primer-title">DEPLOY</h1>
+        <p className="primer-lede">A four-minute thought experiment about the year-in-the-life of an AI deployment manager.</p>
+        <p className="primer-lede">You've been hired to ship and operate a new AI system. You have a budget, a small team, and four quarters before your tenure ends.</p>
+        <p className="primer-lede">Each 60-second quarter compresses three months of operational decisions.</p>
+        <p className="primer-lede primer-lede-emphasis">This is not a score-based game. The state of the deployment at handoff is your diagnosis.</p>
+      </section>
+
+      <section className="primer-section">
+        <h3 className="primer-h">THE WALL IS THE WORK.</h3>
+        <p>Bricks represent operational choices. Break a brick — apply that choice — affect your deployment.</p>
+        <ul className="primer-list">
+          <li>Some bricks <em className="cat-build">BUILD</em> capability.</li>
+          <li>Some <em className="cat-defend">DEFEND</em> what exists.</li>
+          <li>Some <em className="cat-repair">REPAIR</em> damage.</li>
+          <li>Some <em className="cat-invest">INVEST</em> for later.</li>
+        </ul>
+        <p>Your job: keep the ball in play and choose which bricks to break.</p>
+      </section>
+
+      <section className="primer-section">
+        <h3 className="primer-h">WHAT YOU MANAGE</h3>
+        <div className="primer-layers">
+          <div className="primer-layer">
+            <div className="primer-layer-name">CAPITAL</div>
+            <div className="primer-layer-visual primer-bar"><div className="primer-bar-dot" style={{ left: "40%" }} /></div>
+            <div className="primer-layer-desc">Money, headcount, compute. You start at 40. Medium funding.</div>
+          </div>
+          <div className="primer-layer">
+            <div className="primer-layer-name">CAPACITY</div>
+            <div className="primer-layer-visual primer-bar"><div className="primer-bar-dot" style={{ left: "25%" }} /></div>
+            <div className="primer-layer-desc">Attention. The team's bandwidth. You start at 25. Small team, already stretched.</div>
+          </div>
+          <div className="primer-layer">
+            <div className="primer-layer-name">TRUST</div>
+            <div className="primer-layer-visual primer-bar"><div className="primer-bar-dot" style={{ left: "0%" }} /></div>
+            <div className="primer-layer-desc">What stakeholders and users feel. You start at 0. Hard to earn.</div>
+          </div>
+          <div className="primer-layer">
+            <div className="primer-layer-name">FRICTION</div>
+            <div className="primer-layer-visual primer-bar"><div className="primer-bar-dot" style={{ left: "10%" }} /></div>
+            <div className="primer-layer-desc">Organizational drag. Higher = slower paddle. Low — but that creates BREACH risk.</div>
+          </div>
+          <div className="primer-layer">
+            <div className="primer-layer-name">SAFETY</div>
+            <div className="primer-layer-visual primer-bar"><div className="primer-bar-dot" style={{ left: "15%" }} /></div>
+            <div className="primer-layer-desc">AI-specific risk controls. You start at 15. Unmitigated. The thing to build.</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="primer-section">
+        <h3 className="primer-h">EVERY CHOICE COSTS SOMETHING.</h3>
+        <p>There is no free move. Every brick gives you something and takes something away.</p>
+        <p>Building capability costs safety. Shipping features means new failure modes.</p>
+        <p>Defending what exists costs velocity. Reviews and governance slow everything down.</p>
+        <p>Repairing damage costs attention. Patches and apologies pull the team off other work.</p>
+        <p>Investing costs now to gain later. Training and hiring drain resources before they pay back.</p>
+        <p className="primer-tagline"><em>The state of your deployment changes what things cost.</em> The same SHIP brick that builds trust when safety is high will erode trust when safety is low. Bricks will warn you when conditions are bad — a mustard mark in the corner means the current effect would be unfavorable.</p>
+      </section>
+
+      <section className="primer-section">
+        <h3 className="primer-h">TWELVE CHOICES, FOUR CATEGORIES</h3>
+        <div className="primer-bricks-grid">
+          {["build", "defend", "repair", "invest"].map(cat => (
+            <div key={cat} className={"primer-brick-col primer-brick-" + cat}>
+              <div className="primer-brick-cat">{cat.toUpperCase()}</div>
+              {PRIMER_BRICKS[cat].map(b => (
+                <div key={b.id} className={"primer-brick primer-brick-vis-" + cat}>
+                  <div className="primer-brick-id">{b.id}</div>
+                  <div className="primer-brick-blurb">{b.blurb}</div>
+                  <div className="primer-brick-effects">{b.effects}</div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="primer-section">
+        <h3 className="primer-h">SIX FAILURE MODES</h3>
+        <p className="primer-lede-attack"><em>These don't appear in the brick pool. They spawn when the conditions you create allow them.</em></p>
+        <div className="primer-attacks">
+          {PRIMER_ATTACKS.map(a => (
+            <div key={a.id} className="primer-attack">
+              <div className="primer-attack-name">{a.id}</div>
+              <div className="primer-attack-trigger"><em>{a.trigger}</em></div>
+              <div className="primer-attack-anim">{a.animation}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="primer-section">
+        <h3 className="primer-h">PARALLEL WORKSTREAMS — SPACE</h3>
+        <p>Tap SPACE to deploy a second ball. The wall refills 1.25× faster. Attacks become more likely. Capital and capacity drain slowly.</p>
+        <p>Tap SPACE again for a third ball. The wall refills 1.45× faster — and starts producing more failures. Capital and capacity drain heavily.</p>
+        <p>Drop a ball and the pressure drops with it.</p>
+        <p className="primer-tagline"><em>You'll know when you're overloaded.</em></p>
+      </section>
+
+      <section className="primer-section">
+        <h3 className="primer-h">END OF Q4 — THE HANDOFF</h3>
+        <p>Four quarters pass. Sixty seconds each.</p>
+        <p>At the end, you see:</p>
+        <ul className="primer-list primer-list-clean">
+          <li>Your trajectory across all five layers</li>
+          <li>What you traded for what</li>
+          <li>A single sentence about what you hand off</li>
+        </ul>
+        <p className="primer-tagline"><em>No score. No archetype.<br />The state of your deployment is your diagnosis.</em></p>
+      </section>
+    </>
+  );
+}
+
+function LoadingScreen({ onBegin }) {
+  return (
+    <div className="primer-screen primer-loading">
+      <div className="primer-scroll"><PrimerContent /></div>
+      <div className="primer-footer" onClick={onBegin}>
+        <span className="primer-footer-text">SPACE — BEGIN</span>
+      </div>
+    </div>
+  );
+}
+
+function HelpOverlay({ onClose }) {
+  return (
+    <div className="primer-screen primer-help">
+      <button className="primer-close" onClick={onClose} aria-label="Close help">×</button>
+      <div className="primer-scroll"><PrimerContent /></div>
+      <div className="primer-footer" onClick={onClose}>
+        <span className="primer-footer-text">ESC — RETURN TO GAME</span>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
    Page
    ════════════════════════════════════════════════════════════════ */
 function GamePage({ navigate }) {
@@ -1698,6 +1875,15 @@ function GamePage({ navigate }) {
     resuming: false,
     endResult: null,
   });
+
+  const [showLoading, setShowLoading] = useStateGame(() => {
+    try { return !window.localStorage.getItem(PRIMER_STORAGE_KEY); } catch (e) { return true; }
+  });
+  const [helpOpen, setHelpOpen] = useStateGame(false);
+  const dismissLoading = useCallbackGame(() => {
+    try { window.localStorage.setItem(PRIMER_STORAGE_KEY, "1"); } catch (e) {}
+    setShowLoading(false);
+  }, []);
 
   useEffectGame(() => {
     const canvas = canvasRef.current;
@@ -1729,6 +1915,28 @@ function GamePage({ navigate }) {
     };
   }, []);
 
+  // Lock game while LoadingScreen or HelpOverlay is open
+  useEffectGame(() => {
+    const locked = showLoading || helpOpen;
+    if (gameRef.current && gameRef.current.setLocked) gameRef.current.setLocked(locked);
+  }, [showLoading, helpOpen]);
+
+  // SPACE on LoadingScreen → dismiss. ESC on HelpOverlay → close.
+  useEffectGame(() => {
+    if (!showLoading && !helpOpen) return;
+    const onKey = (e) => {
+      if (showLoading && (e.key === " " || e.code === "Space")) {
+        e.preventDefault(); e.stopPropagation();
+        dismissLoading();
+      } else if (helpOpen && (e.key === "Escape" || e.key === "Esc")) {
+        e.preventDefault(); e.stopPropagation();
+        setHelpOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [showLoading, helpOpen, dismissLoading]);
+
   const status = hud.status;
 
   return (
@@ -1759,6 +1967,7 @@ function GamePage({ navigate }) {
               <div className="top-strip-meta">
                 <span className="meta-quarter">Q{hud.quarter || 1}/4</span>
                 <span className="meta-stats">{hud.breaks || 0} breaks · {hud.incidents || 0} incidents</span>
+                <button className="help-icon" onClick={() => setHelpOpen(true)} aria-label="Open primer" title="Primer">?</button>
               </div>
             </div>
 
@@ -1829,6 +2038,10 @@ function GamePage({ navigate }) {
           </div>
         </footer>
       </div>
+
+      {/* V4.7 §8 — primer overlays */}
+      {showLoading && <LoadingScreen onBegin={dismissLoading} />}
+      {helpOpen && <HelpOverlay onClose={() => setHelpOpen(false)} />}
     </main>
   );
 }
