@@ -2,156 +2,1116 @@
   "id": "inheritance",
   "name": "Inheritance",
   "industry_framings": [
-    { "id": "criminal-justice", "name": "Criminal justice risk scoring at Cardinal Public Services", "default": true },
-    { "id": "child-welfare",    "name": "Child welfare hotline triage" },
-    { "id": "unemployment",     "name": "Unemployment-claim adjudication" }
+    {
+      "id": "criminal-justice",
+      "name": "Criminal justice risk scoring at Cardinal Public Services",
+      "default": true
+    },
+    {
+      "id": "child-welfare",
+      "name": "Child welfare hotline triage"
+    },
+    {
+      "id": "unemployment",
+      "name": "Unemployment-claim adjudication"
+    }
   ],
   "composite_firm": "Cardinal Public Services",
-  "central_tension": "Living with a deployed AI system you didn't design",
-  "background_copy": "You walked into a job and found an AI system already running. Decisions were already being made. Your predecessor is gone. The model is opaque, the training data isn't documented, the political coalition that approved it is fractured. You're the AI deployment lead at Cardinal Public Services — and Year One is about figuring out what you've inherited before deciding what to do with it. The research on inherited algorithmic systems is unanimous on one thing: the cost of NOT discovering what's underneath is paid eventually, by someone, in lawsuits or press cycles or quiet harm. The cost of discovering it is paid by you, in political exposure and trust expended on uncomfortable conversations. Four quarters. One year. The pattern of your discoveries reveals the manager you became.",
+  "central_tension": "You took over an AI someone else built. Now what?",
+  "background_copy": "This is the scenario most AI managers actually walk into. The system was designed before you arrived. The training data was chosen by people who are no longer there. The model has been making decisions about real people for years. Now you're responsible for it — and questions are starting to land on your desk. Maybe a community advocacy group filed a records request. Maybe an internal team noticed the AI scores certain neighbourhoods differently. Maybe a journalist is asking pointed questions. You have one year to figure out what was actually built, what to fix, who to tell, and whether to keep the system running at all. Some of the work is technical (retrain the model, add fairness checks). Some is political (build coalitions, brief the mayor's office, manage the board). Some is uncomfortable (do you go to outside investigators?). What you choose to discover, fix, and disclose this year will determine whether the system survives — and whether you survive with it.",
   "anchor_sources": [
-    { "id": "marabelli-2021", "citation": "Marabelli, M., Newell, S., & Handunge, V. (2021). The Lifecycle of Algorithmic Decision-Making Systems. Journal of Strategic Information Systems, 30(3).", "read_time_min": 40, "skim_section": "Section 4 (post-deployment)",        "contribution": "Foundational paper on the inheritance problem. Introduces the post-deployment lifecycle." },
-    { "id": "barocas-2016",   "citation": "Barocas, S., & Selbst, A. D. (2016). Big Data's Disparate Impact. California Law Review, 104, 671-732.",                                                       "read_time_min": 50, "skim_section": "Part II (mechanisms)",            "contribution": "Establishes disparate-impact mechanisms that inherited systems carry forward." },
-    { "id": "dux-2025",       "citation": "Dux, N., et al. (2025). Governance by Design: Translating AI Risk into Organisational Architecture. arXiv.",                                                  "read_time_min": 35, "skim_section": "Section 4 (case examples)",      "contribution": "Provides the governance vocabulary for political and structural bricks." },
-    { "id": "nist-2023",      "citation": "National Institute of Standards and Technology (2023). AI Risk Management Framework 1.0 (NIST AI 100-1).",                                                    "read_time_min": 90, "skim_section": "Map and Manage functions",       "contribution": "Operationalises the technical-fix brick category through the Measure and Manage functions." },
-    { "id": "berente-2021",   "citation": "Berente, N., Gu, B., Recker, J., & Santhanam, R. (2021). Managing AI. MIS Quarterly, 45(3).",                                                                 "read_time_min": 30, "skim_section": "Section 3 (governance posture)", "contribution": "Provides the macro-action vocabulary (replacement, legislative push, advisory conversion)." }
+    {
+      "id": "marabelli-2021",
+      "citation": "Marabelli, M., Newell, S., & Handunge, V. (2021). The Lifecycle of Algorithmic Decision-Making Systems. Journal of Strategic Information Systems, 30(3).",
+      "read_time_min": 40,
+      "skim_section": "Section 4 (post-deployment)",
+      "contribution": "Walks through the full life of an algorithmic decision-making system, phase by phase. Argues every phase encodes politics — who benefits, who pays — and most of the manager's year is dealing with the politics, not the model."
+    },
+    {
+      "id": "barocas-2016",
+      "citation": "Barocas, S., & Selbst, A. D. (2016). Big Data's Disparate Impact. California Law Review, 104, 671-732.",
+      "read_time_min": 50,
+      "skim_section": "Part II (mechanisms)",
+      "contribution": "Foundational paper on how AI bias arises through training data, label choices, and proxy variables. Essential for understanding what you may have inherited."
+    },
+    {
+      "id": "dux-2025",
+      "citation": "Dux, N., et al. (2025). Governance by Design: Translating AI Risk into Organisational Architecture. arXiv.",
+      "read_time_min": 35,
+      "skim_section": "Section 4 (case examples)",
+      "contribution": "Introduces 'human in the lead' — humans should have authority and visibility over agentic AI, not just intervention rights after something goes wrong."
+    },
+    {
+      "id": "nist-2023",
+      "citation": "National Institute of Standards and Technology (2023). AI Risk Management Framework 1.0 (NIST AI 100-1).",
+      "read_time_min": 90,
+      "skim_section": "Map and Manage functions",
+      "contribution": "The risk framework you'll be expected to follow once you've inherited a deployed system."
+    }
   ],
   "contributing_sources": [
-    { "id": "schein-1985", "citation": "Schein, E. H. (1985). Organizational Culture and Leadership. Jossey-Bass.", "read_time_min": 50, "elements_contributed": ["Custodian archetype", "Cont-as-is Q4 choice"] }
+    {
+      "id": "berente-2021",
+      "citation": "Berente, N., Gu, B., Recker, J., & Santhanam, R. (2021). Managing AI. MIS Quarterly, 45(3).",
+      "read_time_min": 30,
+      "skim_section": "Section 3 (governance posture)",
+      "contribution": "Names the three things that make AI hard to manage — autonomy, learning, inscrutability. All three apply when you're inheriting a system you didn't help design."
+    },
+    {
+      "id": "li-2026",
+      "contribution": "Concrete example of an audit catching problems that surface metrics missed. Useful for seeing what 'discovering inherited bias' looks like in practice."
+    }
   ],
   "meters": [
-    { "id": "sys_int",           "label": "System Integrity",       "start": 55, "safe_band": [40, 80], "tone_logic": "standard" },
-    { "id": "trust",             "label": "Stakeholder Trust",      "start": 35, "safe_band": [40, 80], "tone_logic": "standard" },
-    { "id": "disparate_signal",  "label": "Disparate-Impact Signal","start": 50, "safe_band": [0, 40],  "tone_logic": "inverse" },
-    { "id": "polit_exp",         "label": "Political Exposure",     "start": 45, "safe_band": [30, 70], "tone_logic": "standard" },
-    { "id": "board_conf",        "label": "Board Confidence",       "start": 40, "safe_band": [30, 80], "tone_logic": "standard" },
-    { "id": "press_pressure",    "label": "Press Pressure",         "start": 30, "safe_band": [0, 40],  "tone_logic": "inverse", "hidden_until_revealed": "press_pressure" }
+    {
+      "id": "sys_int",
+      "label": "System Integrity",
+      "start": 55,
+      "safe_band": [
+        40,
+        80
+      ],
+      "tone_logic": "standard"
+    },
+    {
+      "id": "trust",
+      "label": "Stakeholder Trust",
+      "start": 35,
+      "safe_band": [
+        40,
+        80
+      ],
+      "tone_logic": "standard"
+    },
+    {
+      "id": "disparate_signal",
+      "label": "Disparate-Impact Signal",
+      "start": 50,
+      "safe_band": [
+        0,
+        40
+      ],
+      "tone_logic": "inverse"
+    },
+    {
+      "id": "polit_exp",
+      "label": "Political Exposure",
+      "start": 45,
+      "safe_band": [
+        30,
+        70
+      ],
+      "tone_logic": "standard"
+    },
+    {
+      "id": "board_conf",
+      "label": "Board Confidence",
+      "start": 40,
+      "safe_band": [
+        30,
+        80
+      ],
+      "tone_logic": "standard"
+    },
+    {
+      "id": "press_pressure",
+      "label": "Press Pressure",
+      "start": 30,
+      "safe_band": [
+        0,
+        40
+      ],
+      "tone_logic": "inverse",
+      "hidden_until_revealed": "press_pressure"
+    }
   ],
   "lives_start": 3,
   "categories": {
-    "disc":    { "label": "Discovery",    "color": "#1d8a5f", "color_dim": "#14633f" },
-    "tech":    { "label": "Technical",    "color": "#2d4fe0", "color_dim": "#1f3aa0" },
-    "pol":     { "label": "Political",    "color": "#6d4cae", "color_dim": "#4a3179" },
-    "op":      { "label": "Operational",  "color": "#5a6473", "color_dim": "#3e454f" },
-    "str":     { "label": "Structural",   "color": "#d4a01b", "color_dim": "#9c7613" },
-    "whistle": { "label": "Whistleblower","color": "#c0392b", "color_dim": "#8c2a20" },
-    "macro":   { "label": "Macro-action", "color": "#8e44ad", "color_dim": "#5b2c75" },
-    "rec":     { "label": "Recovery",     "color": "#e8b830", "color_dim": "#a8821e" }
+    "disc": {
+      "label": "Discovery",
+      "color": "#1d8a5f",
+      "color_dim": "#14633f"
+    },
+    "tech": {
+      "label": "Technical",
+      "color": "#2d4fe0",
+      "color_dim": "#1f3aa0"
+    },
+    "pol": {
+      "label": "Political",
+      "color": "#6d4cae",
+      "color_dim": "#4a3179"
+    },
+    "op": {
+      "label": "Operational",
+      "color": "#5a6473",
+      "color_dim": "#3e454f"
+    },
+    "str": {
+      "label": "Structural",
+      "color": "#d4a01b",
+      "color_dim": "#9c7613"
+    },
+    "whistle": {
+      "label": "Whistleblower",
+      "color": "#c0392b",
+      "color_dim": "#8c2a20"
+    },
+    "macro": {
+      "label": "Macro-action",
+      "color": "#8e44ad",
+      "color_dim": "#5b2c75"
+    },
+    "rec": {
+      "label": "Recovery",
+      "color": "#e8b830",
+      "color_dim": "#a8821e"
+    }
   },
   "bricks": [
-    { "id": "INH-DSC-01", "label": "Review design doc",   "category": "disc", "effects": { "trust":  2 },                                              "reveals": "predecessor_log", "hits": 1, "briefing_description": "Pulls and reads the original design doc. Surfaces the predecessor's logic. Small trust lift.",        "research_note": "Marabelli et al. (2021) — discovery is the first move of inherited-system management.",        "tag": "direct",   "sources": ["marabelli-2021"] },
-    { "id": "INH-DSC-02", "label": "Audit data",          "category": "disc", "effects": { "trust":  1 },                                              "reveals": "training_origin", "hits": 1, "briefing_description": "Audits the training-data origin. Surfaces what shaped the model. Modest trust lift.",                 "research_note": "Barocas & Selbst (2016) — training-data origin is upstream of disparate impact.",               "tag": "direct",   "sources": ["barocas-2016"] },
-    { "id": "INH-DSC-03", "label": "Map coalitions",      "category": "disc", "effects": { "trust":  1 },                                              "reveals": "coalition_map",   "hits": 1, "briefing_description": "Identifies the political coalition that approved the system. Surfaces who'll defend or attack it.", "research_note": "Dux et al. (2025) — political coalition mapping is governance work.",                          "tag": "derived",  "sources": ["dux-2025"] },
-    { "id": "INH-DSC-04", "label": "Survey community",    "category": "disc", "effects": { "trust":  3, "polit_exp":  2 },                             "reveals": "press_pressure",  "hits": 1, "briefing_description": "Conducts community listening sessions. Big trust gain; raises political exposure.",                  "research_note": "Marabelli et al. (2021) — community engagement surfaces hidden press dynamics.",                 "tag": "direct",   "sources": ["marabelli-2021"] },
-    { "id": "INH-DSC-05", "label": "Pull error logs",     "category": "disc", "effects": { "sys_int": -2, "trust":  2 },                               "reveals": "training_origin", "hits": 1, "briefing_description": "Pulls historical error logs. Surfaces the failure modes; integrity score reflects the truth.",       "research_note": "NIST AI RMF Measure function operationalised.",                                                 "tag": "composite","sources": ["nist-2023", "marabelli-2021"] },
-    { "id": "INH-DSC-06", "label": "Interview ex-lead",   "category": "disc", "effects": { "trust":  1, "polit_exp":  1 },                             "reveals": "predecessor_log", "hits": 1, "briefing_description": "Tracks down and interviews the predecessor. Quiet political move; small trust lift.",                "research_note": "Marabelli et al. (2021) — predecessor knowledge is uniquely valuable inheritance.",              "tag": "derived",  "sources": ["marabelli-2021"] },
-
-    { "id": "INH-TCH-01", "label": "Recalibrate",          "category": "tech", "effects": { "sys_int":  5, "trust":  1 },                              "hits": 1, "briefing_description": "Recalibrates thresholds against fresh validation data. Integrity gain.",                                                              "research_note": "NIST AI RMF Manage function.",                                                                  "tag": "direct",   "sources": ["nist-2023"] },
-    { "id": "INH-TCH-02", "label": "Retrain",              "category": "tech", "effects": { "sys_int":  6, "disparate_signal": -3, "trust":  2 },     "hits": 1, "briefing_description": "Retrains on rebalanced data. Big integrity gain + disparate-impact reduction.",                                                  "research_note": "Barocas & Selbst (2016) — retraining is the lever where origin meets outcome.",                  "tag": "composite","sources": ["barocas-2016", "nist-2023"] },
-    { "id": "INH-TCH-03", "label": "Fairness constraint", "category": "tech", "effects": { "disparate_signal": -5, "sys_int": -2, "trust":  3 },     "hits": 1, "briefing_description": "Adds an in-model fairness constraint. Big disparate-impact reduction; small integrity cost.",                                "research_note": "Barocas & Selbst (2016) on constraint-based corrections.",                                       "tag": "direct",   "sources": ["barocas-2016"] },
-    { "id": "INH-TCH-04", "label": "Patch output",         "category": "tech", "effects": { "sys_int":  4, "disparate_signal": -1 },                  "hits": 1, "briefing_description": "Adds an output-layer post-processing filter. Quick integrity fix.",                                                              "research_note": "NIST AI RMF Manage function — output controls.",                                                "tag": "derived",  "sources": ["nist-2023"] },
-    { "id": "INH-TCH-05", "label": "Tighten tier-3",       "category": "tech", "effects": { "sys_int":  3, "disparate_signal": -2, "trust":  1 },     "hits": 1, "briefing_description": "Tightens human-review tier for high-stakes cases. Modest gains all around.",                                                     "research_note": "Asatiani et al. envelopment surface, applied here as inherited-system control.",                  "tag": "derived",  "sources": ["nist-2023"] },
-    { "id": "INH-TCH-06", "label": "Add monitoring",       "category": "tech", "effects": { "sys_int":  3, "trust":  2, "board_conf":  2 },           "hits": 1, "briefing_description": "Stands up a monitoring layer. Integrity, trust, and board-confidence lift.",                                                    "research_note": "NIST AI RMF Measure function.",                                                                 "tag": "direct",   "sources": ["nist-2023"] },
-
-    { "id": "INH-POL-01", "label": "Negotiate vendor",     "category": "pol",  "effects": { "polit_exp":  1, "sys_int":  2 },                         "hits": 1, "briefing_description": "Negotiates revised SLA with the model vendor. Small political move; integrity nudge.",                                          "research_note": "Dux et al. (2025) — vendor relationships are governance surfaces.",                              "tag": "derived",  "sources": ["dux-2025"] },
-    { "id": "INH-POL-02", "label": "Brief mayor",          "category": "pol",  "effects": { "polit_exp":  2, "board_conf":  4, "trust":  1 },        "hits": 1, "briefing_description": "Briefs the mayor's office. Big board-confidence gain; political capital spent.",                                                "research_note": "Berente et al. (2021) — political surface management.",                                          "tag": "direct",   "sources": ["berente-2021"] },
-    { "id": "INH-POL-03", "label": "Convene advisory",     "category": "pol",  "effects": { "polit_exp":  1, "trust":  5, "press_pressure": -2 },    "hits": 1, "briefing_description": "Convenes an external advisory board. Big trust + press-pressure reduction.",                                                    "research_note": "Marabelli et al. (2021) — advisory boards as legitimacy surface.",                              "tag": "direct",   "sources": ["marabelli-2021"] },
-    { "id": "INH-POL-04", "label": "Pre-empt journalist",  "category": "pol",  "effects": { "polit_exp": -2, "trust":  3, "press_pressure": -3 },    "hits": 1, "briefing_description": "Pre-emptively briefs a reporter. Lowers political exposure; lowers press pressure.",                                            "research_note": "Berente et al. (2021) — press relationships as managed exposure surface.",                       "tag": "derived",  "sources": ["berente-2021"] },
-    { "id": "INH-POL-05", "label": "Build coalition",      "category": "pol",  "effects": { "polit_exp":  3, "trust":  2, "board_conf": -1 },        "hits": 1, "briefing_description": "Builds a coalition of stakeholders. Spends political capital; gains durable trust.",                                            "research_note": "Dux et al. (2025) — coalition-building is the structural correlate of trust.",                  "tag": "derived",  "sources": ["dux-2025"] },
-
-    { "id": "INH-OPR-01", "label": "Continue ops",         "category": "op",   "effects": { "sys_int":  1, "trust": -1, "press_pressure":  1 },      "hits": 1, "briefing_description": "Continues operations unchanged. Small integrity nudge; trust costs accumulate.",                                                "research_note": "Marabelli et al. (2021) — continuation as a managerial choice with downstream cost.",            "tag": "direct",   "sources": ["marabelli-2021"] },
-    { "id": "INH-OPR-02", "label": "Narrow scope",         "category": "op",   "effects": { "sys_int":  2, "polit_exp": -2, "trust":  1, "press_pressure": -1 }, "hits": 1, "briefing_description": "Narrows the system's operational scope. Several modest improvements.",                                                            "research_note": "Asatiani et al. (2021) envelopment vocabulary applied to inherited systems.",                    "tag": "composite","sources": ["nist-2023"] },
-    { "id": "INH-OPR-03", "label": "Replace model",        "category": "op",   "effects": { "sys_int": -5, "polit_exp":  5, "trust":  4, "board_conf": -3 }, "hits": 2, "briefing_description": "Replaces the model with a new vendor's. Integrity hit + political exposure + trust gain. Two hits.",                                "research_note": "Berente et al. (2021) — replacement as governance posture.",                                     "tag": "direct",   "sources": ["berente-2021"] },
-    { "id": "INH-OPR-04", "label": "Pause for audit",      "category": "op",   "effects": { "sys_int": -3, "trust":  5, "press_pressure": -4, "board_conf": -5 }, "hits": 2, "briefing_description": "Pauses operations to run a thorough audit. Big trust win + press relief; board cost.",                                       "research_note": "Marabelli et al. (2021) — pausing is a legitimacy move.",                                       "tag": "derived",  "sources": ["marabelli-2021"] },
-
-    { "id": "INH-STR-01", "label": "Hire ethics officer",  "category": "str",  "effects": { "trust":  5, "board_conf":  3 },                          "hits": 2, "briefing_description": "Creates and fills a standing AI ethics role. Trust + board lift. Two hits.",                                                  "research_note": "Dux et al. (2025) — standing-role governance.",                                                  "tag": "direct",   "sources": ["dux-2025"] },
-    { "id": "INH-STR-02", "label": "Review committee",     "category": "str",  "effects": { "trust":  6, "polit_exp":  2 },                          "hits": 2, "briefing_description": "Stands up a cross-stakeholder review committee. Big trust gain; raises exposure.",                                              "research_note": "Dux et al. (2025) — committee governance.",                                                      "tag": "direct",   "sources": ["dux-2025"] },
-    { "id": "INH-STR-03", "label": "Publish methodology",  "category": "str",  "effects": { "trust":  7, "press_pressure": -3, "polit_exp":  3 },    "hits": 2, "briefing_description": "Publishes the system's methodology and metrics. Biggest trust gain available.",                                                  "research_note": "Marabelli et al. (2021) — transparency as durable legitimacy.",                                  "tag": "composite","sources": ["marabelli-2021", "nist-2023"] },
-
-    { "id": "INH-WHS-01", "label": "Brief investigator",   "category": "whistle", "effects": { "trust":  6, "polit_exp":  6, "board_conf": -10, "press_pressure":  3 }, "hits": 2, "briefing_description": "Briefs an external investigator. Big trust + board collapse. Unlocked after 2 discoveries. Two hits.", "research_note": "Berente et al. (2021) — whistleblower-class actions as governance posture.",                  "tag": "direct",   "sources": ["berente-2021"] },
-    { "id": "INH-WHS-02", "label": "Leak design doc",      "category": "whistle", "effects": { "trust":  8, "polit_exp":  8, "board_conf": -15, "press_pressure":  5 }, "hits": 2, "briefing_description": "Leaks the design doc to a journalist. Massive trust + board collapse. Two hits.",                          "research_note": "Berente et al. (2021) — extreme posture; high cost.",                                            "tag": "derived",  "sources": ["berente-2021"] },
-    { "id": "INH-WHS-03", "label": "Resignation threat",   "category": "whistle", "effects": { "trust":  3, "polit_exp":  5, "board_conf": -8 },                       "hits": 2, "briefing_description": "Tables a resignation conditional on policy change. Spent capital; lasting visibility.",                  "research_note": "Berente et al. (2021) — resignation-conditional governance.",                                    "tag": "derived",  "sources": ["berente-2021"] },
-
-    { "id": "INH-MAC-01", "label": "Recommend replace",    "category": "macro",   "effects": { "sys_int": -5, "trust":  6, "polit_exp":  4, "board_conf": -3 }, "hits": 2, "briefing_description": "Formally recommends sunsetting the inherited system. Two hits.",                                          "research_note": "Berente et al. (2021) — replacement as macro-action.",                                          "tag": "direct",   "sources": ["berente-2021"] },
-    { "id": "INH-MAC-02", "label": "Push legislative",     "category": "macro",   "effects": { "trust":  5, "polit_exp":  6, "press_pressure": -2 },                  "hits": 2, "briefing_description": "Pushes for legislative oversight at state level. Spent political capital for durable change.",          "research_note": "Berente et al. (2021) — legislative push as governance posture.",                                "tag": "derived",  "sources": ["berente-2021"] },
-    { "id": "INH-MAC-03", "label": "Convert advisory",     "category": "macro",   "effects": { "sys_int": -3, "trust":  5, "disparate_signal": -3 },                  "hits": 2, "briefing_description": "Converts the system to an advisory tool only. Integrity hit; durable trust gain.",                       "research_note": "Berente et al. (2021) — advisory conversion.",                                                   "tag": "derived",  "sources": ["berente-2021"] },
-
-    { "id": "INH-REC",    "label": "Emergency audit",      "category": "rec",     "effects": { "trust":  6, "disparate_signal": -5, "press_pressure": -3, "polit_exp":  3, "sys_int": -3 }, "hits": 2, "briefing_description": "Halts and runs a full external audit. Big disparate-signal + trust gain. Q3 only when system shows real cracks.", "research_note": "Marabelli et al. (2021) — crisis-mode discovery + transparency.", "tag": "composite", "sources": ["marabelli-2021", "nist-2023"], "recovery": true }
+    {
+      "id": "INH-DSC-01",
+      "label": "Review design doc",
+      "category": "disc",
+      "effects": {
+        "trust": 2
+      },
+      "reveals": "predecessor_log",
+      "hits": 1,
+      "briefing_description": "Pulls and reads the original design doc. Surfaces the predecessor's logic. Small trust lift.",
+      "research_note": "Marabelli et al. (2021) — discovery is the first move of inherited-system management.",
+      "tag": "direct",
+      "sources": [
+        "marabelli-2021"
+      ]
+    },
+    {
+      "id": "INH-DSC-02",
+      "label": "Audit data",
+      "category": "disc",
+      "effects": {
+        "trust": 1
+      },
+      "reveals": "training_origin",
+      "hits": 1,
+      "briefing_description": "Audits the training-data origin. Surfaces what shaped the model. Modest trust lift.",
+      "research_note": "Barocas & Selbst (2016) — training-data origin is upstream of disparate impact.",
+      "tag": "direct",
+      "sources": [
+        "barocas-2016"
+      ]
+    },
+    {
+      "id": "INH-DSC-03",
+      "label": "Map coalitions",
+      "category": "disc",
+      "effects": {
+        "trust": 1
+      },
+      "reveals": "coalition_map",
+      "hits": 1,
+      "briefing_description": "Identifies the political coalition that approved the system. Surfaces who'll defend or attack it.",
+      "research_note": "Dux et al. (2025) — political coalition mapping is governance work.",
+      "tag": "derived",
+      "sources": [
+        "dux-2025"
+      ]
+    },
+    {
+      "id": "INH-DSC-04",
+      "label": "Survey community",
+      "category": "disc",
+      "effects": {
+        "trust": 3,
+        "polit_exp": 2
+      },
+      "reveals": "press_pressure",
+      "hits": 1,
+      "briefing_description": "Conducts community listening sessions. Big trust gain; raises political exposure.",
+      "research_note": "Marabelli et al. (2021) — community engagement surfaces hidden press dynamics.",
+      "tag": "direct",
+      "sources": [
+        "marabelli-2021"
+      ]
+    },
+    {
+      "id": "INH-DSC-05",
+      "label": "Pull error logs",
+      "category": "disc",
+      "effects": {
+        "sys_int": -2,
+        "trust": 2
+      },
+      "reveals": "training_origin",
+      "hits": 1,
+      "briefing_description": "Pulls historical error logs. Surfaces the failure modes; integrity score reflects the truth.",
+      "research_note": "NIST AI RMF Measure function operationalised.",
+      "tag": "composite",
+      "sources": [
+        "nist-2023",
+        "marabelli-2021"
+      ]
+    },
+    {
+      "id": "INH-DSC-06",
+      "label": "Interview ex-lead",
+      "category": "disc",
+      "effects": {
+        "trust": 1,
+        "polit_exp": 1
+      },
+      "reveals": "predecessor_log",
+      "hits": 1,
+      "briefing_description": "Tracks down and interviews the predecessor. Quiet political move; small trust lift.",
+      "research_note": "Marabelli et al. (2021) — predecessor knowledge is uniquely valuable inheritance.",
+      "tag": "derived",
+      "sources": [
+        "marabelli-2021"
+      ]
+    },
+    {
+      "id": "INH-TCH-01",
+      "label": "Recalibrate",
+      "category": "tech",
+      "effects": {
+        "sys_int": 5,
+        "trust": 1
+      },
+      "hits": 1,
+      "briefing_description": "Recalibrates thresholds against fresh validation data. Integrity gain.",
+      "research_note": "NIST AI RMF Manage function.",
+      "tag": "direct",
+      "sources": [
+        "nist-2023"
+      ]
+    },
+    {
+      "id": "INH-TCH-02",
+      "label": "Retrain",
+      "category": "tech",
+      "effects": {
+        "sys_int": 6,
+        "disparate_signal": -3,
+        "trust": 2
+      },
+      "hits": 1,
+      "briefing_description": "Retrains on rebalanced data. Big integrity gain + disparate-impact reduction.",
+      "research_note": "Barocas & Selbst (2016) — retraining is the lever where origin meets outcome.",
+      "tag": "composite",
+      "sources": [
+        "barocas-2016",
+        "nist-2023"
+      ]
+    },
+    {
+      "id": "INH-TCH-03",
+      "label": "Fairness constraint",
+      "category": "tech",
+      "effects": {
+        "disparate_signal": -5,
+        "sys_int": -2,
+        "trust": 3
+      },
+      "hits": 1,
+      "briefing_description": "Adds an in-model fairness constraint. Big disparate-impact reduction; small integrity cost.",
+      "research_note": "Barocas & Selbst (2016) on constraint-based corrections.",
+      "tag": "direct",
+      "sources": [
+        "barocas-2016"
+      ]
+    },
+    {
+      "id": "INH-TCH-04",
+      "label": "Patch output",
+      "category": "tech",
+      "effects": {
+        "sys_int": 4,
+        "disparate_signal": -1
+      },
+      "hits": 1,
+      "briefing_description": "Adds an output-layer post-processing filter. Quick integrity fix.",
+      "research_note": "NIST AI RMF Manage function — output controls.",
+      "tag": "derived",
+      "sources": [
+        "nist-2023"
+      ]
+    },
+    {
+      "id": "INH-TCH-05",
+      "label": "Tighten tier-3",
+      "category": "tech",
+      "effects": {
+        "sys_int": 3,
+        "disparate_signal": -2,
+        "trust": 1
+      },
+      "hits": 1,
+      "briefing_description": "Tightens human-review tier for high-stakes cases. Modest gains all around.",
+      "research_note": "Asatiani et al. envelopment surface, applied here as inherited-system control.",
+      "tag": "derived",
+      "sources": [
+        "nist-2023"
+      ]
+    },
+    {
+      "id": "INH-TCH-06",
+      "label": "Add monitoring",
+      "category": "tech",
+      "effects": {
+        "sys_int": 3,
+        "trust": 2,
+        "board_conf": 2
+      },
+      "hits": 1,
+      "briefing_description": "Stands up a monitoring layer. Integrity, trust, and board-confidence lift.",
+      "research_note": "NIST AI RMF Measure function.",
+      "tag": "direct",
+      "sources": [
+        "nist-2023"
+      ]
+    },
+    {
+      "id": "INH-POL-01",
+      "label": "Negotiate vendor",
+      "category": "pol",
+      "effects": {
+        "polit_exp": 1,
+        "sys_int": 2
+      },
+      "hits": 1,
+      "briefing_description": "Negotiates revised SLA with the model vendor. Small political move; integrity nudge.",
+      "research_note": "Dux et al. (2025) — vendor relationships are governance surfaces.",
+      "tag": "derived",
+      "sources": [
+        "dux-2025"
+      ]
+    },
+    {
+      "id": "INH-POL-02",
+      "label": "Brief mayor",
+      "category": "pol",
+      "effects": {
+        "polit_exp": 2,
+        "board_conf": 4,
+        "trust": 1
+      },
+      "hits": 1,
+      "briefing_description": "Briefs the mayor's office. Big board-confidence gain; political capital spent.",
+      "research_note": "Berente et al. (2021) — political surface management.",
+      "tag": "direct",
+      "sources": [
+        "berente-2021"
+      ]
+    },
+    {
+      "id": "INH-POL-03",
+      "label": "Convene advisory",
+      "category": "pol",
+      "effects": {
+        "polit_exp": 1,
+        "trust": 5,
+        "press_pressure": -2
+      },
+      "hits": 1,
+      "briefing_description": "Convenes an external advisory board. Big trust + press-pressure reduction.",
+      "research_note": "Marabelli et al. (2021) — advisory boards as legitimacy surface.",
+      "tag": "direct",
+      "sources": [
+        "marabelli-2021"
+      ]
+    },
+    {
+      "id": "INH-POL-04",
+      "label": "Pre-empt journalist",
+      "category": "pol",
+      "effects": {
+        "polit_exp": -2,
+        "trust": 3,
+        "press_pressure": -3
+      },
+      "hits": 1,
+      "briefing_description": "Pre-emptively briefs a reporter. Lowers political exposure; lowers press pressure.",
+      "research_note": "Berente et al. (2021) — press relationships as managed exposure surface.",
+      "tag": "derived",
+      "sources": [
+        "berente-2021"
+      ]
+    },
+    {
+      "id": "INH-POL-05",
+      "label": "Build coalition",
+      "category": "pol",
+      "effects": {
+        "polit_exp": 3,
+        "trust": 2,
+        "board_conf": -1
+      },
+      "hits": 1,
+      "briefing_description": "Builds a coalition of stakeholders. Spends political capital; gains durable trust.",
+      "research_note": "Dux et al. (2025) — coalition-building is the structural correlate of trust.",
+      "tag": "derived",
+      "sources": [
+        "dux-2025"
+      ]
+    },
+    {
+      "id": "INH-OPR-01",
+      "label": "Continue ops",
+      "category": "op",
+      "effects": {
+        "sys_int": 1,
+        "trust": -1,
+        "press_pressure": 1
+      },
+      "hits": 1,
+      "briefing_description": "Continues operations unchanged. Small integrity nudge; trust costs accumulate.",
+      "research_note": "Marabelli et al. (2021) — continuation as a managerial choice with downstream cost.",
+      "tag": "direct",
+      "sources": [
+        "marabelli-2021"
+      ]
+    },
+    {
+      "id": "INH-OPR-02",
+      "label": "Narrow scope",
+      "category": "op",
+      "effects": {
+        "sys_int": 2,
+        "polit_exp": -2,
+        "trust": 1,
+        "press_pressure": -1
+      },
+      "hits": 1,
+      "briefing_description": "Narrows the system's operational scope. Several modest improvements.",
+      "research_note": "Asatiani et al. (2021) envelopment vocabulary applied to inherited systems.",
+      "tag": "composite",
+      "sources": [
+        "nist-2023"
+      ]
+    },
+    {
+      "id": "INH-OPR-03",
+      "label": "Replace model",
+      "category": "op",
+      "effects": {
+        "sys_int": -5,
+        "polit_exp": 5,
+        "trust": 4,
+        "board_conf": -3
+      },
+      "hits": 2,
+      "briefing_description": "Replaces the model with a new vendor's. Integrity hit + political exposure + trust gain. Two hits.",
+      "research_note": "Berente et al. (2021) — replacement as governance posture.",
+      "tag": "direct",
+      "sources": [
+        "berente-2021"
+      ]
+    },
+    {
+      "id": "INH-OPR-04",
+      "label": "Pause for audit",
+      "category": "op",
+      "effects": {
+        "sys_int": -3,
+        "trust": 5,
+        "press_pressure": -4,
+        "board_conf": -5
+      },
+      "hits": 2,
+      "briefing_description": "Pauses operations to run a thorough audit. Big trust win + press relief; board cost.",
+      "research_note": "Marabelli et al. (2021) — pausing is a legitimacy move.",
+      "tag": "derived",
+      "sources": [
+        "marabelli-2021"
+      ]
+    },
+    {
+      "id": "INH-STR-01",
+      "label": "Hire ethics officer",
+      "category": "str",
+      "effects": {
+        "trust": 5,
+        "board_conf": 3
+      },
+      "hits": 2,
+      "briefing_description": "Creates and fills a standing AI ethics role. Trust + board lift. Two hits.",
+      "research_note": "Dux et al. (2025) — standing-role governance.",
+      "tag": "direct",
+      "sources": [
+        "dux-2025"
+      ]
+    },
+    {
+      "id": "INH-STR-02",
+      "label": "Review committee",
+      "category": "str",
+      "effects": {
+        "trust": 6,
+        "polit_exp": 2
+      },
+      "hits": 2,
+      "briefing_description": "Stands up a cross-stakeholder review committee. Big trust gain; raises exposure.",
+      "research_note": "Dux et al. (2025) — committee governance.",
+      "tag": "direct",
+      "sources": [
+        "dux-2025"
+      ]
+    },
+    {
+      "id": "INH-STR-03",
+      "label": "Publish methodology",
+      "category": "str",
+      "effects": {
+        "trust": 7,
+        "press_pressure": -3,
+        "polit_exp": 3
+      },
+      "hits": 2,
+      "briefing_description": "Publishes the system's methodology and metrics. Biggest trust gain available.",
+      "research_note": "Marabelli et al. (2021) — transparency as durable legitimacy.",
+      "tag": "composite",
+      "sources": [
+        "marabelli-2021",
+        "nist-2023"
+      ]
+    },
+    {
+      "id": "INH-WHS-01",
+      "label": "Brief investigator",
+      "category": "whistle",
+      "effects": {
+        "trust": 6,
+        "polit_exp": 6,
+        "board_conf": -10,
+        "press_pressure": 3
+      },
+      "hits": 2,
+      "briefing_description": "Briefs an external investigator. Big trust + board collapse. Unlocked after 2 discoveries. Two hits.",
+      "research_note": "Berente et al. (2021) — whistleblower-class actions as governance posture.",
+      "tag": "direct",
+      "sources": [
+        "berente-2021"
+      ]
+    },
+    {
+      "id": "INH-WHS-02",
+      "label": "Leak design doc",
+      "category": "whistle",
+      "effects": {
+        "trust": 8,
+        "polit_exp": 8,
+        "board_conf": -15,
+        "press_pressure": 5
+      },
+      "hits": 2,
+      "briefing_description": "Leaks the design doc to a journalist. Massive trust + board collapse. Two hits.",
+      "research_note": "Berente et al. (2021) — extreme posture; high cost.",
+      "tag": "derived",
+      "sources": [
+        "berente-2021"
+      ]
+    },
+    {
+      "id": "INH-WHS-03",
+      "label": "Resignation threat",
+      "category": "whistle",
+      "effects": {
+        "trust": 3,
+        "polit_exp": 5,
+        "board_conf": -8
+      },
+      "hits": 2,
+      "briefing_description": "Tables a resignation conditional on policy change. Spent capital; lasting visibility.",
+      "research_note": "Berente et al. (2021) — resignation-conditional governance.",
+      "tag": "derived",
+      "sources": [
+        "berente-2021"
+      ]
+    },
+    {
+      "id": "INH-MAC-01",
+      "label": "Recommend replace",
+      "category": "macro",
+      "effects": {
+        "sys_int": -5,
+        "trust": 6,
+        "polit_exp": 4,
+        "board_conf": -3
+      },
+      "hits": 2,
+      "briefing_description": "Formally recommends sunsetting the inherited system. Two hits.",
+      "research_note": "Berente et al. (2021) — replacement as macro-action.",
+      "tag": "direct",
+      "sources": [
+        "berente-2021"
+      ]
+    },
+    {
+      "id": "INH-MAC-02",
+      "label": "Push legislative",
+      "category": "macro",
+      "effects": {
+        "trust": 5,
+        "polit_exp": 6,
+        "press_pressure": -2
+      },
+      "hits": 2,
+      "briefing_description": "Pushes for legislative oversight at state level. Spent political capital for durable change.",
+      "research_note": "Berente et al. (2021) — legislative push as governance posture.",
+      "tag": "derived",
+      "sources": [
+        "berente-2021"
+      ]
+    },
+    {
+      "id": "INH-MAC-03",
+      "label": "Convert advisory",
+      "category": "macro",
+      "effects": {
+        "sys_int": -3,
+        "trust": 5,
+        "disparate_signal": -3
+      },
+      "hits": 2,
+      "briefing_description": "Converts the system to an advisory tool only. Integrity hit; durable trust gain.",
+      "research_note": "Berente et al. (2021) — advisory conversion.",
+      "tag": "derived",
+      "sources": [
+        "berente-2021"
+      ]
+    },
+    {
+      "id": "INH-REC",
+      "label": "Emergency audit",
+      "category": "rec",
+      "effects": {
+        "trust": 6,
+        "disparate_signal": -5,
+        "press_pressure": -3,
+        "polit_exp": 3,
+        "sys_int": -3
+      },
+      "hits": 2,
+      "briefing_description": "Halts and runs a full external audit. Big disparate-signal + trust gain. Q3 only when system shows real cracks.",
+      "research_note": "Marabelli et al. (2021) — crisis-mode discovery + transparency.",
+      "tag": "composite",
+      "sources": [
+        "marabelli-2021",
+        "nist-2023"
+      ],
+      "recovery": true
+    }
   ],
-  "crisis_pool": ["AUDIT", "LAWSUIT", "FRICT", "BIAS", "WHISTLE", "PR", "ACTIVISM", "PRIVACY"],
-  "opportunity_pool": ["PR_WIN", "PARTNER", "CHARTER_RATIFY"],
-  "crises_per_quarter": { "1": 1, "2": 1, "3": 2, "4": 1 },
+  "crisis_pool": [
+    "AUDIT",
+    "LAWSUIT",
+    "FRICT",
+    "BIAS",
+    "WHISTLE",
+    "PR",
+    "ACTIVISM",
+    "PRIVACY"
+  ],
+  "opportunity_pool": [
+    "PR_WIN",
+    "PARTNER",
+    "CHARTER_RATIFY"
+  ],
+  "crises_per_quarter": {
+    "1": 1,
+    "2": 1,
+    "3": 2,
+    "4": 1
+  },
   "opportunities_per_game": 1,
-  "strategic_categories": ["str", "macro"],
+  "strategic_categories": [
+    "str",
+    "macro"
+  ],
   "crisis_meter_map": {
-    "trust_proxy":       "trust",
-    "capability_proxy":  "sys_int",
-    "board_proxy":       "board_conf",
+    "trust_proxy": "trust",
+    "capability_proxy": "sys_int",
+    "board_proxy": "board_conf",
     "performance_proxy": "sys_int",
-    "press_proxy":       "press_pressure",
-    "perception_proxy":  "trust",
-    "value_proxy":       "sys_int",
-    "coherence_proxy":   "sys_int",
-    "adoption_proxy":    "trust",
-    "polit_proxy":       "polit_exp",
-    "sys_int_proxy":     "sys_int"
+    "press_proxy": "press_pressure",
+    "perception_proxy": "trust",
+    "value_proxy": "sys_int",
+    "coherence_proxy": "sys_int",
+    "adoption_proxy": "trust",
+    "polit_proxy": "polit_exp",
+    "sys_int_proxy": "sys_int"
   },
-
   "quarter_walls": {
-    "1": { "size": 24, "include_recovery": false, "exclude_categories": ["whistle", "macro"] },
-    "2": { "size": 24, "include_recovery": false, "exclude_categories": ["macro"] },
-    "3": { "size": 22, "include_recovery": true,  "recovery_unlock_trigger": "sys_int < 40 OR disparate_signal > 50" },
-    "4": { "size": 16, "include_recovery": false, "heavier": true }
+    "1": {
+      "size": 24,
+      "include_recovery": false,
+      "exclude_categories": [
+        "whistle",
+        "macro"
+      ]
+    },
+    "2": {
+      "size": 24,
+      "include_recovery": false,
+      "exclude_categories": [
+        "macro"
+      ]
+    },
+    "3": {
+      "size": 22,
+      "include_recovery": true,
+      "recovery_unlock_trigger": "sys_int < 40 OR disparate_signal > 50"
+    },
+    "4": {
+      "size": 16,
+      "include_recovery": false,
+      "heavier": true
+    }
   },
-  "ball_speed_ramp": [1.00, 1.08, 1.17, 1.27],
-  "incident_event_ids": ["Q1_FOIA", "Q2_NEWS", "Q2_OVERSIGHT", "Q3_LAWSUIT", "Q3_FED"],
+  "ball_speed_ramp": [
+    1.0,
+    1.08,
+    1.17,
+    1.27
+  ],
+  "incident_event_ids": [
+    "Q1_FOIA",
+    "Q2_NEWS",
+    "Q2_OVERSIGHT",
+    "Q3_LAWSUIT",
+    "Q3_FED"
+  ],
   "events": {
     "1": [
-      { "id": "Q1_FOIA",     "trigger": "q_disc == 0",                                                "severity": "warning",  "label": "Q1 · FOIA REQUEST",      "text": "A community organisation files a FOIA request for the system's documentation. You don't have what they're asking for.",                          "effects": { "press_pressure":  6, "trust": -5, "board_conf": -3 } },
-      { "id": "Q1_DISC",     "trigger": "q_disc >= 2",                                                "severity": "positive", "label": "Q1 · QUIET DISCOVERY",   "text": "Your discovery work is noticed inside. The system's owner thanks you privately for taking it seriously.",                                          "effects": { "trust":  5, "board_conf":  2 } },
-      { "id": "Q1_PATCH",    "trigger": "q_disc >= 1 AND q_tech >= 2",                               "severity": "neutral",  "label": "Q1 · QUICK PATCH",       "text": "First technical fixes go live. Operations notice the improvement. Press takes a small interest.",                                                  "effects": { "sys_int":  3, "board_conf":  2, "press_pressure":  3 } },
-      { "id": "Q1_POL_BURN", "trigger": "q_pol >= 3",                                                 "severity": "warning",  "label": "Q1 · POLITICAL BURN",    "text": "You've spent serious political capital this quarter. The mayor's office is paying attention.",                                                    "effects": { "polit_exp":  8, "board_conf":  3 } },
-      { "id": "Q1_STATUS",   "trigger": "always",                                                     "severity": "neutral",  "label": "Q1 · STATUS",            "text": "Operations as inherited. No fires. No clarity.",                                                                                                    "effects": {} }
+      {
+        "id": "Q1_FOIA",
+        "trigger": "q_disc == 0",
+        "severity": "warning",
+        "label": "Q1 · FOIA REQUEST",
+        "text": "A community organisation files a FOIA request for the system's documentation. You don't have what they're asking for.",
+        "effects": {
+          "press_pressure": 6,
+          "trust": -5,
+          "board_conf": -3
+        }
+      },
+      {
+        "id": "Q1_DISC",
+        "trigger": "q_disc >= 2",
+        "severity": "positive",
+        "label": "Q1 · QUIET DISCOVERY",
+        "text": "Your discovery work is noticed inside. The system's owner thanks you privately for taking it seriously.",
+        "effects": {
+          "trust": 5,
+          "board_conf": 2
+        }
+      },
+      {
+        "id": "Q1_PATCH",
+        "trigger": "q_disc >= 1 AND q_tech >= 2",
+        "severity": "neutral",
+        "label": "Q1 · QUICK PATCH",
+        "text": "First technical fixes go live. Operations notice the improvement. Press takes a small interest.",
+        "effects": {
+          "sys_int": 3,
+          "board_conf": 2,
+          "press_pressure": 3
+        }
+      },
+      {
+        "id": "Q1_POL_BURN",
+        "trigger": "q_pol >= 3",
+        "severity": "warning",
+        "label": "Q1 · POLITICAL BURN",
+        "text": "You've spent serious political capital this quarter. The mayor's office is paying attention.",
+        "effects": {
+          "polit_exp": 8,
+          "board_conf": 3
+        }
+      },
+      {
+        "id": "Q1_STATUS",
+        "trigger": "always",
+        "severity": "neutral",
+        "label": "Q1 · STATUS",
+        "text": "Operations as inherited. No fires. No clarity.",
+        "effects": {}
+      }
     ],
     "2": [
-      { "id": "Q2_NEWS",      "trigger": "revealed_training_origin AND q1_tech_count + q2_tech_count == 0", "severity": "critical", "label": "Q2 · LOCAL NEWS",      "text": "Local outlet runs a story on the training-data origin you discovered. You knew. You didn't fix it. The story leads with that.",         "effects": { "press_pressure":  5, "trust": -4, "board_conf": -5 } },
-      { "id": "Q2_OVERSIGHT", "trigger": "press_pressure > 50",                                                                "severity": "warning",  "label": "Q2 · OVERSIGHT CALL", "text": "City council oversight calls a special hearing. Political exposure climbs.",                                                        "effects": { "polit_exp": 10, "board_conf": -4 } },
-      { "id": "Q2_WHISTLE",   "trigger": "whistle_count >= 1",                                                                 "severity": "critical", "label": "Q2 · WHISTLE EFFECT", "text": "Your whistleblower-class move lands. Big trust gain externally; board increasingly uncomfortable.",                                "effects": { "trust": 10, "polit_exp": 10, "board_conf": -8 } },
-      { "id": "Q2_MGD_OUT",   "trigger": "board_conf < 30",                                                                    "severity": "critical", "label": "Q2 · MANAGED OUT",    "text": "Board chair calls. \"Maybe we should consider whether this is the right role for you.\" One life lost.",                            "effects": { "lives": -1, "board_conf":  5 } },
-      { "id": "Q2_STATUS",    "trigger": "always",                                                                              "severity": "neutral",  "label": "Q2 · STATUS",         "text": "Quarter passes. Operational metrics stable. Underlying questions unanswered.",                                                      "effects": {} }
+      {
+        "id": "Q2_NEWS",
+        "trigger": "revealed_training_origin AND q1_tech_count + q2_tech_count == 0",
+        "severity": "critical",
+        "label": "Q2 · LOCAL NEWS",
+        "text": "Local outlet runs a story on the training-data origin you discovered. You knew. You didn't fix it. The story leads with that.",
+        "effects": {
+          "press_pressure": 5,
+          "trust": -4,
+          "board_conf": -5
+        }
+      },
+      {
+        "id": "Q2_OVERSIGHT",
+        "trigger": "press_pressure > 50",
+        "severity": "warning",
+        "label": "Q2 · OVERSIGHT CALL",
+        "text": "City council oversight calls a special hearing. Political exposure climbs.",
+        "effects": {
+          "polit_exp": 10,
+          "board_conf": -4
+        }
+      },
+      {
+        "id": "Q2_WHISTLE",
+        "trigger": "whistle_count >= 1",
+        "severity": "critical",
+        "label": "Q2 · WHISTLE EFFECT",
+        "text": "Your whistleblower-class move lands. Big trust gain externally; board increasingly uncomfortable.",
+        "effects": {
+          "trust": 10,
+          "polit_exp": 10,
+          "board_conf": -8
+        }
+      },
+      {
+        "id": "Q2_MGD_OUT",
+        "trigger": "board_conf < 30",
+        "severity": "critical",
+        "label": "Q2 · MANAGED OUT",
+        "text": "Board chair calls. \"Maybe we should consider whether this is the right role for you.\" One life lost.",
+        "effects": {
+          "lives": -1,
+          "board_conf": 5
+        }
+      },
+      {
+        "id": "Q2_STATUS",
+        "trigger": "always",
+        "severity": "neutral",
+        "label": "Q2 · STATUS",
+        "text": "Quarter passes. Operational metrics stable. Underlying questions unanswered.",
+        "effects": {}
+      }
     ],
     "3": [
-      { "id": "Q3_LAWSUIT",        "trigger": "disparate_signal > 45 AND revealed_training_origin AND tech_count < 2", "severity": "critical", "label": "Q3 · LAWSUIT FILED",         "text": "Class-action suit filed alleging disparate impact. The discovered training origin is in the complaint. One life lost.",     "effects": { "lives": -1, "trust": -15, "press_pressure": 10, "board_conf": -8 } },
-      { "id": "Q3_LEGIT",          "trigger": "pol_count >= 3 AND trust > 55",                                       "severity": "positive", "label": "Q3 · LEGITIMACY GAIN",       "text": "The coalition holds. Community advisory writes a supportive op-ed. The system has stakeholders willing to defend it.",       "effects": { "trust":  8, "board_conf": 10 } },
-      { "id": "Q3_FED",            "trigger": "sys_int < 40",                                                         "severity": "critical", "label": "Q3 · FEDERAL ATTENTION",     "text": "Federal regulator opens an inquiry into system integrity. Board takes the call directly. One life lost.",                  "effects": { "lives": -1, "board_conf": -10 } },
-      { "id": "Q3_FAIRNESS_REC",   "trigger": "disparate_signal < 30 AND revealed_training_origin",                  "severity": "positive", "label": "Q3 · FAIRNESS REVIEW WIN",   "text": "External fairness review comes back clean. The work shows.",                                                                "effects": { "trust":  6, "board_conf":  6 } },
-      { "id": "Q3_STATUS",         "trigger": "always",                                                                "severity": "neutral",  "label": "Q3 · STATUS",                "text": "Quarter closes without a public flare-up. Year-end report drafts begin.",                                                    "effects": {} }
+      {
+        "id": "Q3_LAWSUIT",
+        "trigger": "disparate_signal > 45 AND revealed_training_origin AND tech_count < 2",
+        "severity": "critical",
+        "label": "Q3 · LAWSUIT FILED",
+        "text": "Class-action suit filed alleging disparate impact. The discovered training origin is in the complaint. One life lost.",
+        "effects": {
+          "lives": -1,
+          "trust": -15,
+          "press_pressure": 10,
+          "board_conf": -8
+        }
+      },
+      {
+        "id": "Q3_LEGIT",
+        "trigger": "pol_count >= 3 AND trust > 55",
+        "severity": "positive",
+        "label": "Q3 · LEGITIMACY GAIN",
+        "text": "The coalition holds. Community advisory writes a supportive op-ed. The system has stakeholders willing to defend it.",
+        "effects": {
+          "trust": 8,
+          "board_conf": 10
+        }
+      },
+      {
+        "id": "Q3_FED",
+        "trigger": "sys_int < 40",
+        "severity": "critical",
+        "label": "Q3 · FEDERAL ATTENTION",
+        "text": "Federal regulator opens an inquiry into system integrity. Board takes the call directly. One life lost.",
+        "effects": {
+          "lives": -1,
+          "board_conf": -10
+        }
+      },
+      {
+        "id": "Q3_FAIRNESS_REC",
+        "trigger": "disparate_signal < 30 AND revealed_training_origin",
+        "severity": "positive",
+        "label": "Q3 · FAIRNESS REVIEW WIN",
+        "text": "External fairness review comes back clean. The work shows.",
+        "effects": {
+          "trust": 6,
+          "board_conf": 6
+        }
+      },
+      {
+        "id": "Q3_STATUS",
+        "trigger": "always",
+        "severity": "neutral",
+        "label": "Q3 · STATUS",
+        "text": "Quarter closes without a public flare-up. Year-end report drafts begin.",
+        "effects": {}
+      }
     ]
   },
   "quarter_wrap_rules": [
-    { "id": "BC_COLLAPSE", "condition": "board_conf < 15", "effects": { "lives": -1, "board_conf": 10 }, "severity": "critical", "label": "BOARD CONFIDENCE COLLAPSE", "text": "Emergency board call. You spend the call defending the program rather than running it." }
+    {
+      "id": "BC_COLLAPSE",
+      "condition": "board_conf < 15",
+      "effects": {
+        "lives": -1,
+        "board_conf": 10
+      },
+      "severity": "critical",
+      "label": "BOARD CONFIDENCE COLLAPSE",
+      "text": "Emergency board call. You spend the call defending the program rather than running it."
+    }
   ],
   "q4_forced_choice": {
     "trigger_seconds_into_q4": 30,
     "default_choice": "narrow",
     "options": [
-      { "id": "cont_as_is", "label": "Continue as-is",            "description": "Recommend the inherited system continues without structural change. The custodian's stance.",
-        "succeeds_if": "sys_int > 60 AND disparate_signal < 45", "success_effects": { "board_conf":  8, "sys_int":  3 }, "backfire_effects": { "board_conf": -10, "trust": -5, "lives": -1 } },
-      { "id": "cont_mod",   "label": "Continue with modifications","description": "Keep the system; deepen the fixes. The patcher's stance.",
-        "succeeds_if": "trust > 40",                              "success_effects": { "board_conf":  6, "trust":  4 }, "backfire_effects": { "trust": -5, "board_conf": -5, "lives": -1 } },
-      { "id": "narrow",     "label": "Narrow scope",              "description": "Keep but constrain. Limit the system to where you trust it most.",
-        "succeeds_if": "always",                                   "success_effects": { "trust":  4, "board_conf": -2 } },
-      { "id": "full_rep",   "label": "Recommend full replacement","description": "Sunset the inherited system. Spend the year on a clean replacement.",
-        "succeeds_if": "disc_count >= 3 AND macro_count >= 1",     "success_effects": { "board_conf":  4, "trust":  8 }, "backfire_effects": { "board_conf": -15, "lives": -1 } }
+      {
+        "id": "cont_as_is",
+        "label": "Continue as-is",
+        "description": "Recommend the inherited system continues without structural change. The custodian's stance.",
+        "succeeds_if": "sys_int > 60 AND disparate_signal < 45",
+        "success_effects": {
+          "board_conf": 8,
+          "sys_int": 3
+        },
+        "backfire_effects": {
+          "board_conf": -10,
+          "trust": -5,
+          "lives": -1
+        }
+      },
+      {
+        "id": "cont_mod",
+        "label": "Continue with modifications",
+        "description": "Keep the system; deepen the fixes. The patcher's stance.",
+        "succeeds_if": "trust > 40",
+        "success_effects": {
+          "board_conf": 6,
+          "trust": 4
+        },
+        "backfire_effects": {
+          "trust": -5,
+          "board_conf": -5,
+          "lives": -1
+        }
+      },
+      {
+        "id": "narrow",
+        "label": "Narrow scope",
+        "description": "Keep but constrain. Limit the system to where you trust it most.",
+        "succeeds_if": "always",
+        "success_effects": {
+          "trust": 4,
+          "board_conf": -2
+        }
+      },
+      {
+        "id": "full_rep",
+        "label": "Recommend full replacement",
+        "description": "Sunset the inherited system. Spend the year on a clean replacement.",
+        "succeeds_if": "disc_count >= 3 AND macro_count >= 1",
+        "success_effects": {
+          "board_conf": 4,
+          "trust": 8
+        },
+        "backfire_effects": {
+          "board_conf": -15,
+          "lives": -1
+        }
+      }
     ]
   },
   "archetypes": [
-    { "id": "drifter_empty",  "label": "The Drifter",      "icon": "≀", "trigger_priority": 0, "trigger": "total_bricks == 0",                                                                                                            "reveal_text": "You inherited the system and let it run. The year passed; the system kept running; you watched.",                                                                                                                                                                          "tag": "derived",  "sources": ["marabelli-2021"] },
-    { "id": "custodian",      "label": "The Custodian",    "icon": "🏛", "trigger_priority": 1, "trigger": "op_pct > 0.40 AND disc_count <= 2 AND tech_count <= 1 AND lives_lost <= 1 AND whistle_count == 0",                            "reveal_text": "You ran the system you inherited. You didn't open it; you didn't break it. It still works. Whether that's what you should have done is what the press will eventually ask.",                                                                                              "tag": "derived",  "sources": ["schein-1985", "marabelli-2021"] },
-    { "id": "whistleblower",  "label": "The Whistleblower","icon": "📢", "trigger_priority": 2, "trigger": "whistle_count >= 2",                                                                                                            "reveal_text": "You went outside the building. The system you inherited will be remembered as one you exposed. The board chair will not return your calls. The community organisations will.",                                                                                            "tag": "direct",   "sources": ["berente-2021"] },
-    { "id": "bagholder",      "label": "The Bagholder",    "icon": "🎒", "trigger_priority": 3, "trigger": "disc_count <= 1 AND disparate_signal > 50 AND lives_lost >= 2",                                                               "reveal_text": "You inherited it, didn't look closely at it, and let it run until something cracked. The fault traces back to choices made before you arrived. The consequence traces to you.",                                                                                             "tag": "direct",   "sources": ["marabelli-2021", "barocas-2016"] },
-    { "id": "reformer",       "label": "The Reformer",     "icon": "🔧", "trigger_priority": 4, "trigger": "disc_count >= 4 AND tech_count >= 3 AND pol_count >= 3 AND disparate_signal < 40 AND trust >= 70",                            "reveal_text": "You found what you inherited, fixed what could be fixed, and built the political coalition the system needed to survive. The year did real work. So did you.",                                                                                                              "tag": "derived",  "sources": ["marabelli-2021", "dux-2025", "berente-2021"] },
-    { "id": "patcher",        "label": "The Patcher",      "icon": "🩹", "trigger_priority": 5, "trigger": "tech_count >= 3 AND sys_int >= 60",                                                                                            "reveal_text": "You kept the system running through small, careful fixes. The integrity numbers reward you. The political surface didn't move.",                                                                                                                                              "tag": "derived",  "sources": ["nist-2023", "marabelli-2021"] },
-    { "id": "drifter",        "label": "The Drifter",      "icon": "≀", "trigger_priority": 6, "trigger": "always",                                                                                                                         "reveal_text": "Your year didn't add up to a posture. The system continued in the shape it arrived. So did your tenure.",                                                                                                                                                                   "tag": "derived",  "sources": ["marabelli-2021"] }
+    {
+      "id": "drifter_empty",
+      "label": "The Drifter",
+      "icon": "≀",
+      "trigger_priority": 0,
+      "trigger": "total_bricks == 0",
+      "reveal_text": "You inherited the system and let it run. The year passed; the system kept running; you watched.",
+      "tag": "derived",
+      "sources": [
+        "marabelli-2021"
+      ]
+    },
+    {
+      "id": "custodian",
+      "label": "The Custodian",
+      "icon": "🏛",
+      "trigger_priority": 1,
+      "trigger": "op_pct > 0.40 AND disc_count <= 2 AND tech_count <= 1 AND lives_lost <= 1 AND whistle_count == 0",
+      "reveal_text": "You ran the system you inherited. You didn't open it; you didn't break it. It still works. Whether that's what you should have done is what the press will eventually ask.",
+      "tag": "derived",
+      "sources": [
+        "marabelli-2021"
+      ]
+    },
+    {
+      "id": "whistleblower",
+      "label": "The Whistleblower",
+      "icon": "📢",
+      "trigger_priority": 2,
+      "trigger": "whistle_count >= 2",
+      "reveal_text": "You went outside the building. The system you inherited will be remembered as one you exposed. The board chair will not return your calls. The community organisations will.",
+      "tag": "direct",
+      "sources": [
+        "berente-2021"
+      ]
+    },
+    {
+      "id": "bagholder",
+      "label": "The Bagholder",
+      "icon": "🎒",
+      "trigger_priority": 3,
+      "trigger": "disc_count <= 1 AND disparate_signal > 50 AND lives_lost >= 2",
+      "reveal_text": "You inherited it, didn't look closely at it, and let it run until something cracked. The fault traces back to choices made before you arrived. The consequence traces to you.",
+      "tag": "direct",
+      "sources": [
+        "marabelli-2021",
+        "barocas-2016"
+      ]
+    },
+    {
+      "id": "reformer",
+      "label": "The Reformer",
+      "icon": "🔧",
+      "trigger_priority": 4,
+      "trigger": "disc_count >= 4 AND tech_count >= 3 AND pol_count >= 3 AND disparate_signal < 40 AND trust >= 70",
+      "reveal_text": "You found what you inherited, fixed what could be fixed, and built the political coalition the system needed to survive. The year did real work. So did you.",
+      "tag": "derived",
+      "sources": [
+        "marabelli-2021",
+        "dux-2025",
+        "berente-2021"
+      ]
+    },
+    {
+      "id": "patcher",
+      "label": "The Patcher",
+      "icon": "🩹",
+      "trigger_priority": 5,
+      "trigger": "tech_count >= 3 AND sys_int >= 60",
+      "reveal_text": "You kept the system running through small, careful fixes. The integrity numbers reward you. The political surface didn't move.",
+      "tag": "derived",
+      "sources": [
+        "nist-2023",
+        "marabelli-2021"
+      ]
+    },
+    {
+      "id": "drifter",
+      "label": "The Drifter",
+      "icon": "≀",
+      "trigger_priority": 6,
+      "trigger": "always",
+      "reveal_text": "Your year didn't add up to a posture. The system continued in the shape it arrived. So did your tenure.",
+      "tag": "derived",
+      "sources": [
+        "marabelli-2021"
+      ]
+    }
   ]
 }

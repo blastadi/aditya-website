@@ -46,7 +46,7 @@ function SignInPage({ navigate, auth }) {
         <div className="signin-wrap">
           <div className="signin-greeting">
             <span className="eyebrow" style={{ display: "block", marginBottom: 18 }}>§ Contributor portal · sign-in</span>
-            <h1>The <em>back room</em>.</h1>
+            <h1>The <em>research room</em>.</h1>
             <p>
               For thesis contributors only. Sign in to follow the thesis's progress and to leave the editor a note.
             </p>
