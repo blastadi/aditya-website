@@ -48,8 +48,9 @@ function ThemeBackground({ theme, onContinueToBriefing, onSkipToPlay, onBackToSe
                 <div className="tbg-source-meta">
                   {s.read_time_min != null && <span className="tbg-source-time">~{s.read_time_min} min read</span>}
                 </div>
+                {s.contribution && <p className="tbg-source-contrib">{s.contribution}</p>}
                 {s.elements_contributed && s.elements_contributed.length > 0 && (
-                  <div className="tbg-source-contrib">
+                  <div className="tbg-source-contrib tbg-source-contrib-elements">
                     Contributes to: {s.elements_contributed.join(", ")}
                   </div>
                 )}

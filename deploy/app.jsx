@@ -74,7 +74,7 @@ function Landing({ onStart }) {
       </button>
 
       <div className="landing-foot">
-        Master of Management classroom prototype · Phase 4 · five themes (one live, four arriving in Phase 5)
+        Five themes · Five different shapes of the AI-deployment problem.
       </div>
     </div>
   );
