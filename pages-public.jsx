@@ -936,7 +936,7 @@ function HomeHero({ navigate, auth, index, total }) {
         </h1>
         <div className="home-hero-tag" style={{ "--i": nameWords.length + 1 }}>
           <span className="home-hero-tag-dot"></span>
-          <span>Master Brewer · Royal Swinkels · MSc UvA · {AUTHOR.location}</span>
+          <span>Master Brewer · AI Researcher · {AUTHOR.location}</span>
         </div>
         <div className="home-hero-prompt" style={{ "--i": nameWords.length + 2 }}>
           Scroll for quotes and a way in.
