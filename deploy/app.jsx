@@ -209,6 +209,38 @@ function App() {
     return off;
   }, []);
 
+  // Theme sync — DEPLOY is embedded as an iframe in the parent site. The
+  // parent posts {type:"deploy:theme", value:"dark"|"light"} on mount and
+  // whenever its toggle flips. We also read ?theme= from the URL on cold
+  // load as a fallback. Setting document.documentElement.dataset.theme
+  // engages the [data-theme="dark"] block in styles.css.
+  useEffect(() => {
+    const apply = (val) => {
+      if (val !== "dark" && val !== "light") return;
+      document.documentElement.dataset.theme = val;
+      // Tell Phaser scene to re-tint canvas, paddle, ball (if play screen is mounted)
+      if (window.eventBus) window.eventBus.emit("theme:change", { value: val });
+    };
+    // 1. Cold-start: ?theme= URL param
+    try {
+      const p = new URL(window.location.href).searchParams.get("theme");
+      if (p) apply(p);
+    } catch (_) { /* noop */ }
+    // 2. Subsequent: postMessage from parent
+    const onMsg = (e) => {
+      const d = e && e.data;
+      if (d && d.type === "deploy:theme") apply(d.value);
+    };
+    window.addEventListener("message", onMsg);
+    // 3. Announce to parent we're ready — parent replies with current theme
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: "deploy:ready" }, "*");
+      }
+    } catch (_) { /* noop */ }
+    return () => window.removeEventListener("message", onMsg);
+  }, []);
+
   // Crisis library — loaded once at app start, injected into the engine so
   // every theme's startGame can schedule from it. (Catalog §9.)
   useEffect(() => {

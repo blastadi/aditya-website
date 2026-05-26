@@ -6,8 +6,44 @@
    GamePage — DEPLOY (themed simulation) mounted via iframe.
    Replaces the V4.7 Breakout-style game (now at archive/pages-game-v4-7.jsx).
    DEPLOY lives as a self-contained static app at /deploy/index.html.
+
+   Theme handoff: the parent's data-theme attribute is forwarded to the
+   iframe via both URL param (cold load) and postMessage (live toggle).
+   DEPLOY listens for {type:"deploy:ready"} → we reply with current theme.
    ──────────────────────────────────────────────────────────────── */
 function GamePage({ navigate }) {
+  const iframeRef = React.useRef(null);
+
+  // Read the current parent theme from <html data-theme="…">
+  const currentTheme = () =>
+    document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+
+  // Push the current theme into the iframe (postMessage)
+  const pushTheme = React.useCallback(() => {
+    const f = iframeRef.current;
+    if (!f || !f.contentWindow) return;
+    f.contentWindow.postMessage({ type: "deploy:theme", value: currentTheme() }, "*");
+  }, []);
+
+  // When DEPLOY signals it's ready, send the current theme immediately.
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      if (e && e.data && e.data.type === "deploy:ready") pushTheme();
+    };
+    window.addEventListener("message", onMsg);
+    return () => window.removeEventListener("message", onMsg);
+  }, [pushTheme]);
+
+  // Push theme whenever the parent's data-theme attribute changes (toggle click).
+  React.useEffect(() => {
+    const obs = new MutationObserver(() => pushTheme());
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => obs.disconnect();
+  }, [pushTheme]);
+
+  // Cold load — include ?theme= so DEPLOY doesn't briefly flash light before postMessage lands.
+  const src = "deploy/index.html?theme=" + currentTheme();
+
   return (
     <section className="game-page">
       <div className="game-page-bar">
@@ -20,10 +56,12 @@ function GamePage({ navigate }) {
         <span className="game-meta">~3 min · five themes · classroom prototype</span>
       </div>
       <iframe
-        src="deploy/index.html"
+        ref={iframeRef}
+        src={src}
         className="game-iframe"
         title="DEPLOY"
         allow="fullscreen"
+        onLoad={pushTheme}
       />
     </section>
   );
