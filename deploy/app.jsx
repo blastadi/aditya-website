@@ -263,8 +263,6 @@ function App() {
   // Screen handlers
   const goSelect      = () => setScreen(SCREEN.SELECT);
   const onLearnMore   = (json) => { setTheme(json); setScreen(SCREEN.BACKGROUND); };
-  const onPlayDirect  = (json) => { setTheme(json); setScreen(SCREEN.BRIEFING); };
-  const onSkipToPlay  = ()     => setScreen(SCREEN.RAMP);
   const onToBriefing  = ()     => setScreen(SCREEN.BRIEFING);
   const onBackToBg    = ()     => setScreen(SCREEN.BACKGROUND);
   const onBackToSel   = ()     => setScreen(SCREEN.SELECT);
@@ -291,14 +289,13 @@ function App() {
       {screen === SCREEN.LANDING && <Landing onStart={goSelect} />}
 
       {screen === SCREEN.SELECT && (
-        <window.ThemeSelect onLearnMore={onLearnMore} onPlay={onPlayDirect} />
+        <window.ThemeSelect onLearnMore={onLearnMore} />
       )}
 
       {screen === SCREEN.BACKGROUND && theme && (
         <window.ThemeBackground
           theme={theme}
           onContinueToBriefing={onToBriefing}
-          onSkipToPlay={onSkipToPlay}
           onBackToSelect={onBackToSel}
         />
       )}

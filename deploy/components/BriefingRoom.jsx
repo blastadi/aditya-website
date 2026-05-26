@@ -27,6 +27,7 @@ function BriefingRoom({ theme, onContinueToPlay, onBackToBackground }) {
   const categoryOrder = Object.keys(theme.categories || {}).filter((c) => groups[c]);
 
   const topAnchors = (theme.anchor_sources || []).slice(0, 4);
+  const intro = theme.briefing_intro;
 
   // Source lookup for the modal
   const allSources = [...(theme.anchor_sources || []), ...(theme.contributing_sources || [])];
@@ -40,6 +41,38 @@ function BriefingRoom({ theme, onContinueToPlay, onBackToBackground }) {
         <h1 className="brf-title">{theme.composite_firm || theme.name}</h1>
         <p className="brf-tension">{theme.central_tension}</p>
       </header>
+
+      {intro && (
+        <section className="briefing-orientation">
+          <details open>
+            <summary>
+              <span className="brf-orient-summary-label">Orientation</span>
+              <span className="brf-orient-summary-hint">read once, then dive into the bricks</span>
+            </summary>
+            <div className="brf-orient-body">
+              <div className="brf-orient-block">
+                <h3 className="brf-orient-h3">Where you start</h3>
+                <p>{intro.where_you_start}</p>
+              </div>
+              <div className="brf-orient-block">
+                <h3 className="brf-orient-h3">What you'll decide</h3>
+                <p>{intro.what_you_decide}</p>
+              </div>
+              <div className="brf-orient-actions">
+                <button
+                  type="button"
+                  className="brf-orient-skip"
+                  onClick={onContinueToPlay}
+                  aria-label="Skip the briefing room and start playing"
+                >
+                  Skip to play →
+                </button>
+                <span className="brf-orient-or">or browse the bricks below ↓</span>
+              </div>
+            </div>
+          </details>
+        </section>
+      )}
 
       <section className="brf-anchors">
         <div className="brf-anchors-label">Anchor papers</div>

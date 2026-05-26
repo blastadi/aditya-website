@@ -4,7 +4,7 @@
    Honest time-commitment breakdown. Two exits: briefing room / skip to play.
    ════════════════════════════════════════════════════════════════ */
 
-function ThemeBackground({ theme, onContinueToBriefing, onSkipToPlay, onBackToSelect }) {
+function ThemeBackground({ theme, onContinueToBriefing, onBackToSelect }) {
   if (!theme) return null;
   const anchors = theme.anchor_sources || [];
   const contrib = theme.contributing_sources || [];
@@ -82,8 +82,7 @@ function ThemeBackground({ theme, onContinueToBriefing, onSkipToPlay, onBackToSe
       </section>
 
       <div className="tbg-actions">
-        <button className="tbg-btn tbg-btn-secondary" onClick={onSkipToPlay}>Skip to play →</button>
-        <button className="tbg-btn tbg-btn-primary"   onClick={onContinueToBriefing}>Continue to briefing room →</button>
+        <button className="tbg-btn tbg-btn-primary" onClick={onContinueToBriefing}>Continue to briefing room →</button>
       </div>
     </div>
   );

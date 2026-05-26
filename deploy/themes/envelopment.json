@@ -19,6 +19,10 @@
   "composite_firm": "Meridian Health Network",
   "central_tension": "How tightly do you fence in an AI you can't fully explain?",
   "background_copy": "Some AI systems work well, but nobody — not even the people who built them — can fully explain why they decide what they decide. So how do you safely deploy something you can't see inside? The research community calls the answer envelopment. You don't make the AI transparent. You draw walls around it. You decide carefully what data it sees, what actions it's allowed to take, and who gets to overrule it. In this scenario, you're deploying an AI tool at a hospital that helps triage emergency patients. The model is accurate. It's also complex. Over one year, you choose how much to trust it, where to put humans in the loop, and how to react when it surprises you. Every quarter, pressure to scale up runs into pressure to stay safe. Your job is to figure out where you stand — and what trade-offs you can live with.",
+  "briefing_intro": {
+    "where_you_start": "You're the new AI Deployment Lead at Meridian Health, a three-hospital network. The board approved an AI ED triage tool six weeks ago. The model is accurate, but it's complex — nobody on your team can fully explain why it flags certain patients. The ED chief loves it. The COO is impatient about ROI. The regulator is watching. Now you have one year.",
+    "what_you_decide": "Every quarter, you'll face four kinds of choices. Defensive moves tighten what the AI sees and does — curating training data, adding human checkpoints, restricting where its outputs go. Aggressive moves loosen the gate to capture performance — expanding scope, raising autonomy, skipping audits. Monitoring moves keep your hand on the pulse — running audits, surveying users, briefing the regulator. Structural moves are long-term investments — reskilling the team, hiring a risk specialist, establishing review committees. You can't break every brick. You have to choose where to spend your year. The pattern of those choices will define both the deployment and the kind of manager you became."
+  },
   "anchor_sources": [
     {
       "id": "asatiani-2021",
