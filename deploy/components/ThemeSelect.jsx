@@ -1,8 +1,9 @@
 /* ════════════════════════════════════════════════════════════════
    DEPLOY · components/ThemeSelect.jsx
-   Phase 4 — five theme cards. Envelopment live; others greyed with
-   "Coming in Phase 5" placeholder. Two actions per available card:
-   "Learn more →" (Theme Background) and "Play →" (Briefing Room).
+   Five theme cards. Single action per card: "Open briefing →"
+   routes the player through Theme Background and Briefing Room before
+   they reach Play. No direct-play shortcut — every run starts with
+   orientation.
    ════════════════════════════════════════════════════════════════ */
 
 const { useState } = React;
@@ -62,7 +63,7 @@ const THEME_CATALOG = [
   },
 ];
 
-function ThemeSelect({ onLearnMore, onPlay }) {
+function ThemeSelect({ onLearnMore }) {
   const [loadingId, setLoadingId] = useState(null);
   const [err, setErr] = useState(null);
 
@@ -86,11 +87,6 @@ function ThemeSelect({ onLearnMore, onPlay }) {
     if (!theme.available) return;
     const json = await load(theme);
     if (json) onLearnMore(json);
-  }
-  async function handlePlay(theme) {
-    if (!theme.available) return;
-    const json = await load(theme);
-    if (json) onPlay(json);
   }
 
   return (
@@ -125,20 +121,12 @@ function ThemeSelect({ onLearnMore, onPlay }) {
             </ul>
             <div className="tc-actions">
               <button
-                className="tc-btn tc-btn-secondary"
-                disabled={!t.available || loadingId === t.id}
-                onClick={() => handleLearnMore(t)}
-                aria-label={t.available ? "Read the research background for " + t.name : t.name + " — coming in Phase 5"}
-              >
-                {t.available ? "Learn more →" : "Coming in Phase 5"}
-              </button>
-              <button
                 className="tc-btn tc-btn-primary"
                 disabled={!t.available || loadingId === t.id}
-                onClick={() => handlePlay(t)}
-                aria-label={t.available ? "Play " + t.name : t.name + " — coming in Phase 5"}
+                onClick={() => handleLearnMore(t)}
+                aria-label={t.available ? "Open briefing for " + t.name : t.name + " — coming in Phase 5"}
               >
-                {loadingId === t.id ? "Loading…" : t.available ? "Play →" : "—"}
+                {loadingId === t.id ? "Loading…" : t.available ? "Open briefing →" : "Coming in Phase 5"}
               </button>
             </div>
           </article>
