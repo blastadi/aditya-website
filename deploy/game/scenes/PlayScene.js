@@ -73,20 +73,39 @@
     } catch { return false; }
   }
 
+  // Read a CSS custom property as a Phaser-friendly hex int. Falls back to
+  // theme-neutral defaults if the var hasn't loaded yet.
+  function cssVarHex(name, fallback) {
+    try {
+      const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      if (!v) return fallback;
+      return parseHex(v);
+    } catch (_) { return fallback; }
+  }
+  function cssVarCss(name, fallback) {
+    try {
+      const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      return v || fallback;
+    } catch (_) { return fallback; }
+  }
+
   window.PlayScene = class PlayScene extends window.Phaser.Scene {
     constructor() { super("play"); }
 
     create() {
       const W = this.scale.width, H = this.scale.height;
-      this.cameras.main.setBackgroundColor("#fafaf7");
+      // Theme-aware canvas + paddle + ball — read from CSS vars so dark mode flips properly.
+      const bgCss   = cssVarCss("--bg", "#FFFFFF");
+      const fgHex   = cssVarHex("--fg", 0x0B0B0B);
+      this.cameras.main.setBackgroundColor(bgCss);
       this.W = W; this.H = H;
 
       // ────────────────── paddle ──────────────────
-      this.paddle = this.add.rectangle(W / 2, H - PADDLE_Y_OFFSET, PADDLE_W, PADDLE_H, 0x1a1a1a);
+      this.paddle = this.add.rectangle(W / 2, H - PADDLE_Y_OFFSET, PADDLE_W, PADDLE_H, fgHex);
       this.physics.add.existing(this.paddle, true);
 
       // ────────────────── ball + trail ──────────────────
-      this.ball = this.add.circle(W / 2, H - PADDLE_Y_OFFSET - 30, BALL_R, 0x1a1a1a);
+      this.ball = this.add.circle(W / 2, H - PADDLE_Y_OFFSET - 30, BALL_R, fgHex);
       this.physics.add.existing(this.ball);
       this.ball.body.setBounce(1, 1);
       this.ball.body.setCollideWorldBounds(true, 1, 1);
@@ -94,7 +113,7 @@
 
       this.ballTrail = [];
       for (let i = 0; i < BALL_TRAIL_LEN; i++) {
-        const ghost = this.add.circle(W / 2, H, BALL_R, 0x1a1a1a, 0);
+        const ghost = this.add.circle(W / 2, H, BALL_R, fgHex, 0);
         ghost.setDepth(-1);
         this.ballTrail.push(ghost);
       }
@@ -138,6 +157,7 @@
       this.busOffs.push(window.eventBus.on("game:restart",  ()  => this.onRestart()));
       this.busOffs.push(window.eventBus.on("crisis:start",   (p) => this.onCrisisStart(p)));
       this.busOffs.push(window.eventBus.on("crisis:resolve", (p) => this.onCrisisResolve(p)));
+      this.busOffs.push(window.eventBus.on("theme:change",   ()  => this.applyTheme()));
 
       window.eventBus.emit("phaser:ready", { scene: "play" });
 
@@ -330,6 +350,16 @@
         const fadeDelay = i * (REFILL_STAGGER_BASE + Math.random() * REFILL_STAGGER_JIT);
         this.placeBrickInSlot(slot, meta, fadeDelay);
       }
+    }
+
+    // ────────────────── theme re-tint (light ↔ dark) ──────────────────
+    applyTheme() {
+      const bgCss = cssVarCss("--bg", "#FFFFFF");
+      const fgHex = cssVarHex("--fg", 0x0B0B0B);
+      if (this.cameras && this.cameras.main) this.cameras.main.setBackgroundColor(bgCss);
+      if (this.paddle) this.paddle.fillColor = fgHex;
+      if (this.ball)   this.ball.fillColor   = fgHex;
+      for (const ghost of this.ballTrail || []) ghost.fillColor = fgHex;
     }
 
     // ────────────────── crisis hooks (catalog §11) ──────────────────

@@ -1,21 +1,43 @@
 /* ════════════════════════════════════════════════════════════════
    DEPLOY — base styles
-   Editorial palette: warm off-white, ink, royal blue accent, mustard for state.
+   Inherits the parent site's design system (white/black/royal blue
+   light · black/warm white/mustard dark). Theme follows the parent's
+   data-theme attribute (set via postMessage from the embedding page).
    ════════════════════════════════════════════════════════════════ */
 
 :root {
-  --bg:     #fafaf7;
-  --bg-2:   #f0eee8;
-  --fg:     #1a1a1a;
-  --fg-2:   #4a4a4a;
-  --fg-3:   #8a8a8a;
-  --line:   #d8d6cf;
-  --accent: #2d4fe0;        /* royal blue */
-  --warn:   #d4a01b;        /* mustard — amber state */
-  --bad:    #c0392b;        /* red — critical state */
-  --serif:  "Charter", "Cambria", "Georgia", "Times New Roman", serif;
-  --mono:   "JetBrains Mono", "SF Mono", "Menlo", monospace;
-  --sans:   "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  /* Light mode (matches parent site :root) */
+  --bg:       #FFFFFF;
+  --bg-2:     #F4F4F4;
+  --bg-3:     #E8E8E8;
+  --fg:       #0B0B0B;
+  --fg-2:     #2D2D2D;
+  --fg-3:     #6B6B6B;
+  --line:     #D9D9D9;
+  --line-2:   #ECECEC;
+  --accent:      #2D4FE0;   /* royal blue (light) */
+  --accent-soft: #1F3AB5;
+  --warn:        #B8911E;   /* warm amber — meter warning state */
+  --bad:         #C0392B;   /* red — critical state */
+
+  --serif: "Inter", "Inter Display", system-ui, -apple-system, sans-serif;
+  --sans:  "Inter", system-ui, -apple-system, sans-serif;
+  --mono:  "JetBrains Mono", ui-monospace, monospace;
+}
+
+[data-theme="dark"] {
+  --bg:       #0B0B0B;
+  --bg-2:     #161614;
+  --bg-3:     #1F1E1A;
+  --fg:       #F4F1EB;
+  --fg-2:     #C9C5BB;
+  --fg-3:     #8A867D;
+  --line:     #2A2925;
+  --line-2:   #1F1E1A;
+  --accent:      #D4A82A;   /* mustard (dark) */
+  --accent-soft: #B8911E;
+  --warn:        #D4A82A;   /* mustard — same as accent in dark */
+  --bad:         #E07060;   /* lighter red for dark bg contrast */
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -381,7 +403,7 @@ button {
 .qt-cat-agg { color: #c0392b; border-color: #c0392b; }
 .qt-cat-mon { color: #5a6473; border-color: #5a6473; }
 .qt-cat-str { color: #9c7613; border-color: #d4a01b; }
-.qt-cat-rec { color: #9c7613; border-color: #e8b830; background: #fff7d6; }
+.qt-cat-rec { color: var(--accent); border-color: var(--accent); background: var(--bg-2); }
 .qt-meters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
@@ -945,7 +967,7 @@ button {
   box-shadow: 0 3px 8px rgba(0,0,0,0.06);
 }
 .brf-brick-heavy { box-shadow: inset 0 0 0 1px var(--brick-color); }
-.brf-brick-recovery { background: #fff7d6; }
+.brf-brick-recovery { background: var(--bg-3); border-color: var(--accent); }
 .brf-brick-label {
   font-family: var(--serif); font-size: 14px; font-weight: 500;
   color: var(--fg);
