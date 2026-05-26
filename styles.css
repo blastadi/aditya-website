@@ -2959,3 +2959,71 @@ main.page-fade .section > div[style*="grid-template-columns: 200px 1fr"] {
   color: var(--fg);
 }
 [data-theme="dark"] .end-dominant em { color: var(--accent); }
+
+/* ════════════════════════════════════════════════════════════════
+   DEPLOY game iframe page — replaces the V4.7 Breakout component.
+   Site masthead/footer wrap; DEPLOY runs in /deploy/index.html.
+   ════════════════════════════════════════════════════════════════ */
+
+.game-page {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 240px); /* leave room for masthead + footer */
+  padding: 0;
+}
+
+.game-page-bar {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.game-back {
+  background: none;
+  border: 1px solid var(--line);
+  font-family: var(--mono, "JetBrains Mono", monospace);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+.game-back:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.game-title {
+  font-family: var(--mono, "JetBrains Mono", monospace);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.game-meta {
+  margin-left: auto;
+  font-family: var(--mono, "JetBrains Mono", monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: var(--fg-3);
+}
+
+.game-iframe {
+  flex: 1;
+  width: 100%;
+  min-height: 800px;
+  border: none;
+  background: #fafaf7;
+}
+
+@media (max-width: 900px) {
+  .game-page-bar { padding: 10px 16px; flex-wrap: wrap; }
+  .game-meta { width: 100%; margin-left: 0; padding-top: 4px; }
+  .game-iframe { min-height: 700px; }
+}

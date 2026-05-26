@@ -1,0 +1,143 @@
+{
+  "id": "trust-framing",
+  "name": "Trust & Framing",
+  "industry_framings": [
+    { "id": "telecom",   "name": "Telecom customer support at Helix Communications", "default": true },
+    { "id": "retail",    "name": "Retail-bot frontline" },
+    { "id": "insurance", "name": "Insurance triage chat" },
+    { "id": "healthcare","name": "Healthcare nurse-line assistant" }
+  ],
+  "composite_firm": "Helix Communications",
+  "central_tension": "Perception versus reality in customer-facing AI",
+  "background_copy": "Customer-facing AI has a quiet asymmetry: what users believe about the AI shapes outcomes as much as what the AI actually does. Frame it as a smart assistant and people forgive the misses; frame it as a search box and they punish the same misses. The research shows the gap between perception and reality is itself a managed variable — it can be widened deliberately (marketing) or narrowed deliberately (calibration), and both moves have second-order costs. You play the AI deployment lead at Helix Communications, a mid-tier telecom rolling out an AI assistant in customer support. Four quarters. One year to choose how aggressively to manage the gap — and to discover what the year teaches you about the kind of marketer (or operator) you are.",
+  "anchor_sources": [
+    { "id": "mckinley-2026",   "citation": "McKinley, S., et al. (2026). The Labelling Effect: How AI Framing Shapes User Trust. Information Systems Research.",         "read_time_min": 30, "skim_section": "Sections 3-4 (gap dynamics)",       "contribution": "Foundational paper. Establishes the labelling-as-framing mechanic." },
+    { "id": "yu-2025",         "citation": "Yu, K., et al. (2025). Trust Calibration Under Model Opacity. AI & Society.",                                                 "read_time_min": 25, "skim_section": "Section 4 (miscalibration)",       "contribution": "Documents how miscalibration accumulates as accumulating user mistrust." },
+    { "id": "gillespie-2025",  "citation": "Gillespie, N., et al. (2025). Transparency, AI, and Organisational Trust. Journal of Management Studies.",                    "read_time_min": 35, "skim_section": "Section 5 (transparency moves)",   "contribution": "Provides the transparency-disclosure vocabulary." },
+    { "id": "esmaeilzadeh-2024","citation": "Esmaeilzadeh, P. (2024). Adoption Dynamics for Customer-Facing AI. Decision Support Systems.",                                "read_time_min": 28, "skim_section": "Sections 4-5 (adoption curves)",   "contribution": "Establishes the adoption-curve mechanics behind the adoption bricks." },
+    { "id": "rosenthal-2025",  "citation": "Rosenthal, M., & Iqbal, A. (2025). Hype Collapse: When Framing Snaps. MIS Quarterly.",                                         "read_time_min": 30, "skim_section": "Sections 3-4 (collapse cases)",   "contribution": "Documents the hype-collapse pattern that motivates the Q3 public-incident event." }
+  ],
+  "contributing_sources": [],
+  "meters": [
+    { "id": "user_perception",   "label": "User Perception",  "start": 40, "safe_band": [40, 80], "tone_logic": "standard" },
+    { "id": "actual_performance","label": "Actual Performance","start": 40, "safe_band": [40, 80], "tone_logic": "standard" },
+    { "id": "adoption",          "label": "Adoption Rate",    "start": 20, "safe_band": [30, 80], "tone_logic": "standard" },
+    { "id": "board_conf",        "label": "Board Confidence", "start": 50, "safe_band": [30, 80], "tone_logic": "standard" }
+  ],
+  "derived_meters": [
+    { "id": "gap", "label": "Perception ↔ Reality Gap", "compute": "user_perception - actual_performance", "tone_band_abs": 20 }
+  ],
+  "lives_start": 3,
+  "categories": {
+    "comm":     { "label": "Communication",  "color": "#2d4fe0", "color_dim": "#1f3aa0" },
+    "perf":     { "label": "Performance",    "color": "#1d8a5f", "color_dim": "#14633f" },
+    "calib":    { "label": "Calibration",    "color": "#6d4cae", "color_dim": "#4a3179" },
+    "adoption": { "label": "Adoption",       "color": "#d4a01b", "color_dim": "#9c7613" },
+    "struct":   { "label": "Structural",     "color": "#5a6473", "color_dim": "#3e454f" },
+    "rec":      { "label": "Recovery",       "color": "#c0392b", "color_dim": "#8c2a20" }
+  },
+  "bricks": [
+    { "id": "TF-COM-01", "label": "Launch transparency plan",      "category": "comm", "effects": { "user_perception":  3, "adoption":  2, "board_conf":  2 }, "hits": 1, "briefing_description": "Publishes a transparency plan. Modest perception lift; adoption ticks up.",                                                "research_note": "Gillespie et al. (2025) — transparency as a perception lever.",                                            "tag": "direct",   "sources": ["gillespie-2025"] },
+    { "id": "TF-COM-02", "label": "Reframe as smart assistant",     "category": "comm", "effects": { "user_perception": 10, "adoption":  8, "board_conf":  3 }, "hits": 1, "hidden_label": "Widens gap silently", "briefing_description": "Reframes the product as a smart assistant. Big perception + adoption lift. Real performance unchanged.",                          "research_note": "McKinley et al. (2026) — labelling shifts perception without changing capability.",                       "tag": "direct",   "sources": ["mckinley-2026"] },
+    { "id": "TF-COM-03", "label": "Add transparency disclosure",    "category": "comm", "effects": { "user_perception": -3, "adoption": -5, "board_conf":  3 }, "hits": 1, "hidden_label": "Closes gap by lowering perception", "briefing_description": "Adds a transparency disclosure to the UI. Honest move; perception and adoption fall back.",         "research_note": "Gillespie et al. (2025) — transparency narrows the gap by pulling perception down.",                       "tag": "derived",  "sources": ["gillespie-2025"] },
+    { "id": "TF-COM-04", "label": "Aggressive launch campaign",     "category": "comm", "effects": { "user_perception": 12, "adoption": 10, "board_conf":  5 }, "hits": 1, "hidden_label": "Widens gap aggressively", "briefing_description": "Runs an aggressive launch campaign. Biggest perception + adoption lift. Sets the hype clock.",                  "research_note": "Rosenthal & Iqbal (2025) — aggressive framing builds the hype that later collapses.",                       "tag": "direct",   "sources": ["rosenthal-2025", "mckinley-2026"] },
+    { "id": "TF-COM-05", "label": "Quiet rollout",                  "category": "comm", "effects": { "user_perception": -2, "adoption": -3, "board_conf": -1 }, "hits": 1, "briefing_description": "Rolls out quietly with no marketing push. Perception and adoption stay low; no hype to manage.",                                  "research_note": "McKinley et al. (2026) inverse — absence of framing is itself a framing choice.",                          "tag": "derived",  "sources": ["mckinley-2026"] },
+
+    { "id": "TF-PRF-01", "label": "Train AI on more data",          "category": "perf", "effects": { "actual_performance":  6, "adoption":  2 },               "hits": 1, "briefing_description": "Trains the model on a fresh batch of customer interactions. Real performance + small adoption.",                                "research_note": "Standard supervised-learning improvement; foundational to Yu et al. (2025).",                              "tag": "direct",   "sources": ["yu-2025"] },
+    { "id": "TF-PRF-02", "label": "Add safety filters",             "category": "perf", "effects": { "actual_performance":  4, "adoption": -2, "board_conf":  3 }, "hits": 1, "briefing_description": "Adds safety filters to AI responses. Real performance up; adoption slips from over-refusals.",                                  "research_note": "Yu et al. (2025) on safety vs adoption tension.",                                                          "tag": "composite","sources": ["yu-2025", "gillespie-2025"] },
+    { "id": "TF-PRF-03", "label": "Improve response speed",         "category": "perf", "effects": { "actual_performance":  5, "adoption":  3 },                "hits": 1, "briefing_description": "Cuts response latency in half. Real performance + adoption.",                                                                   "research_note": "Esmaeilzadeh (2024) on latency as adoption driver.",                                                       "tag": "direct",   "sources": ["esmaeilzadeh-2024"] },
+    { "id": "TF-PRF-04", "label": "Add domain expertise",           "category": "perf", "effects": { "actual_performance":  7, "board_conf":  2, "adoption":  1 }, "hits": 1, "briefing_description": "Adds telecom-domain training. Biggest real-performance lift; small adoption + board lifts.",                                   "research_note": "Yu et al. (2025) on domain specificity.",                                                                 "tag": "derived",  "sources": ["yu-2025"] },
+    { "id": "TF-PRF-05", "label": "Quiet performance update",       "category": "perf", "effects": { "actual_performance":  5 },                                "hits": 1, "hidden_label": "Closes gap silently", "briefing_description": "Pushes a performance update without announcing it. Real-performance gain; no perception movement.",  "research_note": "McKinley et al. (2026) — silent improvement narrows gap without consuming hype.",                          "tag": "derived",  "sources": ["mckinley-2026"] },
+
+    { "id": "TF-CAL-01", "label": "Publish accuracy data",          "category": "calib", "effects": { "user_perception": -2, "adoption": -1, "board_conf":  3 }, "hits": 1, "briefing_description": "Publishes accuracy data quarterly. Perception drops as users calibrate; board approves.",                                          "research_note": "Yu et al. (2025) — accuracy disclosure narrows perception toward reality.",                                "tag": "direct",   "sources": ["yu-2025"] },
+    { "id": "TF-CAL-02", "label": "Run user expectations survey",   "category": "calib", "effects": { "board_conf":  2, "user_perception": -1, "adoption":  1 }, "hits": 1, "briefing_description": "Runs a structured user-expectations survey. Small calibration moves all around.",                                                   "research_note": "Gillespie et al. (2025) on calibration mechanics.",                                                         "tag": "derived",  "sources": ["gillespie-2025"] },
+    { "id": "TF-CAL-03", "label": "Train agents on AI limits",      "category": "calib", "effects": { "user_perception": -1, "adoption": -2, "board_conf":  3 }, "hits": 1, "briefing_description": "Trains agents to set AI limit expectations with customers. Calibration move with adoption cost.",                                   "research_note": "Yu et al. (2025) on human-mediated calibration.",                                                           "tag": "derived",  "sources": ["yu-2025"] },
+    { "id": "TF-CAL-04", "label": "Internal critical training",     "category": "calib", "effects": { "user_perception": -3, "adoption": -3, "board_conf":  5 }, "hits": 1, "hidden_label": "Closes gap forcefully", "briefing_description": "Runs internal training emphasising the AI's known limitations. Strongest calibration move.",        "research_note": "Yu et al. (2025) on internal-culture calibration.",                                                         "tag": "derived",  "sources": ["yu-2025"] },
+    { "id": "TF-CAL-05", "label": "Calibration scorecard",          "category": "calib", "effects": { "user_perception": -1, "board_conf":  4 },                "hits": 1, "briefing_description": "Stands up a calibration scorecard tracked at exec. Small perception move; big board signal.",                                  "research_note": "Gillespie et al. (2025) — measurement as governance.",                                                     "tag": "composite","sources": ["gillespie-2025", "yu-2025"] },
+
+    { "id": "TF-ADP-01", "label": "Push to second BU",              "category": "adoption", "effects": { "adoption":  8, "user_perception":  3, "board_conf":  2 }, "hits": 1, "briefing_description": "Expands deployment to a second business unit. Big adoption lift.",                                                                "research_note": "Esmaeilzadeh (2024) on scope expansion as adoption driver.",                                                "tag": "direct",   "sources": ["esmaeilzadeh-2024"] },
+    { "id": "TF-ADP-02", "label": "Manager incentive program",      "category": "adoption", "effects": { "adoption":  6, "board_conf":  2 },                      "hits": 1, "briefing_description": "Ties manager bonuses to AI adoption. Solid adoption lift.",                                                                       "research_note": "Esmaeilzadeh (2024) on incentive-driven adoption.",                                                         "tag": "derived",  "sources": ["esmaeilzadeh-2024"] },
+    { "id": "TF-ADP-03", "label": "Customer-facing pilot",          "category": "adoption", "effects": { "adoption": 10, "user_perception":  5, "board_conf":  3 }, "hits": 1, "hidden_label": "Widens gap via customer enthusiasm", "briefing_description": "Runs a customer-facing pilot. Largest adoption lift.",                                  "research_note": "Esmaeilzadeh (2024) on customer-facing pilot effect; Rosenthal & Iqbal (2025) hype build-up.",              "tag": "composite","sources": ["esmaeilzadeh-2024", "rosenthal-2025"] },
+    { "id": "TF-ADP-04", "label": "Power-user community",           "category": "adoption", "effects": { "adoption":  5, "user_perception":  2, "board_conf":  1 }, "hits": 1, "briefing_description": "Stands up a power-user community. Steady adoption + perception lifts.",                                                            "research_note": "Esmaeilzadeh (2024) on community-driven adoption.",                                                         "tag": "derived",  "sources": ["esmaeilzadeh-2024"] },
+
+    { "id": "TF-STR-01", "label": "AI ethics board",                "category": "struct", "effects": { "board_conf":  8, "user_perception": -2, "adoption": -1 }, "hits": 2, "briefing_description": "Stands up an AI ethics board. Big board signal; small perception + adoption costs.",                                                "research_note": "Gillespie et al. (2025) on governance signal.",                                                             "tag": "direct",   "sources": ["gillespie-2025"] },
+    { "id": "TF-STR-02", "label": "Permanent calibration team",     "category": "struct", "effects": { "board_conf":  5, "user_perception": -3, "adoption": -2 }, "hits": 2, "briefing_description": "Stands up a permanent calibration team. Calibration becomes institutional.",                                                       "research_note": "Yu et al. (2025) institutionalised calibration.",                                                           "tag": "derived",  "sources": ["yu-2025"] },
+    { "id": "TF-STR-03", "label": "Quarterly accuracy report",      "category": "struct", "effects": { "board_conf":  5, "user_perception": -1, "adoption": -1 }, "hits": 2, "briefing_description": "Commits to quarterly accuracy reporting. Structural calibration commitment.",                                                       "research_note": "Gillespie et al. (2025) — public reporting cadence.",                                                       "tag": "composite","sources": ["gillespie-2025", "yu-2025"] },
+
+    { "id": "TF-REC-01", "label": "Issue clarification",            "category": "rec",    "effects": { "user_perception": -15, "adoption": -5, "board_conf": -3 }, "hits": 2, "briefing_description": "Issues a public clarification of what the AI does and doesn't do. Big perception reset.",                                            "research_note": "Rosenthal & Iqbal (2025) — clarification as gap-correction.",                                               "tag": "direct",   "sources": ["rosenthal-2025"], "recovery": true },
+    { "id": "TF-REC-02", "label": "Reframe entire pitch",           "category": "rec",    "effects": { "user_perception": -10, "adoption": -3, "board_conf": -5 }, "hits": 2, "briefing_description": "Reframes the product's pitch entirely. Painful but durable correction.",                                                              "research_note": "Rosenthal & Iqbal (2025) — controlled reframing as preferable to incident.",                                "tag": "derived",  "sources": ["rosenthal-2025"], "recovery": true }
+  ],
+  "crisis_pool": ["FRICT", "BOARD", "REG_COST", "HALLUC", "PR", "MISUSE", "HALLUC_CUST", "ESG"],
+  "opportunity_pool": ["PR_WIN", "OSS_REL", "PARTNER"],
+  "crises_per_quarter": { "1": 1, "2": 1, "3": 2, "4": 1 },
+  "opportunities_per_game": 1,
+  "strategic_categories": ["struct"],
+  "crisis_meter_map": {
+    "trust_proxy":       "user_perception",
+    "capability_proxy":  "actual_performance",
+    "board_proxy":       "board_conf",
+    "performance_proxy": "actual_performance",
+    "press_proxy":       "user_perception",
+    "perception_proxy":  "user_perception",
+    "value_proxy":       "adoption",
+    "coherence_proxy":   "actual_performance",
+    "adoption_proxy":    "adoption",
+    "polit_proxy":       "board_conf",
+    "sys_int_proxy":     "actual_performance"
+  },
+
+  "quarter_walls": {
+    "1": { "size": 24, "include_recovery": false },
+    "2": { "size": 24, "include_recovery": false },
+    "3": { "size": 22, "include_recovery": true,  "recovery_unlock_trigger": "abs_gap > 25" },
+    "4": { "size": 16, "include_recovery": false, "heavier": true }
+  },
+  "ball_speed_ramp": [1.00, 1.10, 1.21, 1.33],
+  "incident_event_ids": ["Q1_HYPE_SIG", "Q2_MISMATCH", "Q2_CALIB_CRISIS", "Q3_PUBLIC_INCIDENT"],
+  "events": {
+    "1": [
+      { "id": "Q1_HYPE_SIG",       "trigger": "gap > 15",            "severity": "warning",  "label": "Q1 · HYPE SIGNAL",         "text": "Press picks up the launch with adjectives you didn't choose. Internal team smiles. Calibration team flags it.",            "effects": { "user_perception":  3 } },
+      { "id": "Q1_INVIS_GAIN",     "trigger": "gap < -15",           "severity": "neutral",  "label": "Q1 · INVISIBLE GAIN",      "text": "Real performance is ahead of perception. Customer satisfaction surveys lag the actual numbers.",                            "effects": { "actual_performance":  2 } },
+      { "id": "Q1_CLEAN",          "trigger": "abs_gap <= 10",       "severity": "positive", "label": "Q1 · CLEAN LAUNCH",        "text": "Perception and reality tracking together. The board's quarterly review is short and quiet.",                                "effects": { "board_conf":  5 } },
+      { "id": "Q1_LAUNCH_FATIGUE", "trigger": "adoption < 25",       "severity": "warning",  "label": "Q1 · LAUNCH FATIGUE",      "text": "Customers aren't trying it. Internal champions losing energy.",                                                              "effects": { "board_conf": -3 } },
+      { "id": "Q1_STATUS",         "trigger": "always",              "severity": "neutral",  "label": "Q1 · STATUS",              "text": "Quarter passes. Marketing wants more lift. Calibration team wants more honesty.",                                            "effects": {} }
+    ],
+    "2": [
+      { "id": "Q2_MISMATCH",       "trigger": "gap > 25",            "severity": "warning",  "label": "Q2 · MISMATCH SIGNAL",     "text": "Support tickets reveal expectation mismatch. Press starts to ask harder questions.",                                       "effects": { "user_perception": -2 } },
+      { "id": "Q2_UNDERSOLD",      "trigger": "gap < -25",           "severity": "warning",  "label": "Q2 · UNDERSOLD",           "text": "Performance is real but the market doesn't know it. Adoption suffers. Board notices.",                                      "effects": { "adoption": -3, "board_conf": -3 } },
+      { "id": "Q2_ORGANIC",        "trigger": "adoption > 60 AND abs_gap < 10", "severity": "positive", "label": "Q2 · ORGANIC TRACTION", "text": "Adoption climbs without the marketing push. Word-of-mouth working.",                                                   "effects": { "board_conf":  5 } },
+      { "id": "Q2_CALIB_CRISIS",   "trigger": "abs_gap > 30",        "severity": "critical", "label": "Q2 · CALIBRATION CRISIS",  "text": "Internal calibration team escalates. The gap is now the public story.",                                                    "effects": { "board_conf": -5 } },
+      { "id": "Q2_STATUS",         "trigger": "always",              "severity": "neutral",  "label": "Q2 · STATUS",              "text": "Mid-year. Numbers stable. Pressure building beneath them.",                                                                  "effects": {} }
+    ],
+    "3": [
+      { "id": "Q3_PUBLIC_INCIDENT","trigger": "gap > 35",            "severity": "critical", "label": "Q3 · PUBLIC INCIDENT",     "text": "Viral thread captures the AI hallucinating confidently. The framing collapses. One life lost.",                            "effects": { "lives": -1, "adoption": -15, "user_perception": -10, "board_conf": -10 } },
+      { "id": "Q3_MISSED_WINDOW",  "trigger": "gap < -25 AND adoption < 40", "severity": "warning",  "label": "Q3 · MISSED WINDOW",      "text": "The performance was there; nobody knew. Competitor announces a similar product to applause.",                  "effects": { "board_conf": -8 } },
+      { "id": "Q3_HONESTY",        "trigger": "abs_gap <= 15 AND board_conf >= 60 AND calib_count >= 2", "severity": "positive", "label": "Q3 · HONESTY DIVIDEND", "text": "Board responds to the calibration discipline. Trade press writes about the realism.",     "effects": { "board_conf": 10, "actual_performance":  5 } },
+      { "id": "Q3_SCALE_NO_HYPE",  "trigger": "adoption > 70 AND abs_gap <= 15", "severity": "positive", "label": "Q3 · SCALE, NO HYPE",    "text": "Big adoption, small gap. The model just works. Boring story; great quarter.",                              "effects": { "board_conf":  8 } },
+      { "id": "Q3_STATUS",         "trigger": "always",              "severity": "neutral",  "label": "Q3 · STATUS",              "text": "Quarter closes. Year-end packet drafts begin.",                                                                              "effects": {} }
+    ]
+  },
+  "quarter_wrap_rules": [
+    { "id": "BC_COLLAPSE", "condition": "board_conf < 15", "effects": { "lives": -1, "board_conf": 10 }, "severity": "critical", "label": "BOARD CONFIDENCE COLLAPSE", "text": "Emergency board call. You spend it defending the framing rather than running the product." }
+  ],
+  "q4_forced_choice": {
+    "trigger_seconds_into_q4": 30,
+    "default_choice": "continue",
+    "options": [
+      { "id": "transparency","label": "Publish transparency report","description": "Publish a public transparency report. The calibrator's move.",
+        "succeeds_if": "calib_count >= 4", "success_effects": { "board_conf": 10, "actual_performance":  3 }, "backfire_effects": { "board_conf": -10, "lives": -1 } },
+      { "id": "continue",    "label": "Continue current framing",   "description": "Stay the course. Hold the year you've built.",
+        "succeeds_if": "always",            "success_effects": { "board_conf":  3 } },
+      { "id": "relaunch",    "label": "Relaunch with new framing",  "description": "Reset the gap by rebranding. Painful but corrective.",
+        "succeeds_if": "abs_gap > 20",      "success_effects": { "board_conf":  5 }, "backfire_effects": { "board_conf": -8, "lives": -1 } }
+    ]
+  },
+  "archetypes": [
+    { "id": "drifter_empty",   "label": "The Drifter",         "icon": "≀", "trigger_priority": 0, "trigger": "total_bricks == 0",                                                                                              "reveal_text": "You launched it but didn't manage it. The framing settled where it settled. So did you.",                                                                                                                                                                                "tag": "derived",  "sources": ["mckinley-2026"] },
+    { "id": "communicator",    "label": "The Communicator",    "icon": "✎", "trigger_priority": 1, "trigger": "abs_gap < 15 AND calib_count >= 4 AND board_conf >= 50 AND lives_lost <= 1",                                  "reveal_text": "You kept perception and reality close. The product is what you said it is. The board respects the discipline. The CMO is restless.",                                                                                                                                  "tag": "derived",  "sources": ["mckinley-2026", "yu-2025", "gillespie-2025"] },
+    { "id": "marketer",        "label": "The Marketer",        "icon": "📣","trigger_priority": 2, "trigger": "gap > 15 AND adoption >= 60 AND lives_lost <= 1",                                                              "reveal_text": "You sold the AI ahead of its capabilities. Adoption is real; the gap is real too. Year Two is the year that gap either narrows on its own or breaks.",                                                                                                                  "tag": "direct",   "sources": ["mckinley-2026", "rosenthal-2025"] },
+    { "id": "hype_collapser",  "label": "The Hype Collapser",  "icon": "💥","trigger_priority": 3, "trigger": "event:Q3_PUBLIC_INCIDENT OR lives_lost >= 2",                                                                  "reveal_text": "You built the hype, the framing collapsed, and the year became a case study you didn't want to be in. The product still works. The story doesn't.",                                                                                                                    "tag": "direct",   "sources": ["rosenthal-2025"] },
+    { "id": "quiet_operator",  "label": "The Quiet Operator",  "icon": "🤐","trigger_priority": 4, "trigger": "gap < -10 AND actual_performance >= 60 AND adoption < 50 AND lives_lost <= 1",                                "reveal_text": "Real performance is ahead of perception. Customers don't know what you built. The CFO is asking when the adoption catches up to the work.",                                                                                                                              "tag": "derived",  "sources": ["esmaeilzadeh-2024"] },
+    { "id": "drifter",         "label": "The Drifter",         "icon": "≀", "trigger_priority": 5, "trigger": "always",                                                                                                        "reveal_text": "Your year didn't shape a story. The framing drifted. The product drifted. The pattern is the absence of one. Year Two needs a posture. You're choosing whether to be the one who picks it.",                                                                            "tag": "derived",  "sources": ["mckinley-2026"] }
+  ]
+}
