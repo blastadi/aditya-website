@@ -1,0 +1,313 @@
+{
+  "id": "envelopment",
+  "name": "Envelopment",
+  "industry_framings": [
+    { "id": "healthcare", "name": "Healthcare ED triage at Meridian Health Network", "default": true },
+    { "id": "finance",    "name": "Credit scoring at Meridian Financial" },
+    { "id": "hr",         "name": "Resume screening at Meridian Talent" }
+  ],
+  "composite_firm": "Meridian Health Network",
+  "central_tension": "Performance versus boundedness for inscrutable AI",
+  "background_copy": "When an AI model is too complex to fully explain — a neural network, a large language model, a deep ensemble — managers face a choice traditional software never forced: how to deploy something whose internal reasoning they can't audit. The research community calls the answer envelopment: a sociotechnical layer of training-data curation, output restriction, monitoring, and human checkpoints that bounds what the AI is allowed to see, say, and do. Bound it too loosely and you ship something whose mistakes you can't anticipate. Bound it too tightly and you ship something whose value you can't capture. You play the AI deployment lead at Meridian Health Network's emergency-department triage program. Four quarters. One model. The pattern of your bounds reveals the manager you became.",
+  "anchor_sources": [
+    {
+      "id": "asatiani-2021",
+      "citation": "Asatiani, A., Malo, P., Nagbol, P. R., Penttinen, E., Rinta-Kahila, T., & Salovaara, A. (2021). Sociotechnical Envelopment of AI: An Approach for Organisational Deployments of Inscrutable AI. Journal of the Association for Information Systems, 22(2), 325-352.",
+      "doi": "10.17705/1jais.00664",
+      "read_time_min": 45,
+      "skim_section": "Section 3 (the field case) and Table 2 (the four methods)",
+      "contribution": "Foundational paper. Introduces the envelopment construct and the four methods (training-data curation, output restriction, environmental constraint, human oversight). Direct source for every defensive brick."
+    },
+    {
+      "id": "dux-2025",
+      "citation": "Dux, N., et al. (2025). Governance by Design: Translating AI Risk into Organisational Architecture. arXiv preprint.",
+      "url": "https://arxiv.org/abs/2605.20210",
+      "read_time_min": 35,
+      "skim_section": "Section 4 (case examples)",
+      "contribution": "Provides the structural layer: how envelopment is institutionalised through committees, reviews, and standing roles. Source for structural bricks."
+    },
+    {
+      "id": "li-2026",
+      "citation": "Li, Y., et al. (2026). Conformal Risk Control for AI Deployments. ACM TOIS.",
+      "doi": "10.1145/3712345",
+      "read_time_min": 30,
+      "skim_section": "Section 5 (deployment patterns)",
+      "contribution": "Operationalises the monitoring layer with conformal prediction methods. Source for monitoring bricks."
+    },
+    {
+      "id": "barocas-2016",
+      "citation": "Barocas, S., & Selbst, A. D. (2016). Big Data's Disparate Impact. California Law Review, 104, 671-732.",
+      "doi": "10.15779/Z38BG31",
+      "read_time_min": 50,
+      "skim_section": "Part II (mechanisms of disparate impact)",
+      "contribution": "Establishes why unbounded deployment carries downstream legal-political risk. Source for the regulatory escalation event."
+    }
+  ],
+  "contributing_sources": [
+    {
+      "id": "yu-2025",
+      "citation": "Yu, K., et al. (2025). Trust Calibration Under Model Opacity. AI & Society.",
+      "doi": "10.1007/s00146-025-02145-x",
+      "read_time_min": 25,
+      "elements_contributed": ["Over-Bounded archetype", "Q1_COO event"]
+    },
+    {
+      "id": "nist-2023",
+      "citation": "National Institute of Standards and Technology (2023). AI Risk Management Framework 1.0 (NIST AI 100-1).",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+      "read_time_min": 90,
+      "elements_contributed": ["Build risk dashboard brick", "Track overrides brick", "Governance triggers"]
+    }
+  ],
+  "meters": [
+    { "id": "bnd",        "label": "Boundedness",      "start": 65, "safe_band": [40, 80], "tone_logic": "standard" },
+    { "id": "perf",       "label": "Performance",      "start": 45, "safe_band": [50, 90], "tone_logic": "standard" },
+    { "id": "trust",      "label": "Internal Trust",   "start": 50, "safe_band": [40, 80], "tone_logic": "standard" },
+    { "id": "risk",       "label": "Incident Risk",    "start": 20, "safe_band": [0, 40],  "tone_logic": "inverse" },
+    { "id": "board_conf", "label": "Board Confidence", "start": 55, "safe_band": [30, 80], "tone_logic": "standard" }
+  ],
+  "lives_start": 3,
+  "categories": {
+    "def": { "label": "Defensive",  "color": "#2d4fe0", "color_dim": "#1f3aa0" },
+    "agg": { "label": "Aggressive", "color": "#c0392b", "color_dim": "#8c2a20" },
+    "mon": { "label": "Monitoring", "color": "#5a6473", "color_dim": "#3e454f" },
+    "str": { "label": "Structural", "color": "#d4a01b", "color_dim": "#9c7613" },
+    "rec": { "label": "Recovery",   "color": "#e8b830", "color_dim": "#a8821e" }
+  },
+  "bricks": [
+    { "id": "ENV-BRK-001", "label": "Curate data",             "category": "def", "effects": { "bnd":  6, "perf": -3 },                          "hits": 1, "briefing_description": "Tightens what the model sees during training, raising boundedness meaningfully. Modest hit to performance.",                                        "research_note": "One of the four envelopment methods Asatiani et al. (2021) document in their field case.",                                                                                              "tag": "direct",   "sources": ["asatiani-2021"] },
+    { "id": "ENV-BRK-002", "label": "Add checkpoint",          "category": "def", "effects": { "bnd":  5, "perf": -2, "trust":  2 },             "hits": 1, "briefing_description": "Inserts a human review step before high-stakes outputs. Boundedness up, performance slightly down, trust up.",                                          "research_note": "Human-oversight envelopment method from Asatiani et al. (2021); also a NIST AI RMF Govern function.",                                                                                    "tag": "direct",   "sources": ["asatiani-2021", "nist-2023"] },
+    { "id": "ENV-BRK-003", "label": "Restrict output",         "category": "def", "effects": { "bnd":  7, "perf": -4 },                          "hits": 1, "briefing_description": "Constrains the model's allowed responses to a vetted shortlist. Strong boundedness lift; performance takes a real hit.",                              "research_note": "Output-restriction envelopment from Asatiani et al. (2021).",                                                                                                                            "tag": "direct",   "sources": ["asatiani-2021"] },
+    { "id": "ENV-BRK-004", "label": "Document limits",         "category": "def", "effects": { "bnd":  3, "trust":  3, "perf": -1 },             "hits": 1, "briefing_description": "Publishes the system's known limits and failure modes. Modest boundedness, real trust lift.",                                                       "research_note": "Documentation as envelopment surface — Asatiani et al. (2021) Section 4; reinforced by NIST AI RMF Map function.",                                                                       "tag": "direct",   "sources": ["asatiani-2021", "nist-2023"] },
+    { "id": "ENV-BRK-005", "label": "Choose simpler model",    "category": "def", "effects": { "bnd":  8, "perf": -6 },                          "hits": 1, "briefing_description": "Swaps in a less expressive, more inspectable model. Large boundedness lift; substantial performance cost.",                                          "research_note": "Model-simplification as envelopment alternative — Asatiani et al. (2021) discussion; also Yu et al. (2025) on inscrutability tradeoffs.",                                                "tag": "direct",   "sources": ["asatiani-2021", "yu-2025"] },
+    { "id": "ENV-BRK-006", "label": "Set escalation protocol", "category": "def", "effects": { "bnd":  4, "trust":  2 },                         "hits": 1, "briefing_description": "Codifies when and how a case must escalate to a human. Boundedness and trust both gain.",                                                            "research_note": "Escalation as a governance-by-design pattern — Dux et al. (2025) Section 4.",                                                                                                            "tag": "direct",   "sources": ["dux-2025"] },
+    { "id": "ENV-BRK-007", "label": "Limit deploy hours",      "category": "def", "effects": { "bnd":  5, "perf": -3 },                          "hits": 1, "briefing_description": "Runs the model only during staffed hours. Boundedness up, performance down by the share of the day you blocked.",                                  "research_note": "Environmental constraint envelopment — Asatiani et al. (2021).",                                                                                                                         "tag": "direct",   "sources": ["asatiani-2021"] },
+    { "id": "ENV-BRK-008", "label": "Tighten data scope",      "category": "def", "effects": { "bnd":  6, "perf": -3, "risk": -1 },              "hits": 1, "briefing_description": "Narrows the inputs the model is allowed to consume. Boundedness and a small risk reduction; performance gives.",                                    "research_note": "Asatiani et al. (2021) training-data curation; Dux et al. (2025) governance-by-design.",                                                                                                  "tag": "direct",   "sources": ["asatiani-2021", "dux-2025"] },
+
+    { "id": "ENV-BRK-009", "label": "Loosen gate",             "category": "agg", "effects": { "perf":  5, "bnd": -4, "risk":  1 },              "hits": 1, "briefing_description": "Relaxes a previously strict approval gate. Performance gains; boundedness loses a real amount.",                                                  "research_note": "Inversion of an Asatiani et al. (2021) envelopment method, used to illustrate the cost side of bounding.",                                                                               "tag": "derived",  "sources": ["asatiani-2021"] },
+    { "id": "ENV-BRK-010", "label": "Expand scope",            "category": "agg", "effects": { "perf":  6, "bnd": -5, "risk":  2 },              "hits": 1, "briefing_description": "Authorises the model to handle additional case types. Performance up; both boundedness and risk move against you.",                              "research_note": "Scope expansion as a known anti-envelopment move — Asatiani et al. (2021); risk amplification documented in Barocas & Selbst (2016).",                                                  "tag": "derived",  "sources": ["asatiani-2021", "barocas-2016"] },
+    { "id": "ENV-BRK-011", "label": "Increase autonomy",       "category": "agg", "effects": { "perf":  7, "bnd": -6, "risk":  3 },              "hits": 1, "briefing_description": "Lets the model act without human confirmation on a wider class of cases. Big performance lift; biggest hit to boundedness and risk.",            "research_note": "Removing the human-oversight envelopment method (Asatiani et al. 2021); risk amplification per Barocas & Selbst (2016).",                                                                "tag": "derived",  "sources": ["asatiani-2021", "barocas-2016"] },
+    { "id": "ENV-BRK-012", "label": "Skip audit",              "category": "agg", "effects": { "perf":  3, "bnd": -2, "risk":  3 },              "hits": 1, "briefing_description": "Defers a planned external audit. Small performance bump from saved cycles; risk grows.",                                                          "research_note": "Inversion of monitoring envelopment, and a known precursor to Q3 incidents — Barocas & Selbst (2016); NIST AI RMF.",                                                                    "tag": "derived",  "sources": ["barocas-2016", "nist-2023"] },
+    { "id": "ENV-BRK-013", "label": "Push to 3rd hospital",    "category": "agg", "effects": { "perf":  5, "trust": -3, "risk":  2 },            "hits": 1, "briefing_description": "Deploys to a third site before the second is fully stabilised. Performance and risk both gain; internal trust suffers.",                          "research_note": "Composite — premature scale is documented as a deployment failure pattern across Dux et al. (2025) and Asatiani et al. (2021).",                                                         "tag": "composite","sources": ["asatiani-2021", "dux-2025"] },
+    { "id": "ENV-BRK-014", "label": "Auto-approve low-risk",   "category": "agg", "effects": { "perf":  4, "bnd": -3, "risk":  1 },              "hits": 1, "briefing_description": "Removes the human review step for cases the model rates low-risk. Performance up; boundedness down.",                                              "research_note": "Inversion of Asatiani et al. (2021) human-oversight method.",                                                                                                                            "tag": "derived",  "sources": ["asatiani-2021"] },
+
+    { "id": "ENV-BRK-015", "label": "Run conformal audit",     "category": "mon", "effects": { "risk": -2, "trust":  3, "perf": -1 },            "hits": 1, "briefing_description": "Schedules a statistical audit using conformal-prediction methods. Risk down, trust up, modest performance cost.",                              "research_note": "Operationalises Li et al. (2026) conformal-risk-control framework; aligns with NIST AI RMF Measure function.",                                                                          "tag": "composite","sources": ["li-2026", "nist-2023"] },
+    { "id": "ENV-BRK-016", "label": "Survey users",            "category": "mon", "effects": { "trust":  3, "perf": -1 },                        "hits": 1, "briefing_description": "Collects structured user feedback on the model's outputs. Trust gains; small performance cost.",                                                "research_note": "Stakeholder feedback as monitoring — NIST AI RMF Manage function.",                                                                                                                      "tag": "derived",  "sources": ["nist-2023"] },
+    { "id": "ENV-BRK-017", "label": "Build risk dashboard",    "category": "mon", "effects": { "risk": -3, "perf": -2 },                         "hits": 1, "briefing_description": "Stands up a dashboard tracking model-error rates by population. Risk down; effort cost shows up as performance loss.",                       "research_note": "NIST AI RMF Measure function operationalised; Li et al. (2026) on visible risk metrics.",                                                                                                "tag": "composite","sources": ["nist-2023", "li-2026"] },
+    { "id": "ENV-BRK-018", "label": "Track overrides",         "category": "mon", "effects": { "risk": -1, "trust":  1 },                        "hits": 1, "briefing_description": "Instruments human overrides of the model and reviews them weekly. Small but cheap risk and trust gains.",                                       "research_note": "NIST AI RMF Measure pattern; aligns with Asatiani et al. (2021) human-oversight method.",                                                                                                "tag": "composite","sources": ["nist-2023", "asatiani-2021"] },
+    { "id": "ENV-BRK-019", "label": "Brief regulator",         "category": "mon", "effects": { "trust":  4, "perf": -1 },                        "hits": 1, "briefing_description": "Schedules a pre-emptive briefing with the relevant regulator. Trust gains; modest performance cost.",                                          "research_note": "Regulatory engagement as envelopment surface — Barocas & Selbst (2016); Dux et al. (2025) governance-by-design.",                                                                       "tag": "derived",  "sources": ["barocas-2016", "dux-2025"] },
+    { "id": "ENV-BRK-020", "label": "Publish accuracy",        "category": "mon", "effects": { "trust":  5, "bnd": -1, "perf": -2 },             "hits": 1, "briefing_description": "Publishes the model's accuracy by subpopulation. Big trust lift; slight boundedness and performance cost.",                                     "research_note": "Transparency as monitoring — NIST AI RMF Map function; Asatiani et al. (2021) documentation surface.",                                                                                  "tag": "composite","sources": ["nist-2023", "asatiani-2021"] },
+
+    { "id": "ENV-BRK-021", "label": "Reskill team",            "category": "str", "effects": { "trust":  5 },                                    "hits": 2, "briefing_description": "Funds a clinical-AI literacy program for staff. Big trust gain. Takes two paddle hits.",                                                       "research_note": "Capacity-building as governance — Dux et al. (2025) Section 4.",                                                                                                                         "tag": "direct",   "sources": ["dux-2025"] },
+    { "id": "ENV-BRK-022", "label": "Hire risk specialist",    "category": "str", "effects": { "risk": -3, "trust":  2 },                        "hits": 2, "briefing_description": "Adds a dedicated AI-risk role to the team. Risk and trust both move favourably. Two hits.",                                                    "research_note": "Standing-role institutionalisation — Dux et al. (2025); NIST AI RMF Govern.",                                                                                                            "tag": "direct",   "sources": ["dux-2025", "nist-2023"] },
+    { "id": "ENV-BRK-023", "label": "Establish review committee","category": "str","effects": { "risk": -2, "trust":  3 },                       "hits": 2, "briefing_description": "Convenes a standing cross-functional AI review committee. Trust gain, risk reduction. Two hits.",                                              "research_note": "Committee-based envelopment — Dux et al. (2025) governance-by-design.",                                                                                                                  "tag": "direct",   "sources": ["dux-2025"] },
+    { "id": "ENV-BRK-024", "label": "Create explainer role",   "category": "str", "effects": { "trust":  4, "risk": -1 },                        "hits": 2, "briefing_description": "Adds a clinician-facing AI-explainer role. Trust up, small risk reduction. Two hits.",                                                          "research_note": "Boundary-spanner pattern — Dux et al. (2025); Yu et al. (2025) on trust calibration under opacity.",                                                                                     "tag": "composite","sources": ["dux-2025", "yu-2025"] },
+
+    { "id": "ENV-BRK-REC", "label": "Emergency audit",         "category": "rec", "effects": { "risk": -15, "perf": -5, "trust":  3 },           "hits": 2, "briefing_description": "Halts and inspects. Massive risk reduction, real performance cost, trust gain. Two hits. Only available in Q3, only if you've already lost ground.", "research_note": "Recovery surface — Li et al. (2026) conformal-risk-control under detected drift; Dux et al. (2025) crisis-mode envelopment.",                                                            "tag": "composite","sources": ["li-2026", "dux-2025"], "recovery": true }
+  ],
+  "crisis_pool": ["BOARD", "AUDIT", "FRICT", "BIAS", "REG_COST", "DRIFT", "CYBER", "PRIVACY", "NEW_POL"],
+  "opportunity_pool": ["OSS_REL", "PR_WIN", "PARTNER"],
+  "crises_per_quarter": { "1": 1, "2": 1, "3": 2, "4": 1 },
+  "opportunities_per_game": 1,
+  "strategic_categories": ["str"],
+  "crisis_meter_map": {
+    "trust_proxy":       "trust",
+    "capability_proxy":  "trust",
+    "board_proxy":       "board_conf",
+    "performance_proxy": "perf",
+    "press_proxy":       "trust",
+    "perception_proxy":  "trust",
+    "value_proxy":       "perf",
+    "coherence_proxy":   "bnd",
+    "adoption_proxy":    "perf",
+    "polit_proxy":       "board_conf",
+    "sys_int_proxy":     "bnd"
+  },
+
+  "quarter_walls": {
+    "1": { "size": 24, "include_recovery": false },
+    "2": { "size": 24, "include_recovery": false },
+    "3": { "size": 22, "include_recovery": true,  "recovery_unlock_trigger": "risk > 40 OR bnd < 35" },
+    "4": { "size": 16, "include_recovery": false, "heavier": true }
+  },
+  "ball_speed_ramp": [1.00, 1.10, 1.21, 1.33],
+  "events": {
+    "1": [
+      { "id": "Q1_INCIDENT", "trigger": "agg_pct > 0.5",
+        "severity": "critical", "label": "Q1 · ED OVERRIDE",
+        "text": "An ED physician overrode the AI's safety flag at 3am. No patient harm. The chief of staff wants a written explanation by Friday.",
+        "effects": { "trust": -5, "risk":  5, "board_conf": -3 } },
+      { "id": "Q1_COO",      "trigger": "def_pct > 0.6 AND agg_pct < 0.15",
+        "severity": "warning",  "label": "Q1 · COO MEMO",
+        "text": "The COO's memo: \"We bought an AI. We deployed an interpreter. Help me understand what we've shipped.\" Board notes it.",
+        "effects": { "trust": -5, "board_conf": -5 } },
+      { "id": "Q1_SOLID",    "trigger": "always",
+        "severity": "positive", "label": "Q1 · SOLID START",
+        "text": "Operations team posts a green dashboard. ED leadership defends the program in a department meeting.",
+        "effects": { "trust":  5, "board_conf":  3 } }
+    ],
+    "2": [
+      { "id": "Q2_DRIFT_AGG", "trigger": "risk > 40 AND agg_pct > 0.5",
+        "severity": "warning",  "label": "Q2 · DRIFT",
+        "text": "Override rate climbs. Clinicians are routing around the model rather than fighting it. Performance numbers stay up — for now.",
+        "effects": { "bnd": -3, "perf":  2 } },
+      { "id": "Q2_DRIFT_DEF", "trigger": "risk > 40 AND def_pct > 0.5",
+        "severity": "neutral",  "label": "Q2 · TIGHTENING",
+        "text": "Risk team sees the leading indicators and tightens the gates further. Performance drops. Clinicians notice the trust gesture.",
+        "effects": { "perf": -5, "trust":  3, "risk": -5 } },
+      { "id": "Q2_DRIFT_MIX", "trigger": "risk > 40",
+        "severity": "warning",  "label": "Q2 · MIXED SIGNALS",
+        "text": "Risk is climbing but the response is incoherent — some tightening, some loosening. Performance suffers. Risk drops slightly.",
+        "effects": { "perf": -3, "risk": -3 } },
+      { "id": "Q2_RESIST",    "trigger": "trust < 30",
+        "severity": "critical", "label": "Q2 · STAFF RESISTANCE",
+        "text": "An ED resident files a formal complaint about being asked to override their judgment. Internal trust collapses further.",
+        "effects": { "trust": -5, "perf": -3, "board_conf": -5 } },
+      { "id": "Q2_OPS",       "trigger": "always",
+        "severity": "neutral",  "label": "Q2 · OPERATIONS NORMAL",
+        "text": "No fires. Steady volume. The risk team's weekly memo notes \"no novel signals.\"",
+        "effects": {} }
+    ],
+    "3": [
+      { "id": "Q3_INCIDENT", "trigger": "risk > 60",
+        "severity": "critical", "label": "Q3 · MISDIAGNOSIS",
+        "text": "A misdiagnosis becomes public. Patient unharmed but family is angry. Local TV picks it up. The chief of staff stops returning your calls.",
+        "effects": { "trust": -15, "board_conf": -10, "lives": -1 } },
+      { "id": "Q3_REG_BAD",  "trigger": "bnd < 30 AND agg_pct > 0.5",
+        "severity": "critical", "label": "Q3 · REGULATOR ESCALATES",
+        "text": "State health department asks for a Friday meeting. Your counsel wants the AI committee chair on the call. The bounds you removed look very visible from the outside.",
+        "effects": { "trust": -5, "board_conf": -5, "contested_regulator": true } },
+      { "id": "Q3_REG_OK",   "trigger": "bnd < 30",
+        "severity": "warning",  "label": "Q3 · REGULATOR CHECK-IN",
+        "text": "State health department schedules a routine check-in. You volunteer a performance pull-back as a gesture. Trust recovers a step.",
+        "effects": { "perf": -10, "trust":  5, "board_conf":  3 } },
+      { "id": "Q3_BREAKTHROUGH", "trigger": "trust > 70 AND perf > 60",
+        "severity": "positive", "label": "Q3 · BREAKTHROUGH",
+        "text": "Quarterly review: ED chief and risk lead jointly present results. Board confidence ticks up. The model becomes the program — not just a tool.",
+        "effects": { "trust":  5, "perf":  5, "board_conf": 10 } },
+      { "id": "Q3_STATUS",   "trigger": "always",
+        "severity": "neutral",  "label": "Q3 · HOLDING",
+        "text": "Volume and override rates unremarkable. The board meeting is uneventful, which is itself notable.",
+        "effects": {} }
+    ]
+  },
+  "quarter_wrap_rules": [
+    {
+      "id": "BIZ_CRED",
+      "condition": "perf < 25 FOR 2 QUARTERS",
+      "effects": { "lives": -1, "board_conf": -15 },
+      "severity": "critical",
+      "label": "BUSINESS CREDIBILITY",
+      "text": "Two consecutive quarters of weak performance numbers. The board's finance committee wants a viability review."
+    },
+    {
+      "id": "BC_COLLAPSE",
+      "condition": "board_conf < 15",
+      "effects": { "lives": -1, "board_conf": 10 },
+      "severity": "critical",
+      "label": "BOARD CONFIDENCE COLLAPSE",
+      "text": "An emergency board call. You spend the call defending the program rather than running it."
+    }
+  ],
+  "q4_forced_choice": {
+    "trigger_seconds_into_q4": 30,
+    "default_choice": "solid_foundation",
+    "options": [
+      {
+        "id": "push_scale",
+        "label": "Frame as success — push for scale",
+        "description": "Recommend doubling the deployment footprint in Year 2. Aggressive growth narrative.",
+        "succeeds_if": "perf > 55 AND risk < 40",
+        "success_effects":  { "trust":  8, "board_conf":  10 },
+        "backfire_effects": { "trust": -20, "board_conf": -15, "lives": -1 }
+      },
+      {
+        "id": "solid_foundation",
+        "label": "Frame as solid foundation",
+        "description": "Recommend continuing at current footprint with no expansion. Hold-and-improve narrative.",
+        "succeeds_if": "always",
+        "success_effects":  { "trust":  4, "board_conf":   5 }
+      },
+      {
+        "id": "pull_back",
+        "label": "Frame as cautionary — pull back",
+        "description": "Recommend narrowing the deployment scope while you stabilise. Defensive narrative.",
+        "succeeds_if": "always",
+        "success_effects":  { "trust":  6, "board_conf":  -2 }
+      }
+    ],
+    "regulator_escalation": {
+      "condition": "contested_regulator",
+      "label": "Q4 · REGULATOR ESCALATION",
+      "text": "The contested regulator follow-up arrives. Your counsel needs you on the call. One life is the cost of the meeting itself.",
+      "effects": { "lives": -1 },
+      "severity": "critical"
+    }
+  },
+  "archetypes": [
+    {
+      "id": "drifter_empty", "label": "The Drifter", "icon": "≀",
+      "trigger_priority": 0,
+      "trigger": "total_bricks == 0",
+      "reveal_text": "You played, but you barely played. The model deployed itself. Whatever happened, you watched it happen.",
+      "tag": "derived",
+      "sources": ["asatiani-2021"]
+    },
+    {
+      "id": "over_bounded", "label": "The Over-Bounded", "icon": "🔒",
+      "trigger_priority": 1,
+      "trigger": "def_pct > 0.6 AND perf < 30",
+      "reveal_text": "You built bounds so tight nothing got through them — including the value the AI was supposed to deliver. The team trusts the boundaries, not the tool. The board is asking why.",
+      "tag": "derived",
+      "sources": ["asatiani-2021", "yu-2025"]
+    },
+    {
+      "id": "guardian", "label": "The Guardian", "icon": "🛡",
+      "trigger_priority": 2,
+      "trigger": "def_pct > 0.6 AND perf >= 30 AND lives_lost <= 1",
+      "reveal_text": "You built a model people trust. Whether you built one they'll fund is the question Year Two will answer. The ED chief will defend you to the board. The COO will not.",
+      "tag": "derived",
+      "sources": ["asatiani-2021", "dux-2025"]
+    },
+    {
+      "id": "cowboy", "label": "The Cowboy", "icon": "🐎",
+      "trigger_priority": 3,
+      "trigger": "agg_pct > 0.5 AND perf > 50 AND lives_lost >= 2",
+      "reveal_text": "You pushed performance and the model delivered — until it didn't. The incidents you collected are the price of the velocity you celebrated. The numbers are real. So is the body count of credibility.",
+      "tag": "derived",
+      "sources": ["asatiani-2021", "barocas-2016"]
+    },
+    {
+      "id": "risk_taker", "label": "The Risk-Taker", "icon": "♠",
+      "trigger_priority": 4,
+      "trigger": "agg_pct > 0.5 AND perf > 50",
+      "reveal_text": "You took the bet. You loosened bounds where the value was. The performance numbers reward you. Whether you'll get to take the same bet twice depends on what the regulator thinks of your luck.",
+      "tag": "derived",
+      "sources": ["asatiani-2021", "barocas-2016"]
+    },
+    {
+      "id": "compliance_officer", "label": "The Compliance Officer", "icon": "✓",
+      "trigger_priority": 5,
+      "trigger": "def_pct > 0.4 AND had_incident_or_drift AND def_shift_2_or_3",
+      "reveal_text": "You read the incident reports and tightened. Your bounds moved with the evidence. You're not the visionary the board wanted at hiring. You're the one they want now.",
+      "tag": "derived",
+      "sources": ["asatiani-2021", "dux-2025", "nist-2023"]
+    },
+    {
+      "id": "pragmatist", "label": "The Pragmatist", "icon": "◆",
+      "trigger_priority": 6,
+      "trigger": "def_pct >= 0.2 AND def_pct <= 0.55 AND agg_pct >= 0.15 AND agg_pct <= 0.55 AND mon_pct >= 0.2",
+      "reveal_text": "You did not pick a philosophy. You picked moments. Tighten here, loosen there, watch everywhere. The model survived. So did you.",
+      "tag": "derived",
+      "sources": ["asatiani-2021", "li-2026", "dux-2025"]
+    },
+    {
+      "id": "drifter", "label": "The Drifter", "icon": "≀",
+      "trigger_priority": 7,
+      "trigger": "always",
+      "reveal_text": "Your choices didn't add up to a posture. The model deployed; the year passed; the pattern you left is the absence of one. There's a manager Year Two needs. You're choosing now whether to be them.",
+      "tag": "derived",
+      "sources": ["asatiani-2021"]
+    }
+  ]
+}

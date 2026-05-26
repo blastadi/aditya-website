@@ -1,0 +1,142 @@
+{
+  "id": "strategic-posture",
+  "name": "Strategic Posture",
+  "industry_framings": [
+    { "id": "industrial", "name": "Industrial manufacturer at Pemberton Industries", "default": true },
+    { "id": "fs",         "name": "Financial services" },
+    { "id": "cpg",        "name": "Consumer packaged goods" },
+    { "id": "tech",       "name": "Tech platform" }
+  ],
+  "composite_firm": "Pemberton Industries",
+  "central_tension": "AI as initiatives versus AI as operating-model change",
+  "background_copy": "Most firms approach AI as initiatives — pilots, point projects, business-unit experiments. The research shows the firms that capture durable value do something different: they treat AI as an operating-model change, which is structurally harder, takes longer, requires committed capital, and only pays off in years two and beyond. You play the AI deployment lead at Pemberton Industries, a mid-cap industrial manufacturer rolling out an enterprise AI strategy. Four quarters. Heavier bricks than the other themes — each move takes more paddle commitment, because operating-model change is heavier than running a pilot. The pattern of your year reveals whether you were a portfolio manager, an initiative collector, an operating-model builder, or the integrator who can hold both.",
+  "anchor_sources": [
+    { "id": "iansiti-2020",     "citation": "Iansiti, M., & Lakhani, K. R. (2020). Competing in the Age of AI. Harvard Business Review Press.",                                       "read_time_min": 90, "skim_section": "Chapters 3-5 (operating-model logic)",         "contribution": "Foundational text. Argues AI is an operating-model change, not a portfolio of initiatives." },
+    { "id": "hutzschenreuter-2025", "citation": "Hutzschenreuter, T., & Lämmermann, J. (2025). AI Portfolio vs Operating-Model: Empirical Evidence. Strategic Management Journal.", "read_time_min": 35, "skim_section": "Sections 4-5 (portfolio cap)",               "contribution": "Empirical evidence that portfolio-only postures plateau at coherence < 50." },
+    { "id": "bcg-2025",         "citation": "Boston Consulting Group (2025). The AI Transformation Index. BCG Research.",                                                            "read_time_min": 25, "skim_section": "Section 3 (capability dependency)",           "contribution": "Establishes capability prerequisites for operating-model moves." },
+    { "id": "mckinsey-2026",    "citation": "McKinsey & Company (2026). The State of AI Strategy. McKinsey Global Institute.",                                                       "read_time_min": 30, "skim_section": "Sections 4-5 (value-capture patterns)",      "contribution": "Documents value-capture patterns across postures." },
+    { "id": "davenport-2023",   "citation": "Davenport, T. H., & Mittal, N. (2023). All-In on AI: How Smart Companies Win Big with AI. Harvard Business Review Press.",            "read_time_min": 70, "skim_section": "Section 2 (strategic coherence)",            "contribution": "Establishes strategic-coherence vocabulary." }
+  ],
+  "contributing_sources": [],
+  "meters": [
+    { "id": "coherence",  "label": "Strategic Coherence", "start": 35, "safe_band": [40, 80], "tone_logic": "standard" },
+    { "id": "portfolio",  "label": "Portfolio Health",    "start": 60, "safe_band": [40, 80], "tone_logic": "standard" },
+    { "id": "value",      "label": "Value Capture",       "start": 10, "safe_band": [30, 80], "tone_logic": "standard" },
+    { "id": "capability", "label": "Capability Build",    "start": 35, "safe_band": [40, 80], "tone_logic": "standard" },
+    { "id": "board_conf", "label": "Board Confidence",    "start": 50, "safe_band": [30, 80], "tone_logic": "standard" }
+  ],
+  "lives_start": 3,
+  "categories": {
+    "strat":  { "label": "Strategic",         "color": "#2d4fe0", "color_dim": "#1f3aa0" },
+    "port":   { "label": "Portfolio",         "color": "#1d8a5f", "color_dim": "#14633f" },
+    "cap":    { "label": "Capability",        "color": "#d4a01b", "color_dim": "#9c7613" },
+    "exec":   { "label": "Execution",         "color": "#5a6473", "color_dim": "#3e454f" },
+    "comm":   { "label": "Communication",     "color": "#6d4cae", "color_dim": "#4a3179" },
+    "opmod":  { "label": "Operating-Model",   "color": "#c0392b", "color_dim": "#8c2a20" },
+    "rec":    { "label": "Recovery",          "color": "#e8b830", "color_dim": "#a8821e" }
+  },
+  "bricks": [
+    { "id": "SP-STR-01", "label": "Ratify charter",            "category": "strat", "effects": { "coherence": 15, "board_conf":  5 },                          "hits": 2, "briefing_description": "Ratifies the AI strategy charter at board level. Big coherence + board signal. Two hits.",                              "research_note": "Davenport & Mittal (2023) — charter as coherence anchor.",                                                  "tag": "direct",   "sources": ["davenport-2023"] },
+    { "id": "SP-STR-02", "label": "Sign 3-yr commitment",      "category": "strat", "effects": { "coherence": 12, "capability":  3, "board_conf":  8 },       "hits": 2, "briefing_description": "Signs a three-year strategy commitment. Durable coherence + capability seed + board commitment.",                "research_note": "Iansiti & Lakhani (2020) — multi-year commitment as operating-model precondition.",                       "tag": "direct",   "sources": ["iansiti-2020"] },
+    { "id": "SP-STR-03", "label": "AI operating committee",    "category": "strat", "effects": { "coherence": 10, "board_conf":  5 },                          "hits": 2, "briefing_description": "Stands up an AI operating committee. Coherence + board signal. Two hits.",                                          "research_note": "Davenport & Mittal (2023) — operating committee as governance surface.",                                   "tag": "derived",  "sources": ["davenport-2023"] },
+    { "id": "SP-STR-04", "label": "Strategic principles",       "category": "strat", "effects": { "coherence":  8, "capability":  2 },                         "hits": 2, "briefing_description": "Publishes a set of strategic principles for AI investment. Coherence + capability nudge.",                         "research_note": "Davenport & Mittal (2023) — principles as decision filter.",                                                "tag": "derived",  "sources": ["davenport-2023"] },
+
+    { "id": "SP-PRT-01", "label": "Launch supply-chain pilot", "category": "port",  "effects": { "portfolio": 10, "value":  3 },                               "hits": 2, "briefing_description": "Launches a supply-chain AI pilot. Portfolio + small value. Two hits.",                                                "research_note": "BCG (2025) on portfolio-typical scope.",                                                                    "tag": "derived",  "sources": ["bcg-2025"] },
+    { "id": "SP-PRT-02", "label": "Launch sales pilot",        "category": "port",  "effects": { "portfolio": 10, "value":  3 },                               "hits": 2, "briefing_description": "Launches a sales-AI pilot. Portfolio + small value.",                                                                "research_note": "BCG (2025) sales-AI portfolio entry.",                                                                      "tag": "derived",  "sources": ["bcg-2025"] },
+    { "id": "SP-PRT-03", "label": "Launch HR pilot",           "category": "port",  "effects": { "portfolio": 10, "value":  2 },                               "hits": 2, "briefing_description": "Launches an HR-AI pilot. Portfolio lift; modest value.",                                                            "research_note": "BCG (2025) HR-AI patterns.",                                                                                "tag": "derived",  "sources": ["bcg-2025"] },
+    { "id": "SP-PRT-04", "label": "Launch finance pilot",      "category": "port",  "effects": { "portfolio": 10, "value":  3 },                               "hits": 2, "briefing_description": "Launches a finance-AI pilot. Portfolio + value.",                                                                  "research_note": "BCG (2025) finance-AI portfolio entry.",                                                                    "tag": "derived",  "sources": ["bcg-2025"] },
+    { "id": "SP-PRT-05", "label": "Launch ops pilot",          "category": "port",  "effects": { "portfolio":  8, "value":  4 },                               "hits": 2, "briefing_description": "Launches an operations-AI pilot. Bigger value capture.",                                                            "research_note": "McKinsey (2026) ops-AI value patterns.",                                                                    "tag": "derived",  "sources": ["mckinsey-2026"] },
+
+    { "id": "SP-CAP-01", "label": "Hire ML director",          "category": "cap",   "effects": { "capability": 10, "coherence":  3 },                         "hits": 2, "briefing_description": "Hires a senior ML director. Big capability + coherence.",                                                            "research_note": "BCG (2025) capability institutionalisation.",                                                               "tag": "direct",   "sources": ["bcg-2025"] },
+    { "id": "SP-CAP-02", "label": "Build data platform",       "category": "cap",   "effects": { "capability": 18, "coherence":  6, "value": -5 },           "hits": 3, "briefing_description": "Builds a unified data platform. Largest capability + coherence. Real value cost during build. Three hits.",         "research_note": "Iansiti & Lakhani (2020) — data platform as operating-model precondition.",                                "tag": "direct",   "sources": ["iansiti-2020", "bcg-2025"] },
+    { "id": "SP-CAP-03", "label": "AI vendor partnership",     "category": "cap",   "effects": { "capability":  8, "value":  3 },                              "hits": 2, "briefing_description": "Signs a strategic AI vendor partnership. Capability + value.",                                                     "research_note": "BCG (2025) on vendor-augmented capability.",                                                                "tag": "derived",  "sources": ["bcg-2025"] },
+
+    { "id": "SP-EXC-01", "label": "Kill underperformer",       "category": "exec",  "effects": { "coherence":  8, "portfolio": -8, "board_conf":  3 },        "hits": 2, "briefing_description": "Kills a struggling pilot. Coherence + board signal; portfolio shrinks.",                                                "research_note": "Davenport & Mittal (2023) on portfolio rationalisation.",                                                    "tag": "direct",   "sources": ["davenport-2023"] },
+    { "id": "SP-EXC-02", "label": "Re-scope failing pilot",    "category": "exec",  "effects": { "coherence":  5, "portfolio": -3, "value":  2 },             "hits": 2, "briefing_description": "Re-scopes a failing pilot rather than killing it. Coherence + value; portfolio dips.",                              "research_note": "Davenport & Mittal (2023) on re-scoping discipline.",                                                       "tag": "derived",  "sources": ["davenport-2023"] },
+    { "id": "SP-EXC-03", "label": "Scale best initiative",     "category": "exec",  "effects": { "value": 10, "portfolio":  5 },                              "hits": 2, "briefing_description": "Scales the highest-performing pilot enterprise-wide. Biggest value capture.",                                       "research_note": "McKinsey (2026) — scaling discipline as value mechanic.",                                                   "tag": "direct",   "sources": ["mckinsey-2026"] },
+
+    { "id": "SP-CMM-01", "label": "Investor day AI section",   "category": "comm",  "effects": { "board_conf":  5, "value":  3 },                              "hits": 2, "briefing_description": "Adds an AI section to investor day. Board signal + small value (analyst recognition).",                              "research_note": "Davenport & Mittal (2023) — investor narrative as posture signal.",                                         "tag": "derived",  "sources": ["davenport-2023"] },
+    { "id": "SP-CMM-02", "label": "Internal town hall",        "category": "comm",  "effects": { "coherence":  5, "board_conf":  3 },                          "hits": 2, "briefing_description": "Runs an internal AI town hall. Coherence + board signal.",                                                          "research_note": "Davenport & Mittal (2023) — internal communication as coherence lever.",                                    "tag": "derived",  "sources": ["davenport-2023"] },
+
+    { "id": "SP-OPM-01", "label": "Reorganise around AI",      "category": "opmod", "effects": { "coherence": 15, "capability": 10, "value":  8, "board_conf": 10 }, "hits": 3, "briefing_description": "Re-organises the firm's structure around AI workflows. Three hits. Unlocks only when coherence + capability are both high.", "research_note": "Iansiti & Lakhani (2020) — structural reorganisation as operating-model lever.", "tag": "direct", "sources": ["iansiti-2020", "hutzschenreuter-2025"] },
+    { "id": "SP-OPM-02", "label": "Embed AI roles in BUs",     "category": "opmod", "effects": { "coherence": 12, "capability":  8, "value":  5 },              "hits": 3, "briefing_description": "Embeds AI roles into every business unit. Operating-model move. Three hits.",                                          "research_note": "Iansiti & Lakhani (2020) on embedded operating-model patterns.",                                            "tag": "direct",   "sources": ["iansiti-2020"] },
+    { "id": "SP-OPM-03", "label": "Reframe as AI-first",       "category": "opmod", "effects": { "coherence": 15, "value": 10, "board_conf":  8 },              "hits": 3, "briefing_description": "Public reframing of the firm as AI-first. Highest coherence + value impact. Three hits.",                              "research_note": "Hutzschenreuter & Lämmermann (2025) on positioning shift.",                                                  "tag": "derived",  "sources": ["hutzschenreuter-2025"] },
+
+    { "id": "SP-REC",    "label": "Strategic reset session",    "category": "rec",   "effects": { "coherence": 20, "portfolio": -15, "board_conf":  5 },        "hits": 3, "briefing_description": "Two-day off-site to reset the AI strategy. Massive coherence + board lift; portfolio takes a real hit. Three hits.",     "research_note": "Davenport & Mittal (2023) — strategic reset as recovery surface.",                                          "tag": "derived",  "sources": ["davenport-2023"], "recovery": true }
+  ],
+  "crisis_pool": ["BOARD", "TALENT", "REG_COST", "AUDIT", "COMPET", "NEW_POL", "ESG", "FRICT"],
+  "opportunity_pool": ["CHARTER_RATIFY", "TALENT_WIN", "OSS_REL", "PARTNER"],
+  "crises_per_quarter": { "1": 1, "2": 1, "3": 2, "4": 1 },
+  "opportunities_per_game": 1,
+  "strategic_categories": ["strat", "opmod"],
+  "crisis_meter_map": {
+    "trust_proxy":       "board_conf",
+    "capability_proxy":  "capability",
+    "board_proxy":       "board_conf",
+    "performance_proxy": "value",
+    "press_proxy":       "board_conf",
+    "perception_proxy":  "board_conf",
+    "value_proxy":       "value",
+    "coherence_proxy":   "coherence",
+    "adoption_proxy":    "value",
+    "polit_proxy":       "board_conf",
+    "sys_int_proxy":     "capability"
+  },
+
+  "quarter_walls": {
+    "1": { "size": 14, "include_recovery": false, "exclude_categories": ["opmod", "rec"] },
+    "2": { "size": 14, "include_recovery": false, "exclude_categories": ["opmod", "rec"] },
+    "3": { "size": 12, "include_recovery": true,  "recovery_unlock_trigger": "coherence < 30 OR board_conf < 30", "opmod_unlock_trigger": "coherence >= 50 AND capability >= 50" },
+    "4": { "size": 10, "include_recovery": false, "heavier": true }
+  },
+  "ball_speed_ramp": [1.00, 1.05, 1.10, 1.16],
+  "incident_event_ids": ["Q1_NO_LOGIC", "Q1_INFRA_GAP", "Q2_COLLECTOR_WARN", "Q3_COLLECTOR_INCIDENT", "Q3_PATIENCE_LOST"],
+  "events": {
+    "1": [
+      { "id": "Q1_NO_LOGIC",   "trigger": "q_strat == 0 AND q_port >= 2", "severity": "warning",  "label": "Q1 · NO LOGIC",      "text": "Pilots launched; no strategic frame. The investor analyst note reads \"three pilots in search of a story.\"",            "effects": { "coherence": -10, "board_conf": -5 } },
+      { "id": "Q1_CHARTER_OK", "trigger": "q_strat >= 1 AND q_cap >= 1", "severity": "positive", "label": "Q1 · CHARTER + CAPABILITY", "text": "Strategy ratified; capability seed planted. Board comfortable.",                                                                  "effects": { "coherence":  5, "board_conf":  3 } },
+      { "id": "Q1_INFRA_GAP",  "trigger": "q_port >= 3 AND q_cap == 0", "severity": "warning",  "label": "Q1 · INFRA GAP",     "text": "Three pilots running, no data platform underneath. Engineering team starts asking pointed questions.",                    "effects": { "capability": -5, "portfolio":  3 } },
+      { "id": "Q1_NO_COMM",    "trigger": "q_comm == 0 AND q_strat >= 2", "severity": "neutral",  "label": "Q1 · NO COMM",       "text": "Strategic moves made; nobody told the firm. Coherence leaks.",                                                              "effects": { "coherence": -3 } },
+      { "id": "Q1_STATUS",     "trigger": "always",                       "severity": "neutral",  "label": "Q1 · STATUS",        "text": "First quarter closes. Pieces on the board.",                                                                                "effects": {} }
+    ],
+    "2": [
+      { "id": "Q2_RECOG",            "trigger": "coherence >= 60 AND portfolio >= 70", "severity": "positive", "label": "Q2 · RECOGNITION",      "text": "Industry press picks up the coherent portfolio. Board sends a celebratory note.",                                "effects": { "board_conf": 10 } },
+      { "id": "Q2_COLLECTOR_WARN",   "trigger": "coherence < 30 AND portfolio > 60",   "severity": "warning",  "label": "Q2 · COLLECTOR WARNING","text": "Lots of pilots, no theme. CEO asks \"what story am I telling at investor day?\"",                                "effects": { "board_conf": -5 } },
+      { "id": "Q2_PATIENCE",         "trigger": "capability >= 60 AND value < 25",     "severity": "warning",  "label": "Q2 · PATIENCE TEST",     "text": "Capability investment is real; value is months away. Board chair asks for ROI checkpoints.",                       "effects": { "board_conf": -5 } },
+      { "id": "Q2_INFRA_DEBT",       "trigger": "capability < 25",                     "severity": "warning",  "label": "Q2 · INFRA DEBT",        "text": "Pilots starting to slow. Data ingestion bottleneck blames the absent platform.",                                   "effects": { "portfolio": -5, "board_conf": -3 } },
+      { "id": "Q2_STATUS",           "trigger": "always",                              "severity": "neutral",  "label": "Q2 · STATUS",            "text": "Mid-year. Pieces still on the board.",                                                                              "effects": {} }
+    ],
+    "3": [
+      { "id": "Q3_TRANSFORM",          "trigger": "opmod_count >= 1",                                "severity": "positive", "label": "Q3 · TRANSFORMATION",        "text": "Operating-model move lands. Board recognises the shape of the year ahead.",                                  "effects": { "board_conf": 15, "value":  5 } },
+      { "id": "Q3_COLLECTOR_INCIDENT", "trigger": "portfolio > 70 AND coherence < 40",               "severity": "critical", "label": "Q3 · COLLECTOR INCIDENT",     "text": "Portfolio sprawl without strategic frame. Reorg rumours start. One life lost.",                              "effects": { "lives": -1, "board_conf": -10 } },
+      { "id": "Q3_PROOF",              "trigger": "value > 50 AND coherence > 50",                   "severity": "positive", "label": "Q3 · VALUE PROOF",            "text": "Value capture visible in P&L. Investor day prep writes itself.",                                              "effects": { "board_conf": 10 } },
+      { "id": "Q3_PATIENCE_LOST",      "trigger": "capability >= 70 AND value < 30",                 "severity": "warning",  "label": "Q3 · PATIENCE LOST",          "text": "Capability built; value not yet visible. CFO suggests pulling back the next investment tranche.",            "effects": { "board_conf": -5 } },
+      { "id": "Q3_STATUS",             "trigger": "always",                                          "severity": "neutral",  "label": "Q3 · STATUS",                 "text": "Quarter closes. Year-end packet drafts begin.",                                                                "effects": {} }
+    ]
+  },
+  "quarter_wrap_rules": [
+    { "id": "BC_COLLAPSE", "condition": "board_conf < 15", "effects": { "lives": -1, "board_conf": 10 }, "severity": "critical", "label": "BOARD CONFIDENCE COLLAPSE", "text": "Emergency board call. You spend it defending the strategy rather than running it." }
+  ],
+  "q4_forced_choice": {
+    "trigger_seconds_into_q4": 30,
+    "default_choice": "narrow",
+    "options": [
+      { "id": "transform",       "label": "Recommend full transformation", "description": "Bet Year Two on the operating-model move. Highest reward; highest cost if you don't have the foundations.",
+        "succeeds_if": "coherence >= 70 AND capability >= 60", "success_effects": { "board_conf": 15, "value": 10 }, "backfire_effects": { "board_conf": -15, "lives": -1 } },
+      { "id": "continue_port",   "label": "Continue portfolio approach",   "description": "Stay the course on the pilot portfolio.",
+        "succeeds_if": "portfolio >= 60 AND value >= 50",      "success_effects": { "board_conf":  5 },             "backfire_effects": { "board_conf": -10, "lives": -1 } },
+      { "id": "narrow",          "label": "Narrow to top 3 initiatives",   "description": "Concentrate on the three pilots that are working.",
+        "succeeds_if": "always",                                "success_effects": { "coherence":  5, "portfolio": -5 } },
+      { "id": "reset",           "label": "Pause for a strategic reset",   "description": "Year Two begins after a reset. Only honest if the strategy is broken.",
+        "succeeds_if": "coherence < 30",                        "success_effects": { "coherence":  5, "board_conf": -10 }, "backfire_effects": { "board_conf": -15, "lives": -1 } }
+    ]
+  },
+  "archetypes": [
+    { "id": "drifter_empty",        "label": "The Drifter",                "icon": "≀", "trigger_priority": 0, "trigger": "total_bricks == 0",                                                                                                                "reveal_text": "Pilots existed. Strategy didn't. You watched.",                                                                                                                                                                                            "tag": "derived",  "sources": ["davenport-2023"] },
+    { "id": "integrator",           "label": "The Integrator",             "icon": "◇", "trigger_priority": 1, "trigger": "opmod_count >= 1 AND coherence >= 70 AND capability >= 70 AND value >= 40 AND lives_lost <= 1",                                  "reveal_text": "You held the portfolio AND made the operating-model move. The year was the bet; Year Two is the payoff. The board knows what they have.",                                                                                                "tag": "derived",  "sources": ["iansiti-2020", "hutzschenreuter-2025", "davenport-2023"] },
+    { "id": "portfolio_manager",    "label": "The Portfolio Manager",      "icon": "□", "trigger_priority": 2, "trigger": "port_count >= 3 AND strat_count >= 1 AND value >= 50 AND coherence >= 50 AND lives_lost <= 1",                                  "reveal_text": "Disciplined portfolio. Real value capture. Coherent narrative. The board respects this. The McKinsey deck calls it the responsible posture.",                                                                                              "tag": "derived",  "sources": ["mckinsey-2026", "davenport-2023"] },
+    { "id": "initiative_collector", "label": "The Initiative Collector",   "icon": "≡", "trigger_priority": 3, "trigger": "port_count >= 4 AND strat_count <= 1 AND coherence < 40 AND event:Q3_COLLECTOR_INCIDENT",                                       "reveal_text": "Pilots without a logic. The portfolio looks impressive on a slide and incoherent on a P&L. Year Two reshuffles or recovers.",                                                                                                              "tag": "direct",   "sources": ["davenport-2023", "hutzschenreuter-2025"] },
+    { "id": "operating_model",      "label": "The Operating-Model Builder","icon": "▤", "trigger_priority": 4, "trigger": "strat_count >= 2 AND cap_count >= 1 AND coherence >= 60 AND capability >= 60 AND value < 30",                                   "reveal_text": "Foundations built; value still ahead. The CFO needs Year Two to show numbers, not architecture diagrams.",                                                                                                                                  "tag": "derived",  "sources": ["iansiti-2020", "bcg-2025"] },
+    { "id": "drifter",              "label": "The Drifter",                "icon": "≀", "trigger_priority": 5, "trigger": "always",                                                                                                                          "reveal_text": "Coherence didn't form. Portfolio drifted. Capability stayed thin. The shape of the year is the shape that needs choosing for Year Two.",                                                                                                   "tag": "derived",  "sources": ["davenport-2023"] }
+  ]
+}

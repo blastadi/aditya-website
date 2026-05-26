@@ -1,0 +1,136 @@
+{
+  "id": "paradox",
+  "name": "The Paradox",
+  "industry_framings": [
+    { "id": "audit", "name": "Audit & advisory at Lattimer & Burke", "default": true }
+  ],
+  "composite_firm": "Lattimer & Burke",
+  "central_tension": "Automation depth versus augmentation breadth — paradoxical, not alternatives",
+  "background_copy": "The paradox is this: every serious AI deployment forces an automation move (replace the work) AND an augmentation move (upgrade the people doing the work). Most firms treat these as alternatives — pick one — and accelerate one while the other rots. The research shows the firms that thrive run both at once: automation deepens what's routine while augmentation broadens what people can attempt. The hard part isn't the technology. It's the leadership move of refusing the choice. You play the AI deployment lead at Lattimer & Burke, a mid-tier audit and advisory firm. Four quarters. One year to either learn that automation depth and augmentation breadth are paradoxical — held in tension, not traded — or to discover what happens when you pretend they're alternatives.",
+  "anchor_sources": [
+    { "id": "raisch-2021",     "citation": "Raisch, S., & Krakowski, S. (2021). Artificial Intelligence and Management: The Automation-Augmentation Paradox. Academy of Management Review, 46(1), 192-210.",  "read_time_min": 40, "skim_section": "Sections 3-4 (paradox dynamics)",         "contribution": "Foundational paper. Names the paradox; argues automation and augmentation must be held together." },
+    { "id": "murray-2020",     "citation": "Murray, A., Rhymer, J., & Sirmon, D. G. (2020). Humans and Technology: Forms of Conjoined Agency in Organisations. Academy of Management Review, 46(3).",      "read_time_min": 35, "skim_section": "Section 4 (conjoined agency)",            "contribution": "Provides the conjoined-agency vocabulary used to describe hybrid bricks." },
+    { "id": "spring-2022",     "citation": "Spring, M., Faulconbridge, J., & Sarwar, A. (2022). How Information Technologies Reshape Professional Services. Journal of Operations Management.",            "read_time_min": 35, "skim_section": "Section 3 (capability erosion)",          "contribution": "Documents the capability-erosion pattern that automation-heavy strategies produce." },
+    { "id": "shao-2025",       "citation": "Shao, Z., et al. (2025). Augmentation Without Automation: The Hidden Cost. MIS Quarterly.",                                                                  "read_time_min": 30, "skim_section": "Section 4 (ROI patterns)",               "contribution": "Documents the inverse pattern — pure augmentation without automation under-delivers ROI." },
+    { "id": "hillebrand-2025", "citation": "Hillebrand, P., et al. (2025). Hybrid Intelligence in Knowledge Work. Information Systems Research.",                                                        "read_time_min": 28, "skim_section": "Section 5 (hybrid configurations)",      "contribution": "Establishes the hybrid configuration patterns that underwrite the hybrid bricks." }
+  ],
+  "contributing_sources": [
+    { "id": "smith-2011-paradox", "citation": "Smith, W. K., & Lewis, M. W. (2011). Toward a Theory of Paradox. Academy of Management Review, 36(2).", "read_time_min": 40, "elements_contributed": ["Both/And archetype", "Course-Corrector archetype"] }
+  ],
+  "meters": [
+    { "id": "auto",       "label": "Automation Depth",       "start": 20, "safe_band": [40, 80], "tone_logic": "standard" },
+    { "id": "aug",        "label": "Augmentation Breadth",   "start": 20, "safe_band": [40, 80], "tone_logic": "standard" },
+    { "id": "cap",        "label": "Workforce Capability",   "start": 50, "safe_band": [40, 80], "tone_logic": "standard" },
+    { "id": "eff",        "label": "Efficiency Gain",        "start": 10, "safe_band": [20, 80], "tone_logic": "standard" },
+    { "id": "board_conf", "label": "Board Confidence",       "start": 55, "safe_band": [30, 80], "tone_logic": "standard" }
+  ],
+  "lives_start": 3,
+  "categories": {
+    "auto": { "label": "Automation",   "color": "#2d4fe0", "color_dim": "#1f3aa0" },
+    "aug":  { "label": "Augmentation", "color": "#1d8a5f", "color_dim": "#14633f" },
+    "hyb":  { "label": "Hybrid",       "color": "#6d4cae", "color_dim": "#4a3179" },
+    "str":  { "label": "Structural",   "color": "#d4a01b", "color_dim": "#9c7613" },
+    "rec":  { "label": "Recovery",     "color": "#e8b830", "color_dim": "#a8821e" }
+  },
+  "bricks": [
+    { "id": "PDX-AUT-01", "label": "Auto-flag",       "category": "auto", "effects": { "auto":  5, "eff":  2, "cap": -1 },           "hits": 1, "briefing_description": "Routes flagged items straight to the model with no junior review. Cheap automation lift; small capability loss.",                            "research_note": "Inversion of the augmentation move per Raisch & Krakowski (2021); capability erosion is the Spring et al. (2022) pattern.",                              "tag": "derived",  "sources": ["raisch-2021", "spring-2022"] },
+    { "id": "PDX-AUT-02", "label": "AI drafts",       "category": "auto", "effects": { "auto":  6, "eff":  3, "cap": -2 },           "hits": 1, "briefing_description": "AI writes first drafts of audit memos; humans review. Significant automation lift; junior staff lose drafting reps.",            "research_note": "Capability erosion documented in Spring et al. (2022) when human drafting is the learning surface.",                                                   "tag": "direct",   "sources": ["spring-2022"] },
+    { "id": "PDX-AUT-03", "label": "Auto-classify",   "category": "auto", "effects": { "auto":  5, "eff":  2, "cap": -1 },           "hits": 1, "briefing_description": "Routine classifications handled by the model. Modest efficiency; small capability cost.",                                              "research_note": "Routine automation per Raisch & Krakowski (2021).",                                                                                                     "tag": "direct",   "sources": ["raisch-2021"] },
+    { "id": "PDX-AUT-04", "label": "Skip tier-3",     "category": "auto", "effects": { "auto":  4, "eff":  3, "cap": -3 },           "hits": 1, "briefing_description": "Removes the junior tier from the review chain. Efficiency win; capability collapse.",                                                  "research_note": "Spring et al. (2022) — when the learning rung is removed, capability degrades systemically.",                                                          "tag": "direct",   "sources": ["spring-2022"] },
+    { "id": "PDX-AUT-05", "label": "AI flags only",   "category": "auto", "effects": { "auto":  5, "eff":  2 },                       "hits": 1, "briefing_description": "Humans only see what the AI flags. Automation deepens; capability untouched but blind-spot risk grows.",                              "research_note": "Routine automation move per Raisch & Krakowski (2021); blind-spot risk from Murray et al. (2020).",                                                    "tag": "composite","sources": ["raisch-2021", "murray-2020"] },
+    { "id": "PDX-AUT-06", "label": "Replace junior",  "category": "auto", "effects": { "auto":  6, "eff":  2, "cap": -3 },           "hits": 1, "briefing_description": "Closes the junior pipeline. Big automation move; large capability hit over the year.",                                              "research_note": "Spring et al. (2022) capability-pipeline erosion.",                                                                                                     "tag": "direct",   "sources": ["spring-2022"] },
+    { "id": "PDX-AUT-07", "label": "Overnight batch", "category": "auto", "effects": { "auto":  4, "eff":  4 },                       "hits": 1, "briefing_description": "AI handles overnight runs unattended. Efficiency lift; no immediate capability cost.",                                                "research_note": "Boundary automation per Raisch & Krakowski (2021); low-risk if scope stays narrow.",                                                                   "tag": "derived",  "sources": ["raisch-2021"] },
+
+    { "id": "PDX-AUG-01", "label": "Train prompts",     "category": "aug", "effects": { "aug":  5, "cap":  2 },                       "hits": 1, "briefing_description": "Funds prompt-engineering training across the audit team. Augmentation breadth + capability.",                                       "research_note": "Hillebrand et al. (2025) hybrid-intelligence configuration; Raisch & Krakowski (2021) augmentation move.",                                              "tag": "direct",   "sources": ["raisch-2021", "hillebrand-2025"] },
+    { "id": "PDX-AUG-02", "label": "Co-review",         "category": "aug", "effects": { "aug":  4, "cap":  3 },                       "hits": 1, "briefing_description": "Pairs reviewer + AI on every case. Big capability lift; modest breadth.",                                                              "research_note": "Murray et al. (2020) conjoined agency — humans and AI on the same task surface.",                                                                       "tag": "direct",   "sources": ["murray-2020"] },
+    { "id": "PDX-AUG-03", "label": "AI suggests",       "category": "aug", "effects": { "aug":  6, "cap":  1, "auto": -1 },           "hits": 1, "briefing_description": "AI offers suggestions; humans decide. Augmentation lift but explicit pullback on autonomous handling.",                            "research_note": "Hillebrand et al. (2025) suggest-and-decide configuration.",                                                                                            "tag": "derived",  "sources": ["hillebrand-2025"] },
+    { "id": "PDX-AUG-04", "label": "Pair with AI",      "category": "aug", "effects": { "aug":  5, "cap":  2 },                       "hits": 1, "briefing_description": "Each junior pairs with an AI tool through their first 90 days. Capability build through coupling.",                                "research_note": "Murray et al. (2020) conjoined agency; Hillebrand et al. (2025) pairing pattern.",                                                                      "tag": "composite","sources": ["murray-2020", "hillebrand-2025"] },
+    { "id": "PDX-AUG-05", "label": "Prompt library",    "category": "aug", "effects": { "aug":  5, "cap":  2, "eff":  1 },            "hits": 1, "briefing_description": "Curates a firm-wide prompt library. Breadth, capability, and small efficiency gain.",                                                "research_note": "Hillebrand et al. (2025) — codified prompt practice is a capability-build surface.",                                                                    "tag": "derived",  "sources": ["hillebrand-2025"] },
+    { "id": "PDX-AUG-06", "label": "Critique workshop", "category": "aug", "effects": { "aug":  4, "cap":  3 },                       "hits": 1, "briefing_description": "Quarterly critique sessions on AI output. Big capability lift; modest breadth.",                                                       "research_note": "Spring et al. (2022) — critique is a capability-preservation surface when automation grows.",                                                          "tag": "derived",  "sources": ["spring-2022"] },
+    { "id": "PDX-AUG-07", "label": "Explainer role",    "category": "aug", "effects": { "aug":  5, "cap":  2, "eff": -1 },            "hits": 1, "briefing_description": "Adds a standing role to explain AI reasoning to clients. Breadth + capability; small efficiency cost.",                              "research_note": "Murray et al. (2020) boundary-spanner pattern.",                                                                                                        "tag": "derived",  "sources": ["murray-2020"] },
+
+    { "id": "PDX-HYB-01", "label": "Two-stage",         "category": "hyb", "effects": { "auto":  3, "aug":  3, "eff":  1 },           "hits": 2, "briefing_description": "AI passes the case to a human at a defined stage. Holds both moves together. Two hits.",                                            "research_note": "Hillebrand et al. (2025) two-stage hybrid; Raisch & Krakowski (2021) paradox stance.",                                                                  "tag": "direct",   "sources": ["raisch-2021", "hillebrand-2025"] },
+    { "id": "PDX-HYB-02", "label": "Selective deskill", "category": "hyb", "effects": { "auto":  3, "aug":  3, "eff":  2, "cap":  1 },"hits": 2, "briefing_description": "Deskills only the lowest-risk decisions while reskilling everywhere else. Both moves at once.",                                    "research_note": "Raisch & Krakowski (2021) paradox-holding pattern.",                                                                                                    "tag": "direct",   "sources": ["raisch-2021"] },
+    { "id": "PDX-HYB-03", "label": "Tier by risk",      "category": "hyb", "effects": { "auto":  3, "aug":  3, "eff":  1 },           "hits": 2, "briefing_description": "Splits work into auto vs human tiers by case risk. Auto and aug together. Two hits.",                                                "research_note": "Hillebrand et al. (2025) risk-tiered hybrid.",                                                                                                          "tag": "direct",   "sources": ["hillebrand-2025"] },
+    { "id": "PDX-HYB-04", "label": "Draft then polish", "category": "hyb", "effects": { "auto":  3, "aug":  3, "eff":  2 },           "hits": 2, "briefing_description": "AI drafts; senior polishes. Both moves, with efficiency.",                                                                            "research_note": "Hillebrand et al. (2025) draft-and-polish configuration.",                                                                                              "tag": "direct",   "sources": ["hillebrand-2025"] },
+    { "id": "PDX-HYB-05", "label": "Workflow-wise",     "category": "hyb", "effects": { "auto":  3, "aug":  3, "eff":  1 },           "hits": 2, "briefing_description": "Picks the auto-vs-human split per workflow rather than per role. Hybrid pattern.",                                                  "research_note": "Murray et al. (2020) conjoined-agency by workflow.",                                                                                                    "tag": "derived",  "sources": ["murray-2020"] },
+    { "id": "PDX-HYB-06", "label": "Pair-rotate",       "category": "hyb", "effects": { "auto":  3, "aug":  3, "cap":  2 },           "hits": 2, "briefing_description": "Rotates pairs of human + AI through case types. Both moves + capability build.",                                                    "research_note": "Hillebrand et al. (2025) pair-rotation configuration.",                                                                                                 "tag": "derived",  "sources": ["hillebrand-2025"] },
+
+    { "id": "PDX-STR-01", "label": "AI champion",       "category": "str", "effects": { "aug":  5, "board_conf":  5 },                "hits": 2, "briefing_description": "Names a partner-level AI champion. Augmentation breadth + board signal. Two hits.",                                                   "research_note": "Raisch & Krakowski (2021) leadership requirement for paradox holding.",                                                                                  "tag": "derived",  "sources": ["raisch-2021"] },
+    { "id": "PDX-STR-02", "label": "Rewrite JDs",       "category": "str", "effects": { "aug":  3, "cap":  3 },                       "hits": 2, "briefing_description": "Rewrites job descriptions to expect AI fluency. Structural capability build.",                                                          "research_note": "Spring et al. (2022) capability institutionalisation; Hillebrand et al. (2025) role redesign.",                                                          "tag": "composite","sources": ["spring-2022", "hillebrand-2025"] },
+    { "id": "PDX-STR-03", "label": "AI committee",      "category": "str", "effects": { "board_conf":  5, "auto":  2, "aug":  2 },    "hits": 2, "briefing_description": "Standing AI committee for paradox calls. Board signal + both moves nudge up.",                                                       "research_note": "Smith & Lewis (2011) governance for paradox; Raisch & Krakowski (2021) operationalised.",                                                              "tag": "composite","sources": ["smith-2011-paradox", "raisch-2021"] },
+    { "id": "PDX-STR-04", "label": "Cap dashboard",     "category": "str", "effects": { "cap":  4, "board_conf":  3 },                "hits": 2, "briefing_description": "Stands up a capability dashboard tracked at firm leadership. Capability institutionalised.",                                       "research_note": "Spring et al. (2022) — capability becomes governable when measured.",                                                                                   "tag": "derived",  "sources": ["spring-2022"] },
+
+    { "id": "PDX-REC-01", "label": "Hybrid sprint",     "category": "rec", "effects": { "auto": 10, "aug": 10, "cap":  5 },           "hits": 2, "briefing_description": "Two-week firm-wide sprint integrating auto + aug streams. Big lift on both. Q3 only when gap is wide.",                          "research_note": "Hillebrand et al. (2025) hybrid sprint pattern as paradox-correction.",                                                                                  "tag": "derived",  "sources": ["hillebrand-2025"], "recovery": true }
+  ],
+  "crisis_pool": ["FRICT", "TALENT", "BOARD", "AUDIT", "HALLUC", "ESG", "API_OUT", "COMPET"],
+  "opportunity_pool": ["TALENT_WIN", "OSS_REL", "PARTNER"],
+  "crises_per_quarter": { "1": 1, "2": 1, "3": 2, "4": 1 },
+  "opportunities_per_game": 1,
+  "strategic_categories": ["str"],
+  "crisis_meter_map": {
+    "trust_proxy":       "cap",
+    "capability_proxy":  "cap",
+    "board_proxy":       "board_conf",
+    "performance_proxy": "eff",
+    "press_proxy":       "cap",
+    "perception_proxy":  "cap",
+    "value_proxy":       "eff",
+    "coherence_proxy":   "cap",
+    "adoption_proxy":    "eff",
+    "polit_proxy":       "board_conf",
+    "sys_int_proxy":     "cap"
+  },
+
+  "quarter_walls": {
+    "1": { "size": 24, "include_recovery": false },
+    "2": { "size": 24, "include_recovery": false },
+    "3": { "size": 22, "include_recovery": true,  "recovery_unlock_trigger": "auto_aug_abs_gap > 30" },
+    "4": { "size": 16, "include_recovery": false, "heavier": true }
+  },
+  "ball_speed_ramp": [1.00, 1.10, 1.21, 1.33],
+  "incident_event_ids": ["Q1_CAP_ERO", "Q2_VICIOUS", "Q3_AUDIT_ERR", "Q3_SLOW_BUILD"],
+  "events": {
+    "1": [
+      { "id": "Q1_CAP_ERO",  "trigger": "q_auto_count >= 5 AND q_aug_count <= 2", "severity": "warning",  "label": "Q1 · CAPABILITY EROSION", "text": "Junior staff complain they're not getting reps. The director asks if you're building auditors or button-pressers.", "effects": { "cap": -5, "board_conf": -3 } },
+      { "id": "Q1_ROI",      "trigger": "q_aug_count >= 5 AND q_auto_count <= 2", "severity": "warning",  "label": "Q1 · WHERE'S THE ROI",     "text": "CFO's quarterly note: \"Investment in training is visible. Productivity returns are not.\"",                          "effects": { "board_conf": -5 } },
+      { "id": "Q1_VIRT",     "trigger": "q_auto_count >= 4 AND q_aug_count >= 4", "severity": "positive", "label": "Q1 · BOTH MOVES",          "text": "Engagement scores up; cycle time down. Two paragraphs in the firm-wide email.",                                       "effects": { "board_conf":  5 } },
+      { "id": "Q1_SLOW",     "trigger": "always",                                  "severity": "neutral",  "label": "Q1 · SLOW START",          "text": "Nothing's broken; nothing's moving. The committee asks for sharper choices in Q2.",                                   "effects": { "board_conf": -3 } }
+    ],
+    "2": [
+      { "id": "Q2_VICIOUS", "trigger": "auto_aug_abs_gap > 35",                                    "severity": "critical", "label": "Q2 · VICIOUS CYCLE",  "text": "The gap between the two streams becomes self-reinforcing. People route around the weaker side. One life lost.",      "effects": { "lives": -1, "board_conf": -10 } },
+      { "id": "Q2_VIRT",    "trigger": "auto_aug_abs_gap <= 15 AND auto >= 50 AND aug >= 50",      "severity": "positive", "label": "Q2 · VIRTUOUS CYCLE", "text": "Auto and aug feed each other. Clients notice the difference. Partner meeting feels different.",                       "effects": { "board_conf":  8 } },
+      { "id": "Q2_STATUS",  "trigger": "always",                                                   "severity": "neutral",  "label": "Q2 · STATUS",         "text": "Quarter ends without fireworks. Risk team has nothing flagged. Marketing wants a story you can't yet tell.",          "effects": {} }
+    ],
+    "3": [
+      { "id": "Q3_AUDIT_ERR",  "trigger": "auto >= 60 AND aug < 40",                              "severity": "critical", "label": "Q3 · AUDIT ERROR",        "text": "AI-drafted memo misses a related-party disclosure. Client catches it. Firm credibility takes a hit. One life lost.", "effects": { "lives": -1, "cap": -10, "board_conf": -10 } },
+      { "id": "Q3_COMP",       "trigger": "aug >= 60 AND auto < 40",                              "severity": "warning",  "label": "Q3 · COMPETITION",       "text": "Competitor firm announces a 30% productivity gain from their AI auditor. Your investor day messaging needs a rewrite.", "effects": { "board_conf": -10 } },
+      { "id": "Q3_RECOG",      "trigger": "auto >= 50 AND aug >= 50 AND auto_aug_abs_gap <= 20",  "severity": "positive", "label": "Q3 · RECOGNITION",       "text": "Industry press picks up your hybrid configuration. Board sends a celebratory note.",                                "effects": { "board_conf": 10 } },
+      { "id": "Q3_SLOW_BUILD", "trigger": "q1_auto_count + q1_aug_count <= 4 AND q2_auto_count + q2_aug_count <= 4", "severity": "warning", "label": "Q3 · SLOW BUILD", "text": "Two quarters of timid moves. The board wonders aloud whether this is a real initiative. One life lost.", "effects": { "lives": -1, "board_conf": -8, "cap": -5 } },
+      { "id": "Q3_STATUS",     "trigger": "always",                                                "severity": "neutral",  "label": "Q3 · HOLDING",            "text": "Quarter passes without a major incident. Investor day prep begins.",                                                  "effects": {} }
+    ]
+  },
+  "quarter_wrap_rules": [
+    { "id": "BC_COLLAPSE", "condition": "board_conf < 15", "effects": { "lives": -1, "board_conf": 10 }, "severity": "critical", "label": "BOARD CONFIDENCE COLLAPSE", "text": "Emergency partners' call. You spend it defending the program rather than running it." }
+  ],
+  "q4_forced_choice": {
+    "trigger_seconds_into_q4": 30,
+    "default_choice": "hybrid",
+    "options": [
+      { "id": "auto_agg", "label": "Automate aggressively in Year Two", "description": "Recommend doubling the automation push. Bet on efficiency.",
+        "succeeds_if": "aug >= 50", "success_effects": { "board_conf": 10, "eff": 15 }, "backfire_effects": { "board_conf": -20, "lives": -1 } },
+      { "id": "hybrid",   "label": "Hold both moves — keep the hybrid", "description": "Recommend continuing the dual-track approach. Refuse the binary.",
+        "succeeds_if": "auto_aug_abs_gap <= 25", "success_effects": { "board_conf": 8 }, "backfire_effects": { "board_conf": -10, "lives": -1 } },
+      { "id": "pull_back","label": "Pull back to augmentation", "description": "Recommend cooling the automation push and doubling down on people.",
+        "succeeds_if": "always", "success_effects": { "board_conf":  3, "cap":  5 } }
+    ]
+  },
+  "archetypes": [
+    { "id": "drifter_empty",     "label": "The Drifter",            "icon": "≀",  "trigger_priority": 0, "trigger": "total_bricks == 0",                                                                                            "reveal_text": "You played but barely played. The paradox was put to you and you didn't pick.",                                                                                                                                                                "tag": "derived",  "sources": ["raisch-2021"] },
+    { "id": "course_corrector",  "label": "The Course-Corrector",   "icon": "↺", "trigger_priority": 1, "trigger": "q1_auto_count >= 5 AND q3_aug_count >= 4 AND lives_lost <= 2",                                                  "reveal_text": "Q1 you bet automation. Q3 you saw the gap and built the people side. You arrived at the paradox the long way. Year Two is yours to defend.",                                                                                                "tag": "derived",  "sources": ["raisch-2021", "smith-2011-paradox"] },
+    { "id": "both_and",          "label": "The Both/And",           "icon": "∞", "trigger_priority": 2, "trigger": "auto >= 70 AND aug >= 70 AND auto_aug_abs_gap <= 25 AND lives_lost <= 1",                                       "reveal_text": "You refused the binary from day one. Automation deepened while augmentation broadened. The firm became something both of its predecessors weren't.",                                                                                          "tag": "derived",  "sources": ["raisch-2021", "smith-2011-paradox", "hillebrand-2025"] },
+    { "id": "automator",         "label": "The Automator",          "icon": "⟶", "trigger_priority": 3, "trigger": "auto_pct > 0.45 AND auto - aug > 25",                                                                            "reveal_text": "You bet automation. The efficiency numbers are real. The capability drain is real too. The partners will love you until the year the audits start missing things.",                                                                          "tag": "derived",  "sources": ["raisch-2021", "spring-2022"] },
+    { "id": "augmenter",         "label": "The Augmenter",          "icon": "⤴", "trigger_priority": 4, "trigger": "aug_pct > 0.45 AND aug - auto > 25 AND lives_lost <= 1",                                                        "reveal_text": "You bet people. Your team is more capable than when you started. The CFO is asking when productivity catches up to the training budget.",                                                                                                    "tag": "derived",  "sources": ["shao-2025", "raisch-2021"] },
+    { "id": "drifter",           "label": "The Drifter",            "icon": "≀",  "trigger_priority": 5, "trigger": "always",                                                                                                          "reveal_text": "You held something — not the paradox, not a clear bet. The committee writes your year up as transitional. Year Two needs a pattern. You're choosing whether to be the one who draws it.",                                                       "tag": "derived",  "sources": ["raisch-2021"] }
+  ]
+}

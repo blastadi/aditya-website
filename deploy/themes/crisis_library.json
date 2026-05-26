@@ -1,0 +1,539 @@
+{
+  "_doc": "Shared crisis + opportunity definitions. Per the catalog §6, themes draw from a tailored pool. Drain meters and effect keys use abstract proxy tokens (trust_proxy, capability_proxy, board_proxy, performance_proxy, perception_proxy, press_proxy, value_proxy, coherence_proxy, adoption_proxy, polit_proxy, sys_int_proxy, lives, contested_regulator). Each theme's crisis_meter_map resolves these to its concrete meters.",
+
+  "version": "milestone-2",
+
+  "crises": {
+
+    "_minor_3s_1_brick": "═══════════════════════ MINOR ═══════════════════════",
+
+    "HALLUC": {
+      "label": "Hallucination Incident",
+      "severity": "minor",
+      "duration_seconds": 3,
+      "physics_signatures": ["screen_tint_amber", "ball_erratic"],
+      "response_bricks": [
+        { "id": "halluc-1", "label": "Issue correction", "color_hint": "yellow" }
+      ],
+      "drain_meter": "perception_proxy",
+      "drain_rate_per_sec": 5,
+      "success_effect":  { "perception_proxy": 3 },
+      "failure_effect":  { "perception_proxy": -15, "press_proxy": 5 },
+      "warning_text": "HALLUCINATION",
+      "success_feed_text": "Correction issued. Perception steady.",
+      "failure_feed_text": "Hallucination left uncorrected. Users noticed.",
+      "research_source": "yu-2025",
+      "research_note": "AI hallucinations propagate fastest when not acknowledged. Yu et al. (2025) show user trust degrades less from the hallucination itself than from the silence after."
+    },
+
+    "REG_COST": {
+      "label": "Regulatory Cost Spike",
+      "severity": "minor",
+      "duration_seconds": 3,
+      "physics_signatures": ["screen_tint_amber"],
+      "response_bricks": [
+        { "id": "regcost-1", "label": "Reallocate budget", "color_hint": "blue" }
+      ],
+      "drain_meter": "value_proxy",
+      "drain_rate_per_sec": 3,
+      "success_effect":  { "value_proxy": 2 },
+      "failure_effect":  { "value_proxy": -10, "board_proxy": -3 },
+      "warning_text": "REG COST SPIKE",
+      "success_feed_text": "Budget reallocated. Value capture intact.",
+      "failure_feed_text": "Funding question raised at next quarterly review.",
+      "research_source": "eu-ai-act-2024",
+      "research_note": "The EU AI Act and similar instruments impose compliance costs that arrive as line-item surprises rather than scheduled budgets."
+    },
+
+    "API_OUT": {
+      "label": "API Outage",
+      "severity": "minor",
+      "duration_seconds": 3,
+      "physics_signatures": ["screen_tint_amber", "ball_slow"],
+      "response_bricks": [
+        { "id": "apiout-1", "label": "Switch to backup", "color_hint": "green" }
+      ],
+      "drain_meter": "performance_proxy",
+      "drain_rate_per_sec": 4,
+      "success_effect":  { "performance_proxy": 3 },
+      "failure_effect":  { "performance_proxy": -8, "lives": -1 },
+      "warning_text": "API OUTAGE",
+      "success_feed_text": "Switched to backup vendor. Service restored.",
+      "failure_feed_text": "Customer-impacting outage. One life lost.",
+      "research_source": "nist-rmf-2023",
+      "research_note": "Single-vendor AI dependencies are documented in NIST AI RMF as one of the highest-frequency deployment-stage failures."
+    },
+
+    "_moderate_4s_2_bricks": "═══════════════════════ MODERATE ═══════════════════════",
+
+    "BIAS": {
+      "label": "Bias Surfaces",
+      "severity": "moderate",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_amber", "brick_lock_red"],
+      "response_bricks": [
+        { "id": "bias-1", "label": "Run bias audit",    "color_hint": "blue" },
+        { "id": "bias-2", "label": "Recalibrate model", "color_hint": "green" }
+      ],
+      "drain_meter": "trust_proxy",
+      "drain_rate_per_sec": 3,
+      "success_effect":  { "trust_proxy": 5, "board_proxy": 3 },
+      "failure_effect":  { "trust_proxy": -10, "lives": -1, "press_proxy": 5 },
+      "warning_text": "BIAS DETECTED",
+      "success_feed_text": "Bias addressed. Audit confirms calibration.",
+      "failure_feed_text": "Bias unaddressed. The community has noticed.",
+      "research_source": "barocas-selbst-2016",
+      "research_note": "Bias in deployed AI systems is typically emergent, not intentional. Each pipeline stage encodes choices that can produce disparate impact. Detection during deployment requires audit; remediation requires retraining or constraint addition."
+    },
+
+    "NEW_POL": {
+      "label": "New Policy In Effect",
+      "severity": "moderate",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_amber", "brick_lock_red"],
+      "response_bricks": [
+        { "id": "newpol-1", "label": "Brief compliance",   "color_hint": "blue" },
+        { "id": "newpol-2", "label": "Update procedures",  "color_hint": "yellow" }
+      ],
+      "drain_meter": "board_proxy",
+      "drain_rate_per_sec": 2,
+      "success_effect":  { "board_proxy": 4 },
+      "failure_effect":  { "board_proxy": -10, "lives": -1 },
+      "warning_text": "NEW POLICY IN EFFECT",
+      "success_feed_text": "Compliance briefed in time. Procedures updated.",
+      "failure_feed_text": "Caught off-guard by the rule change. One life lost.",
+      "research_source": "eu-ai-act-2024",
+      "research_note": "Policy transitions create temporary compliance gaps. Deployment teams that read upstream rule signals absorb the cost; teams that wait for enforcement pay for it."
+    },
+
+    "FRICT": {
+      "label": "Workplace Friction",
+      "severity": "moderate",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_amber", "paddle_slow"],
+      "response_bricks": [
+        { "id": "frict-1", "label": "Hold town hall",     "color_hint": "blue" },
+        { "id": "frict-2", "label": "Address concerns",   "color_hint": "green" }
+      ],
+      "drain_meter": "capability_proxy",
+      "drain_rate_per_sec": 4,
+      "success_effect":  { "capability_proxy": 3, "trust_proxy": 3 },
+      "failure_effect":  { "capability_proxy": -10, "trust_proxy": -5 },
+      "warning_text": "WORKPLACE FRICTION",
+      "success_feed_text": "Team realigned. Concerns heard, paddle steady.",
+      "failure_feed_text": "Friction calcifies. Team disengaged through the rest of the year.",
+      "research_source": "shao-2025",
+      "research_note": "Internal resistance to AI deployment is one of the most under-counted costs in the academic literature on AI adoption. When workforce capability erodes from change-fatigue rather than capability gaps, the symptoms look identical to a technical failure."
+    },
+
+    "BOARD": {
+      "label": "Board Misalignment",
+      "severity": "moderate",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_amber", "ball_slow"],
+      "response_bricks": [
+        { "id": "board-1", "label": "Realign with strategy", "color_hint": "blue" },
+        { "id": "board-2", "label": "Reframe narrative",     "color_hint": "yellow" }
+      ],
+      "drain_meter": "board_proxy",
+      "drain_rate_per_sec": 5,
+      "success_effect":  { "board_proxy": 5 },
+      "failure_effect":  { "board_proxy": -10, "lives": -1 },
+      "warning_text": "BOARD MISALIGNMENT",
+      "success_feed_text": "Board re-aligned. Quarterly review survives.",
+      "failure_feed_text": "Board patience exhausted. One life lost.",
+      "research_source": "bcg-2025",
+      "research_note": "Board confidence in AI initiatives erodes silently. By the time it surfaces in quarterly review, the patience-runway is usually shorter than the deployment lead realises."
+    },
+
+    "DRIFT": {
+      "label": "Model Drift Alert",
+      "severity": "moderate",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_amber", "ball_erratic"],
+      "response_bricks": [
+        { "id": "drift-1", "label": "Retrain model", "color_hint": "blue" },
+        { "id": "drift-2", "label": "Run audit",     "color_hint": "green" }
+      ],
+      "drain_meter": "performance_proxy",
+      "drain_rate_per_sec": 3,
+      "success_effect":  { "performance_proxy": 3 },
+      "failure_effect":  { "performance_proxy": -8, "sys_int_proxy": -5 },
+      "warning_text": "MODEL DRIFT",
+      "success_feed_text": "Retrain triggered. Drift contained.",
+      "failure_feed_text": "Performance ceiling lower for the rest of the year.",
+      "research_source": "li-2026",
+      "research_note": "Model drift is the slow erosion of performance as the operational distribution diverges from the training distribution. Detection via conformal methods is well-established; remediation requires retraining cadence the organisation has often not budgeted."
+    },
+
+    "TALENT": {
+      "label": "Talent Departure",
+      "severity": "moderate",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_amber"],
+      "response_bricks": [
+        { "id": "talent-1", "label": "Backfill role", "color_hint": "blue" },
+        { "id": "talent-2", "label": "Retain team",   "color_hint": "green" }
+      ],
+      "drain_meter": "capability_proxy",
+      "drain_rate_per_sec": 3,
+      "success_effect":  { "capability_proxy": 4 },
+      "failure_effect":  { "capability_proxy": -10, "trust_proxy": -5 },
+      "warning_text": "TALENT DEPARTURE",
+      "success_feed_text": "Backfilled. Team capability holds.",
+      "failure_feed_text": "Capability bench thins. The remaining team notices.",
+      "research_source": "rosenthal-2025",
+      "research_note": "AI capability is concentrated in a small number of senior roles. The departure of one such role can produce capability drag disproportionate to headcount."
+    },
+
+    "MISUSE": {
+      "label": "Public Misuse",
+      "severity": "moderate",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_amber", "brick_hostile_purple"],
+      "response_bricks": [
+        { "id": "misuse-1", "label": "Add safeguards",   "color_hint": "blue" },
+        { "id": "misuse-2", "label": "User education",   "color_hint": "green" }
+      ],
+      "drain_meter": "adoption_proxy",
+      "drain_rate_per_sec": 3,
+      "success_effect":  { "adoption_proxy": 3, "sys_int_proxy": 3 },
+      "failure_effect":  { "adoption_proxy": -10, "sys_int_proxy": -5 },
+      "warning_text": "PUBLIC MISUSE",
+      "success_feed_text": "Safeguards added. Misuse vector closed.",
+      "failure_feed_text": "Misuse becomes a recurring pattern in support tickets.",
+      "research_source": "yu-2025",
+      "research_note": "Users find ways to use AI systems that designers did not anticipate. The cost of misuse falls on the deployment team regardless of the user's intent."
+    },
+
+    "COMPET": {
+      "label": "Competitor Move",
+      "severity": "moderate",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_amber"],
+      "response_bricks": [
+        { "id": "compet-1", "label": "Accelerate roadmap", "color_hint": "blue" },
+        { "id": "compet-2", "label": "Differentiate",      "color_hint": "yellow" }
+      ],
+      "drain_meter": "board_proxy",
+      "drain_rate_per_sec": 3,
+      "success_effect":  { "board_proxy": 5 },
+      "failure_effect":  { "board_proxy": -10 },
+      "warning_text": "COMPETITOR MOVE",
+      "success_feed_text": "Roadmap acceleration announced. Narrative held.",
+      "failure_feed_text": "Competitor's launch dominates the trade press.",
+      "research_source": "iansiti-lakhani-2020",
+      "research_note": "AI deployments compete on narrative as much as on capability. Competitor moves shift board expectations independently of your own performance."
+    },
+
+    "WHISTLE": {
+      "label": "Whistleblower Threat",
+      "severity": "moderate",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_amber", "brick_lock_red"],
+      "response_bricks": [
+        { "id": "whistle-1", "label": "Protect whistleblower", "color_hint": "blue" },
+        { "id": "whistle-2", "label": "Investigate claim",     "color_hint": "yellow" }
+      ],
+      "drain_meter": "polit_proxy",
+      "drain_rate_per_sec": -5,
+      "success_effect":  { "polit_proxy": -3, "trust_proxy": 3 },
+      "failure_effect":  { "trust_proxy": -10, "lives": -1, "press_proxy": 5 },
+      "warning_text": "INTERNAL REPORT LEAKING",
+      "success_feed_text": "Whistleblower protected. Claim investigated honestly.",
+      "failure_feed_text": "External story breaks. One life lost.",
+      "research_source": "marabelli-2021",
+      "research_note": "Whistleblower dynamics in inherited AI systems are an under-documented governance surface. The cost of suppression typically exceeds the cost of investigation."
+    },
+
+    "CYBER": {
+      "label": "Cyber Incident",
+      "severity": "moderate",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_red", "screen_glitch", "brick_hostile_purple"],
+      "response_bricks": [
+        { "id": "cyber-1", "label": "Containment",   "color_hint": "blue" },
+        { "id": "cyber-2", "label": "Notification",  "color_hint": "yellow" }
+      ],
+      "drain_meter": "trust_proxy",
+      "drain_rate_per_sec": 3,
+      "success_effect":  { "trust_proxy": 3 },
+      "failure_effect":  { "trust_proxy": -10, "performance_proxy": -5, "lives": -1 },
+      "warning_text": "CYBER INCIDENT",
+      "success_feed_text": "Contained quickly. Notification done by the book.",
+      "failure_feed_text": "Incident escalated to regulatory inquiry.",
+      "research_source": "nist-rmf-2023",
+      "research_note": "AI deployment surfaces increase the cyber-attack surface. Containment and notification are time-sensitive; an unprepared team pays compounding costs."
+    },
+
+    "HALLUC_CUST": {
+      "label": "Hallucinated Output to Customer",
+      "severity": "moderate",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_amber", "brick_rain"],
+      "response_bricks": [
+        { "id": "halluccust-1", "label": "Catch escaped output", "color_hint": "yellow" },
+        { "id": "halluccust-2", "label": "Issue correction",     "color_hint": "blue" }
+      ],
+      "drain_meter": "trust_proxy",
+      "drain_rate_per_sec": 5,
+      "success_effect":  { "trust_proxy": 3, "adoption_proxy": 2 },
+      "failure_effect":  { "trust_proxy": -15, "adoption_proxy": -5 },
+      "warning_text": "HALLUCINATION → CUSTOMER",
+      "success_feed_text": "Caught the bad output before it landed. Correction issued.",
+      "failure_feed_text": "Customer received the hallucinated response. Trust hit.",
+      "research_source": "yu-2025",
+      "research_note": "Customer-facing hallucinations compound: the customer remembers the bad answer, not the calibration metric. Yu et al. (2025) document the asymmetric memory effect."
+    },
+
+    "_major_5s_3_bricks": "═══════════════════════ MAJOR ═══════════════════════",
+
+    "AUDIT": {
+      "label": "Compliance Audit",
+      "severity": "major",
+      "duration_seconds": 5,
+      "physics_signatures": ["screen_tint_red", "edge_vignette_pulse", "camera_shake_low"],
+      "response_bricks": [
+        { "id": "audit-1", "label": "Document procedures",  "color_hint": "blue" },
+        { "id": "audit-2", "label": "Show training data",   "color_hint": "green" },
+        { "id": "audit-3", "label": "Demonstrate controls", "color_hint": "yellow" }
+      ],
+      "drain_meter": "board_proxy",
+      "drain_rate_per_sec": 3,
+      "success_effect":  { "board_proxy": 5 },
+      "failure_effect":  { "board_proxy": -10, "lives": -1, "contested_regulator": true },
+      "warning_text": "COMPLIANCE AUDIT",
+      "success_feed_text": "Audit passed. Board notes the readiness.",
+      "failure_feed_text": "Audit findings flag the program for Q4 follow-up.",
+      "research_source": "nist-rmf-2023",
+      "research_note": "Audit-readiness is not a moment — it is a discipline. Teams that documented continuously absorb audit days; teams that documented retroactively pay for years."
+    },
+
+    "PRIVACY": {
+      "label": "Data Privacy Incident",
+      "severity": "major",
+      "duration_seconds": 5,
+      "physics_signatures": ["screen_tint_red", "edge_vignette_pulse", "brick_hostile_purple"],
+      "response_bricks": [
+        { "id": "priv-1", "label": "Lock down access",        "color_hint": "blue" },
+        { "id": "priv-2", "label": "Notify regulator",        "color_hint": "yellow" },
+        { "id": "priv-3", "label": "Communicate to affected", "color_hint": "green" }
+      ],
+      "drain_meter": "trust_proxy",
+      "drain_rate_per_sec": 4,
+      "success_effect":  { "trust_proxy": 3 },
+      "failure_effect":  { "trust_proxy": -15, "lives": -1, "press_proxy": 10 },
+      "warning_text": "DATA PRIVACY INCIDENT",
+      "success_feed_text": "Lockdown executed. Regulator notified inside the deadline.",
+      "failure_feed_text": "Affected users learned via press. Large press spike.",
+      "research_source": "barocas-selbst-2016",
+      "research_note": "Data privacy incidents in AI systems carry compounding cost: the loss itself, the regulatory penalty, the trust erosion, and the precedent the firm has now set for itself."
+    },
+
+    "PR": {
+      "label": "PR Crisis",
+      "severity": "major",
+      "duration_seconds": 5,
+      "physics_signatures": ["screen_tint_red", "edge_vignette_pulse", "camera_shake_high"],
+      "response_bricks": [
+        { "id": "pr-1", "label": "Issue statement",    "color_hint": "blue" },
+        { "id": "pr-2", "label": "Pause deployment",   "color_hint": "yellow" },
+        { "id": "pr-3", "label": "Brief community",    "color_hint": "green" }
+      ],
+      "drain_meter": "trust_proxy",
+      "drain_rate_per_sec": 5,
+      "success_effect":  { "trust_proxy": 5 },
+      "failure_effect":  { "trust_proxy": -15, "lives": -1, "press_proxy": 15 },
+      "warning_text": "🔥 TRENDING",
+      "success_feed_text": "Crisis contained. The story died down.",
+      "failure_feed_text": "The story has legs. Coverage continues for weeks.",
+      "research_source": "marabelli-2021",
+      "research_note": "Public incidents in AI deployment compound quickly because algorithmic systems are seen as having intent. A single visible failure can become a sustained narrative."
+    },
+
+    "LAWSUIT": {
+      "label": "Lawsuit / Legal Discovery",
+      "severity": "major",
+      "duration_seconds": 5,
+      "physics_signatures": ["screen_tint_red", "brick_heavy"],
+      "response_bricks": [
+        { "id": "law-1", "label": "Engage counsel",          "color_hint": "blue" },
+        { "id": "law-2", "label": "Preserve records",        "color_hint": "yellow" },
+        { "id": "law-3", "label": "Internal investigation",  "color_hint": "green" }
+      ],
+      "drain_meter": "board_proxy",
+      "drain_rate_per_sec": 3,
+      "success_effect":  { "board_proxy": 3 },
+      "failure_effect":  { "board_proxy": -10, "lives": -1 },
+      "warning_text": "⚖ LEGAL HOLD",
+      "success_feed_text": "Counsel engaged. Records preserved. Investigation honest.",
+      "failure_feed_text": "Discovery surfaces gaps. Settlement implied.",
+      "research_source": "barocas-selbst-2016",
+      "research_note": "Legal discovery in AI cases turns on documentation. The team that preserved its decision trail can defend; the team that didn't, settles."
+    },
+
+    "ACTIVISM": {
+      "label": "Stakeholder Activism",
+      "severity": "major",
+      "duration_seconds": 5,
+      "physics_signatures": ["screen_tint_red", "edge_vignette_pulse"],
+      "response_bricks": [
+        { "id": "act-1", "label": "Address concerns",   "color_hint": "blue" },
+        { "id": "act-2", "label": "Public commitment",  "color_hint": "green" },
+        { "id": "act-3", "label": "Engage advisory",    "color_hint": "yellow" }
+      ],
+      "drain_meter": "polit_proxy",
+      "drain_rate_per_sec": -5,
+      "success_effect":  { "polit_proxy": -3, "trust_proxy": 3 },
+      "failure_effect":  { "polit_proxy": 10, "lives": -1 },
+      "warning_text": "STAKEHOLDER ACTIVISM",
+      "success_feed_text": "Concerns addressed in public. Coalition holds.",
+      "failure_feed_text": "Activism organises. Opposition becomes durable.",
+      "research_source": "matthews-2025",
+      "research_note": "Stakeholder activism in AI deployment is increasingly organised. Reactive engagement costs more political capital than proactive engagement."
+    },
+
+    "ESG": {
+      "label": "ESG / Ethics Review",
+      "severity": "major",
+      "duration_seconds": 5,
+      "physics_signatures": ["screen_tint_red", "edge_vignette_pulse"],
+      "response_bricks": [
+        { "id": "esg-1", "label": "Ethical alignment",    "color_hint": "blue" },
+        { "id": "esg-2", "label": "Document principles",  "color_hint": "green" },
+        { "id": "esg-3", "label": "External review",      "color_hint": "yellow" }
+      ],
+      "drain_meter": "board_proxy",
+      "drain_rate_per_sec": 3,
+      "success_effect":  { "board_proxy": 3, "trust_proxy": 3 },
+      "failure_effect":  { "board_proxy": -10, "trust_proxy": -5, "lives": -1 },
+      "warning_text": "ESG / ETHICS REVIEW",
+      "success_feed_text": "Principles documented. External review favourable.",
+      "failure_feed_text": "Ethical-breach flag on the year-end packet.",
+      "research_source": "matthews-2025",
+      "research_note": "ESG and ethics review for AI deployment is shifting from voluntary disclosure to material risk. Boards now expect to see the documentation."
+    }
+
+  },
+
+  "opportunities": {
+
+    "OSS_REL": {
+      "label": "Open-Source Model Release",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_green", "brick_spawn_green", "edge_vignette_green"],
+      "response_bricks": [
+        { "id": "oss-1", "label": "Evaluate adoption", "color_hint": "cyan" },
+        { "id": "oss-2", "label": "Adapt strategy",    "color_hint": "green" }
+      ],
+      "success_effect": { "value_proxy": 5, "board_proxy": 3, "capability_proxy": 3 },
+      "missed_effect":  { "board_proxy": -2 },
+      "warning_text": "✨ OPPORTUNITY · OSS MODEL",
+      "success_feed_text": "Adopted the new model. Capability bench deepens.",
+      "missed_feed_text":  "Competitor adopted first. You'll catch up next year.",
+      "research_source": "jacobides-2021",
+      "research_note": "Open-source model releases reshape the build-vs-buy calculus. Firms that move within the window of advantage gain compound value; firms that don't, watch competitors compound."
+    },
+
+    "TALENT_WIN": {
+      "label": "Star Hire Available",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_green", "brick_glow_cyan"],
+      "response_bricks": [
+        { "id": "talwin-1", "label": "Make offer",   "color_hint": "cyan" },
+        { "id": "talwin-2", "label": "Onboard fast", "color_hint": "green" }
+      ],
+      "success_effect": { "capability_proxy": 8, "trust_proxy": 3 },
+      "missed_effect":  { "capability_proxy": -3 },
+      "warning_text": "✨ OPPORTUNITY · STAR HIRE",
+      "success_feed_text": "Hired. The team's capability bench deepens visibly.",
+      "missed_feed_text":  "Candidate accepted a competitor's offer.",
+      "research_source": "davenport-2023",
+      "research_note": "AI capability hires arrive in narrow availability windows. The cost of moving fast is process; the cost of moving slow is the hire."
+    },
+
+    "PR_WIN": {
+      "label": "Positive Press Window",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_green", "edge_vignette_green"],
+      "response_bricks": [
+        { "id": "prwin-1", "label": "Brief journalist", "color_hint": "cyan" },
+        { "id": "prwin-2", "label": "Share data",       "color_hint": "green" }
+      ],
+      "success_effect": { "trust_proxy": 8, "board_proxy": 5 },
+      "missed_effect":  { "board_proxy": -2 },
+      "warning_text": "✨ OPPORTUNITY · FAVOURABLE COVERAGE",
+      "success_feed_text": "Briefed in time. Coverage frames the program well.",
+      "missed_feed_text":  "Window closed. The story ran without you.",
+      "research_source": "gillespie-2025",
+      "research_note": "Favourable coverage windows are short. Gillespie et al. (2025) show that the trust dividend of being early-to-narrative compounds across the year."
+    },
+
+    "PARTNER": {
+      "label": "Strategic Partnership Offer",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_green", "brick_glow_cyan"],
+      "response_bricks": [
+        { "id": "part-1", "label": "Negotiate terms",       "color_hint": "cyan" },
+        { "id": "part-2", "label": "Align with strategy",   "color_hint": "green" }
+      ],
+      "success_effect": { "capability_proxy": 5, "value_proxy": 5 },
+      "missed_effect":  { "value_proxy": -2 },
+      "warning_text": "✨ OPPORTUNITY · PARTNERSHIP OFFER",
+      "success_feed_text": "Partnership ratified. Capability and value both gain.",
+      "missed_feed_text":  "Deal goes to a competitor. Niche narrows.",
+      "research_source": "sjodin-2021",
+      "research_note": "Strategic partnership offers in the AI value chain are increasingly time-bounded. The discipline of fast alignment determines whether the offer is the gift it appears to be."
+    },
+
+    "CHARTER_RATIFY": {
+      "label": "Charter Ratification Window",
+      "duration_seconds": 4,
+      "physics_signatures": ["screen_tint_green", "brick_glow_cyan"],
+      "response_bricks": [
+        { "id": "char-1", "label": "Push for ratification", "color_hint": "cyan" }
+      ],
+      "success_effect": { "coherence_proxy": 10, "board_proxy": 5 },
+      "missed_effect":  { "coherence_proxy": -3 },
+      "warning_text": "✨ OPPORTUNITY · CHARTER WINDOW",
+      "success_feed_text": "Charter ratified. Strategic coherence anchored.",
+      "missed_feed_text":  "Window closed. Coherence drifts another quarter.",
+      "research_source": "hutzschenreuter-2025",
+      "research_note": "Strategic charters in AI initiatives have ratification windows tied to board cycles. Missing one window typically costs a year before the next."
+    }
+
+  },
+
+  "shared_archetypes": [
+    {
+      "id": "crisis_strategist",
+      "label": "The Crisis Strategist",
+      "icon": "⚡",
+      "trigger_priority": -3,
+      "trigger": "crises_fired > 0 AND crisis_response_rate >= 0.80 AND strategic_pct >= 0.30",
+      "reveal_text": "You held both — the year's crises AND your strategic line. Crises landed; you contained most of them. The strategic charter still has your signature on it. This is the rarest archetype in the game and the rarest in industry. Year Two starts with the team understanding what 'unshakeable under pressure' actually means.",
+      "tag": "composite",
+      "sources": ["iansiti-2020", "raisch-2021", "marabelli-2021"]
+    },
+    {
+      "id": "firefighter",
+      "label": "The Firefighter",
+      "icon": "🚒",
+      "trigger_priority": -2,
+      "trigger": "crises_fired > 0 AND crisis_response_rate >= 0.85 AND strategic_pct < 0.30",
+      "reveal_text": "You resolved every crisis the year threw at you. You didn't have time for strategy. The team learned what reactive excellence looks like — and that excellence has a cost. Year Two needs someone who can do both. That person might still be you.",
+      "tag": "composite",
+      "sources": ["rosenthal-2025", "hutzschenreuter-2025"]
+    },
+    {
+      "id": "overwhelmed",
+      "label": "The Overwhelmed",
+      "icon": "🌊",
+      "trigger_priority": -1,
+      "trigger": "crises_fired > 0 AND crisis_response_rate < 0.30 AND lives_lost_to_crises >= 2",
+      "reveal_text": "The year was louder than you could match. Your strategic decisions were drowned out by the things you didn't contain. The board's review will focus on what happened to you, not what you built. Year Two starts with the same problems and a shorter runway.",
+      "tag": "composite",
+      "sources": ["marabelli-2021", "bcg-2025"]
+    }
+  ]
+}

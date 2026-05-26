@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DEPLOY</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- React 18 (UMD, production) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel Standalone — transpiles JSX in the browser. -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Phaser 3 — game engine. -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+
+  <!-- Howler — audio (optional; can be removed if no audio shipped). -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Vanilla JS engine modules — load before Babel transpiles JSX. -->
+  <script src="game/eventBus.js"></script>
+  <script src="game/engineRules.js"></script>
+  <script src="game/scenes/PreloadScene.js"></script>
+  <script src="game/scenes/PlayScene.js"></script>
+
+  <!-- React components — Babel transpiles JSX on the fly. -->
+  <!-- Order matters: components must register on window before app.jsx renders. -->
+  <!-- Phase 3 (play layer) -->
+  <script type="text/babel" data-presets="env,react" src="components/HUD.jsx"></script>
+  <script type="text/babel" data-presets="env,react" src="components/PressureFeed.jsx"></script>
+  <script type="text/babel" data-presets="env,react" src="components/Lives.jsx"></script>
+  <script type="text/babel" data-presets="env,react" src="components/QuarterTransition.jsx"></script>
+  <script type="text/babel" data-presets="env,react" src="components/Q4ForcedChoice.jsx"></script>
+  <script type="text/babel" data-presets="env,react" src="components/ArchetypeReveal.jsx"></script>
+  <!-- Phase 4 (surround screens + research backbone) -->
+  <script type="text/babel" data-presets="env,react" src="components/ThemeSelect.jsx"></script>
+  <script type="text/babel" data-presets="env,react" src="components/ThemeBackground.jsx"></script>
+  <script type="text/babel" data-presets="env,react" src="components/BriefingRoom.jsx"></script>
+  <script type="text/babel" data-presets="env,react" src="components/PressureRamp.jsx"></script>
+  <script type="text/babel" data-presets="env,react" src="components/ResearchBackbone.jsx"></script>
+  <!-- Phase 6 (Crisis Events) -->
+  <script type="text/babel" data-presets="env,react" src="components/CrisisOverlay.jsx"></script>
+  <script type="text/babel" data-presets="env,react" src="game/PhaserGame.jsx"></script>
+  <script type="text/babel" data-presets="env,react" src="app.jsx"></script>
+</body>
+</html>

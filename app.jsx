@@ -2,6 +2,33 @@
    Router / app entry
    ════════════════════════════════════════════════════════════════ */
 
+/* ────────────────────────────────────────────────────────────────
+   GamePage — DEPLOY (themed simulation) mounted via iframe.
+   Replaces the V4.7 Breakout-style game (now at archive/pages-game-v4-7.jsx).
+   DEPLOY lives as a self-contained static app at /deploy/index.html.
+   ──────────────────────────────────────────────────────────────── */
+function GamePage({ navigate }) {
+  return (
+    <section className="game-page">
+      <div className="game-page-bar">
+        <button
+          className="game-back"
+          onClick={() => navigate("home")}
+          aria-label="Return to site"
+        >← back to site</button>
+        <span className="game-title">DEPLOY · AI deployment simulation</span>
+        <span className="game-meta">~3 min · five themes · classroom prototype</span>
+      </div>
+      <iframe
+        src="deploy/index.html"
+        className="game-iframe"
+        title="DEPLOY"
+        allow="fullscreen"
+      />
+    </section>
+  );
+}
+
 function App() {
   const [route, navigate] = useRoute();
   const [theme, toggleTheme] = useDarkMode();
