@@ -464,7 +464,6 @@ function Masthead({ route, navigate, theme, toggleTheme, auth }) {
       <div className="masthead-inner">
         <div className="brand" onClick={() => navigate("home")}>
           <div className="brand-mark">{AUTHOR.full}</div>
-          <div className="brand-meta">Master Brewer · Researcher · Editor</div>
         </div>
         <nav className="nav-links" aria-label="Primary">
           {NAV_ITEMS.map(item => (
