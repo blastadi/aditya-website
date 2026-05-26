@@ -48,38 +48,117 @@ function useDarkMode() {
   return [theme, toggle];
 }
 
-/* ───────── Auth (mock) ───────── */
-const MOCK_PASSWORD = "thesis";
+/* ───────── Auth (Supabase) ─────────
+   Real auth via Supabase. The SDK is loaded as a UMD script in
+   index.html (window.supabase), so we just construct a client here.
+   - signInWithMagicLink(email) → sends magic link to a registered user.
+     If the user isn't in the dashboard, Supabase returns "Signups not
+     allowed for this instance" — invite-only is enforced server-side.
+   - The magic link returns the user to https://adityaparupudi.com/#/portal
+     with a token in the hash; onAuthStateChange picks it up.
+   - profile is the row from public.profiles (full_name, role, institution,
+     contributor_since); we fetch it whenever the session changes.
+*/
+const SUPABASE_URL      = "https://iepyjygjitcmapgefetg.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_1m7mCDnTSSEw3fVva0Wp4g_KYf8ZXVJ";
+
+const supabaseClient = window.supabase
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+    })
+  : null;
+window.__supabase = supabaseClient; // exposed for debugging; access via auth hook in components
 
 function useAuth() {
-  const [user, setUser] = useState(() => {
-    try {
-      const raw = localStorage.getItem("auth");
-      return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
-  });
+  const [user,    setUser]    = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(null);
+
+  // Fetch the profile row for a given user (returns null if missing).
+  const fetchProfile = useCallback(async (u) => {
+    if (!supabaseClient || !u) return null;
+    const { data, error } = await supabaseClient
+      .from("profiles")
+      .select("id, email, full_name, role, institution, contributor_since")
+      .eq("id", u.id)
+      .single();
+    if (error) {
+      console.warn("[auth] profile fetch error:", error.message);
+      return null;
+    }
+    return data;
+  }, []);
+
+  // Boot: read existing session + subscribe to auth state changes.
   useEffect(() => {
-    if (user) localStorage.setItem("auth", JSON.stringify(user));
-    else localStorage.removeItem("auth");
-  }, [user]);
-  const signIn = useCallback((email, password) => {
-    if (password !== MOCK_PASSWORD) {
-      return { ok: false, error: 'Password incorrect. Try "thesis".' };
-    }
-    if (!email || !email.includes("@")) {
-      return { ok: false, error: "Please enter a valid email address." };
-    }
-    setUser({
-      email,
-      name: "Dr. Elena Visser",
-      role: "Operations Researcher",
-      institution: "Lorem University",
-      contributorSince: "Feb 2024"
+    if (!supabaseClient) { setLoading(false); return; }
+    let mounted = true;
+
+    supabaseClient.auth.getSession().then(async ({ data }) => {
+      const u = data.session?.user || null;
+      if (!mounted) return;
+      setUser(u);
+      if (u) setProfile(await fetchProfile(u));
+      setLoading(false);
     });
+
+    const { data: sub } = supabaseClient.auth.onAuthStateChange(async (event, session) => {
+      const u = session?.user || null;
+      setUser(u);
+      setProfile(u ? await fetchProfile(u) : null);
+      setLoading(false);
+    });
+    return () => { mounted = false; sub.subscription.unsubscribe(); };
+  }, [fetchProfile]);
+
+  const signInWithMagicLink = useCallback(async (email) => {
+    if (!supabaseClient) return { ok: false, error: "Auth service unavailable." };
+    setAuthError(null);
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin + "/#/portal", shouldCreateUser: false },
+    });
+    if (error) {
+      setAuthError(error.message);
+      return { ok: false, error: error.message };
+    }
     return { ok: true };
   }, []);
-  const signOut = useCallback(() => setUser(null), []);
-  return { user, signIn, signOut };
+
+  const signOut = useCallback(async () => {
+    if (!supabaseClient) return;
+    await supabaseClient.auth.signOut();
+    setUser(null); setProfile(null);
+  }, []);
+
+  const updateProfile = useCallback(async (patch) => {
+    if (!supabaseClient || !user) return { ok: false, error: "Not signed in." };
+    const { data, error } = await supabaseClient
+      .from("profiles")
+      .update(patch)
+      .eq("id", user.id)
+      .select("id, email, full_name, role, institution, contributor_since")
+      .single();
+    if (error) return { ok: false, error: error.message };
+    setProfile(data);
+    return { ok: true, profile: data };
+  }, [user]);
+
+  // Returns the current access token (used by the contributor-note API to verify identity)
+  const getAccessToken = useCallback(async () => {
+    if (!supabaseClient) return null;
+    const { data } = await supabaseClient.auth.getSession();
+    return data.session?.access_token || null;
+  }, []);
+
+  return {
+    user, profile, loading,
+    signInWithMagicLink, signOut, updateProfile, getAccessToken,
+    error: authError,
+    // Convenience: profile is "complete" once full_name is set
+    profileComplete: !!(profile && profile.full_name && profile.full_name.trim()),
+  };
 }
 
 /* ───────── Toast ───────── */
