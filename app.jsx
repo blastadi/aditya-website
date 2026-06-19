@@ -119,7 +119,6 @@ function App() {
   return (
     <div className="app">
       <Masthead route={route} navigate={navigate} theme={theme} toggleTheme={toggleTheme} auth={auth} />
-      <AmbientPetals enabled={route.name !== "game"} />
       {view}
       <Footer navigate={navigate} auth={auth} />
       <Toast msg={toast.msg} />
