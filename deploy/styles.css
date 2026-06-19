@@ -1,43 +1,73 @@
 /* ════════════════════════════════════════════════════════════════
    DEPLOY — base styles
-   Inherits the parent site's design system (white/black/royal blue
-   light · black/warm white/mustard dark). Theme follows the parent's
-   data-theme attribute (set via postMessage from the embedding page).
+   Inherits the parent site's Paper Map–themed design system. Theme
+   follows the parent's data-theme attribute (set via postMessage from
+   the embedding page).
    ════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Light mode (matches parent site :root) */
-  --bg:       #FFFFFF;
-  --bg-2:     #F4F4F4;
-  --bg-3:     #E8E8E8;
-  --fg:       #0B0B0B;
-  --fg-2:     #2D2D2D;
-  --fg-3:     #6B6B6B;
-  --line:     #D9D9D9;
-  --line-2:   #ECECEC;
-  --accent:      #2D4FE0;   /* royal blue (light) */
-  --accent-soft: #1F3AB5;
-  --warn:        #B8911E;   /* warm amber — meter warning state */
-  --bad:         #C0392B;   /* red — critical state */
+  /* Palette — light (companion to Paper Map's authored dark) */
+  --bg:        #f4f7fb;
+  --bg-2:      #ffffff;
+  --bg-3:      #eef2f7;
+  --fg:        #111a24;
+  --fg-2:      #52616f;
+  --fg-3:      #7a8794;
+  --line:      #e4e9f0;
+  --line-2:    #cbd5e1;
+  --accent:        #2f6fe0;
+  --accent-soft:   #245fc8;
+  --warn:          #b9791a;
+  --good:          #0d9488;
+  --bad:           #c63d3d;
 
-  --serif: "Inter", "Inter Display", system-ui, -apple-system, sans-serif;
-  --sans:  "Inter", system-ui, -apple-system, sans-serif;
-  --mono:  "JetBrains Mono", ui-monospace, monospace;
+  /* Typography — system stack, no web fonts */
+  --font-display:  -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-body:     -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono:     ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* Legacy font aliases */
+  --serif: var(--font-display);
+  --sans:  var(--font-body);
+  --mono:  var(--font-mono);
+
+  /* Shape */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 999px;
+  --border-weight: 1px;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10);
+  --shadow-md: 0 12px 30px rgba(16,24,40,.16);
+
+  /* Motion */
+  --duration-fast:   120ms;
+  --duration-base:   150ms;
+  --easing-standard: cubic-bezier(.25,.1,.25,1);
+
+  color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --bg:       #0B0B0B;
-  --bg-2:     #161614;
-  --bg-3:     #1F1E1A;
-  --fg:       #F4F1EB;
-  --fg-2:     #C9C5BB;
-  --fg-3:     #8A867D;
-  --line:     #2A2925;
-  --line-2:   #1F1E1A;
-  --accent:      #D4A82A;   /* mustard (dark) */
-  --accent-soft: #B8911E;
-  --warn:        #D4A82A;   /* mustard — same as accent in dark */
-  --bad:         #E07060;   /* lighter red for dark bg contrast */
+  /* Paper Map's authored dark world */
+  --bg:        #070b11;
+  --bg-2:      #0e141d;
+  --bg-3:      #131c27;
+  --fg:        #e6edf5;
+  --fg-2:      #93a4b6;
+  --fg-3:      #647387;
+  --line:      #1d2733;
+  --line-2:    #2b3947;
+  --accent:        #3b82f6;
+  --accent-soft:   #2f6fe0;
+  --warn:          #e0a23b;
+  --good:          #5eead4;
+  --bad:           #dc4d4d;
+
+  --shadow-sm: 0 2px 10px rgba(0,0,0,.45);
+  --shadow-md: 0 10px 28px rgba(0,0,0,.45);
+
+  color-scheme: dark;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -77,9 +107,9 @@ button {
   margin: 0 auto;
 }
 .landing h1 {
-  font-family: var(--serif);
-  font-size: clamp(56px, 9vw, 96px);
-  letter-spacing: -0.025em;
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5.2vw, 56px);
+  letter-spacing: -0.02em;
   margin: 0;
   font-weight: 600;
 }
@@ -93,9 +123,9 @@ button {
   max-width: 52ch;
 }
 .landing .scaffold-note {
-  font-family: var(--mono);
+  font-family: var(--font-body); font-weight: 600;
   font-size: 11px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fg-3);
   margin-top: 8px;
@@ -117,17 +147,19 @@ button {
 .landing .scaffold-list li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
 .landing .scaffold-list li.failing::before { content: "✗ "; color: var(--bad); }
 .landing button {
-  font-family: var(--mono);
+  font-family: var(--font-body); font-weight: 500;
   font-size: 13px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  background: var(--fg);
-  color: var(--bg);
-  border: none;
-  padding: 14px 28px;
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  padding: 10px 18px;
   margin-top: 12px;
+  transition: background var(--duration-base) var(--easing-standard), border-color var(--duration-base) var(--easing-standard);
 }
-.landing button:hover { background: var(--accent); }
+.landing button:hover { background: var(--accent-soft); border-color: var(--accent-soft); }
 
 /* ════════════════════════════════════════════════════════════════
    Phase 2 — play screen layout (HUD | canvas | feed)
@@ -150,9 +182,9 @@ button {
   gap: 22px;
 }
 .play-eyebrow {
-  font-family: var(--mono);
+  font-family: var(--font-body); font-weight: 600;
   font-size: 10.5px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fg-3);
 }
@@ -160,9 +192,9 @@ button {
   margin-left: auto;
   background: none;
   border: 1px solid var(--line);
-  font-family: var(--mono);
+  font-family: var(--font-body); font-weight: 600;
   font-size: 10.5px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fg-2);
   padding: 6px 12px;
@@ -214,9 +246,9 @@ button {
 }
 .hud-head { display: flex; align-items: baseline; justify-content: space-between; }
 .hud-eyebrow {
-  font-family: var(--mono);
+  font-family: var(--font-body); font-weight: 600;
   font-size: 9.5px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fg-3);
 }
@@ -226,7 +258,7 @@ button {
   display: flex; justify-content: space-between; align-items: baseline; gap: 6px;
 }
 .hud-meter-label {
-  font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em;
+  font-family: var(--font-body); font-weight: 600; font-size: 9.5px; letter-spacing: 0.06em;
   text-transform: uppercase; color: var(--fg-3);
 }
 .hud-meter-value {
@@ -296,9 +328,9 @@ button {
 
 /* ────────────────── HUD quarter clock + foreshadow ────────────────── */
 .hud-quarter {
-  font-family: var(--mono);
+  font-family: var(--font-body); font-weight: 600;
   font-size: 10.5px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fg-2);
   font-feature-settings: "tnum";
@@ -343,9 +375,9 @@ button {
   pointer-events: none;
 }
 .feed-foreshadow-tag {
-  font-family: var(--mono);
+  font-family: var(--font-body); font-weight: 600;
   font-size: 9px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--warn);
   animation: meter-pulse 1s ease-in-out infinite;
@@ -379,8 +411,8 @@ button {
   to   { opacity: 1; transform: translateY(0)   scale(1); }
 }
 .qt-eyebrow {
-  font-family: var(--mono); font-size: 10px;
-  letter-spacing: 0.16em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 10px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3); margin-bottom: 10px;
 }
 .qt-headline {
@@ -415,8 +447,8 @@ button {
 }
 .qt-meter { display: flex; flex-direction: column; align-items: flex-start; }
 .qt-meter-id {
-  font-family: var(--mono); font-size: 9px;
-  letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3);
+  font-family: var(--font-body); font-weight: 600; font-size: 9px;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-3);
 }
 .qt-meter-val {
   font-family: var(--mono); font-size: 16px; font-weight: 500;
@@ -424,8 +456,8 @@ button {
 }
 .qt-events { margin-bottom: 14px; }
 .qt-sublabel {
-  font-family: var(--mono); font-size: 9px;
-  letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-3);
+  font-family: var(--font-body); font-weight: 600; font-size: 9px;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-3);
   margin-bottom: 4px;
 }
 .qt-event {
@@ -458,8 +490,8 @@ button {
   animation: qt-rise 0.36s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 .q4-eyebrow {
-  font-family: var(--mono); font-size: 10px;
-  letter-spacing: 0.16em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 10px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--accent); margin-bottom: 12px;
 }
 .q4-headline {
@@ -495,7 +527,7 @@ button {
   box-shadow: 0 0 0 1px var(--accent), 0 4px 10px rgba(45, 79, 224, 0.18);
 }
 .q4-option-label {
-  font-family: var(--mono); font-size: 12px;
+  font-family: var(--font-body); font-weight: 600; font-size: 12px;
   letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--fg);
 }
@@ -522,8 +554,8 @@ button {
   display: flex; flex-direction: column; gap: 22px;
 }
 .reveal-eyebrow {
-  font-family: var(--mono); font-size: 10.5px;
-  letter-spacing: 0.18em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 10.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3);
 }
 .reveal-pattern {
@@ -562,8 +594,8 @@ button {
 }
 .reveal-provenance.is-visible { opacity: 1; transform: translateY(0); }
 .reveal-prov-label {
-  font-family: var(--mono); font-size: 10.5px;
-  letter-spacing: 0.12em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 10.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3); margin-bottom: 10px;
 }
 .prov-tag {
@@ -599,8 +631,8 @@ button {
 }
 .reveal-actions.is-visible { opacity: 1; transform: translateY(0); }
 .reveal-btn {
-  font-family: var(--mono); font-size: 12px;
-  letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 12px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   padding: 12px 22px;
   border: 1px solid var(--line);
   background: var(--bg);
@@ -625,9 +657,9 @@ button {
 /* ────────────────── Landing footer ────────────────── */
 .landing-foot {
   margin-top: 14px;
-  font-family: var(--mono);
+  font-family: var(--font-body); font-weight: 600;
   font-size: 10px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fg-3);
 }
@@ -661,7 +693,7 @@ button {
 }
 .theme-select-head { max-width: 720px; margin: 0 auto 36px; text-align: center; }
 .ts-eyebrow {
-  font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
+  font-family: var(--font-body); font-weight: 600; font-size: 11px; letter-spacing: 0.06em;
   text-transform: uppercase; color: var(--fg-3); margin-bottom: 10px;
 }
 .ts-title {
@@ -702,8 +734,8 @@ button {
   margin: 0; letter-spacing: -0.01em;
 }
 .tc-pill {
-  font-family: var(--mono); font-size: 9px;
-  letter-spacing: 0.16em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 9px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   padding: 2px 7px;
   border: 1px solid var(--fg-3);
   color: var(--fg-3);
@@ -734,22 +766,23 @@ button {
 }
 .tc-btn {
   flex: 1;
-  font-family: var(--mono); font-size: 10.5px;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  padding: 10px 12px;
-  background: var(--bg);
-  border: 1px solid var(--line);
+  font-family: var(--font-body); font-weight: 500; font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 10px 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-md);
   color: var(--fg);
   cursor: pointer;
-  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  transition: background var(--duration-base) var(--easing-standard), color var(--duration-base) var(--easing-standard), border-color var(--duration-base) var(--easing-standard);
 }
-.tc-btn:hover:not(:disabled) { border-color: var(--card-accent); color: var(--card-accent); }
+.tc-btn:hover:not(:disabled) { background: var(--bg-3); border-color: var(--card-accent); color: var(--card-accent); }
 .tc-btn:disabled { cursor: not-allowed; opacity: 0.5; }
 .tc-btn-primary:not(:disabled) {
-  background: var(--fg); color: var(--bg); border-color: var(--fg);
+  background: var(--accent); color: #ffffff; border-color: var(--accent);
 }
 .tc-btn-primary:not(:disabled):hover {
-  background: var(--card-accent); border-color: var(--card-accent); color: var(--bg);
+  background: var(--accent-soft); border-color: var(--accent-soft); color: #ffffff;
 }
 .theme-select-err {
   margin-top: 22px; padding: 10px 14px;
@@ -767,15 +800,15 @@ button {
 .tbg-head { margin-bottom: 28px; }
 .tbg-back {
   background: none; border: none; cursor: pointer;
-  font-family: var(--mono); font-size: 11px;
-  letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3);
   padding: 4px 0; margin-bottom: 16px;
 }
 .tbg-back:hover { color: var(--accent); }
 .tbg-eyebrow {
-  font-family: var(--mono); font-size: 11px;
-  letter-spacing: 0.18em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3);
 }
 .tbg-title {
@@ -794,8 +827,8 @@ button {
   line-height: 1.65; color: var(--fg); margin: 0;
 }
 .tbg-section-head {
-  font-family: var(--mono); font-size: 10.5px;
-  letter-spacing: 0.16em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 10.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3); margin-bottom: 14px;
   display: flex; gap: 6px; align-items: baseline;
 }
@@ -842,8 +875,8 @@ button {
   padding-top: 24px; border-top: 1px solid var(--line);
 }
 .tbg-btn {
-  font-family: var(--mono); font-size: 11.5px;
-  letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 11.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   padding: 12px 22px;
   background: var(--bg); border: 1px solid var(--line);
   color: var(--fg); cursor: pointer;
@@ -867,14 +900,14 @@ button {
 .brf-head { margin-bottom: 24px; }
 .brf-back {
   background: none; border: none; cursor: pointer;
-  font-family: var(--mono); font-size: 11px;
-  letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3); padding: 4px 0; margin-bottom: 14px;
 }
 .brf-back:hover { color: var(--accent); }
 .brf-eyebrow {
-  font-family: var(--mono); font-size: 11px;
-  letter-spacing: 0.18em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3);
 }
 .brf-title {
@@ -925,8 +958,8 @@ button {
   transform: rotate(90deg);
 }
 .brf-orient-summary-label {
-  font-family: var(--mono); font-size: 11px;
-  letter-spacing: 0.18em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg);
 }
 .brf-orient-summary-hint {
@@ -940,8 +973,8 @@ button {
 .brf-orient-block { margin-bottom: 18px; }
 .brf-orient-block:last-of-type { margin-bottom: 14px; }
 .brf-orient-h3 {
-  font-family: var(--mono); font-size: 10.5px;
-  letter-spacing: 0.16em; text-transform: uppercase;
+  font-family: var(--font-body); font-size: 10.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3); margin: 0 0 8px; font-weight: 500;
 }
 .brf-orient-block p {
@@ -955,8 +988,8 @@ button {
   border-top: 1px solid var(--line);
 }
 .brf-orient-skip {
-  font-family: var(--mono); font-size: 11.5px;
-  letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 11.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   padding: 10px 18px;
   border: 1px solid var(--fg); background: var(--fg); color: var(--bg);
   cursor: pointer;
@@ -986,8 +1019,8 @@ button {
   background: var(--bg-2); border: 1px solid var(--line);
 }
 .brf-anchors-label {
-  font-family: var(--mono); font-size: 10px;
-  letter-spacing: 0.16em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 10px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3); margin-bottom: 8px;
 }
 .brf-anchors-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
@@ -1002,8 +1035,8 @@ button {
 }
 .brf-anchor-link:hover { text-decoration: underline; }
 .brf-section-head {
-  font-family: var(--mono); font-size: 10.5px;
-  letter-spacing: 0.16em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 10.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3); margin-bottom: 14px;
 }
 .brf-section-sub { color: var(--fg-3); font-weight: normal; }
@@ -1018,8 +1051,8 @@ button {
   background: var(--bg); border: 1px solid var(--line);
 }
 .brf-meter-name {
-  font-family: var(--mono); font-size: 11px;
-  letter-spacing: 0.12em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg); margin-bottom: 6px;
 }
 .brf-meter-narrative {
@@ -1030,8 +1063,8 @@ button {
 .brf-cat-section { margin-bottom: 24px; }
 .brf-cat-label {
   --cat-accent: var(--fg);
-  font-family: var(--mono); font-size: 11px;
-  letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--cat-accent); margin-bottom: 10px;
   display: flex; align-items: center; gap: 8px;
 }
@@ -1067,7 +1100,7 @@ button {
   color: var(--fg);
 }
 .brf-brick-meta {
-  font-family: var(--mono); font-size: 9.5px;
+  font-family: var(--font-body); font-weight: 600; font-size: 9.5px;
   letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--fg-3);
   display: flex; align-items: center; gap: 6px;
@@ -1075,8 +1108,8 @@ button {
 .brf-brick-tag {
   display: inline-block;
   padding: 1px 5px;
-  font-family: var(--mono); font-size: 8.5px;
-  letter-spacing: 0.12em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 8.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   border: 1px solid currentColor;
 }
 .brf-brick-tag-direct    { color: var(--accent); }
@@ -1087,8 +1120,8 @@ button {
   padding-top: 20px; border-top: 1px solid var(--line);
 }
 .brf-btn {
-  font-family: var(--mono); font-size: 11.5px;
-  letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 11.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   padding: 12px 24px;
   border: 1px solid var(--line);
   background: var(--bg); color: var(--fg);
@@ -1129,8 +1162,8 @@ button {
 .brf-modal-close:hover { color: var(--fg); }
 .brf-modal-eyebrow {
   display: flex; align-items: center; gap: 8px;
-  font-family: var(--mono); font-size: 10px;
-  letter-spacing: 0.16em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 10px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3);
 }
 .brf-modal-cat { display: inline-block; width: 10px; height: 10px; }
@@ -1141,7 +1174,7 @@ button {
   margin: 8px 0 4px; letter-spacing: -0.01em;
 }
 .brf-modal-hits {
-  font-family: var(--mono); font-size: 10.5px;
+  font-family: var(--font-body); font-weight: 600; font-size: 10.5px;
   letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--fg-3); margin-bottom: 14px;
 }
@@ -1151,8 +1184,8 @@ button {
   margin: 0 0 18px;
 }
 .brf-modal-section-head {
-  font-family: var(--mono); font-size: 9.5px;
-  letter-spacing: 0.16em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 9.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3);
   margin: 10px 0 6px;
 }
@@ -1211,8 +1244,8 @@ button {
   letter-spacing: -0.015em;
 }
 .ramp-phrase-role {
-  font-family: var(--mono); font-size: 12.5px;
-  letter-spacing: 0.18em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 12.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: #d4d2c8;
 }
 .ramp-phrase-scale {
@@ -1247,8 +1280,8 @@ button {
 }
 .ramp-skip {
   position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
-  font-family: var(--mono); font-size: 10px;
-  letter-spacing: 0.18em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 10px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: #6a6a6a;
 }
 
@@ -1289,8 +1322,8 @@ button {
 }
 .rb-head { margin-bottom: 28px; }
 .rb-eyebrow {
-  font-family: var(--mono); font-size: 11px;
-  letter-spacing: 0.18em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3);
 }
 .rb-title {
@@ -1304,8 +1337,8 @@ button {
 }
 .rb-section { margin-bottom: 28px; }
 .rb-section-head {
-  font-family: var(--mono); font-size: 10.5px;
-  letter-spacing: 0.16em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 10.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3); margin-bottom: 12px;
   display: flex; gap: 6px; align-items: baseline;
 }
@@ -1371,8 +1404,8 @@ button {
   display: flex; flex-direction: column; gap: 4px;
 }
 .rb-section-sub {
-  font-family: var(--mono); font-size: 9.5px;
-  letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 9.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3); margin-bottom: 4px;
 }
 .rb-ref {
@@ -1402,8 +1435,8 @@ button {
   border-top: 1px solid var(--line);
 }
 .rb-footer-label {
-  font-family: var(--mono); font-size: 10.5px;
-  letter-spacing: 0.16em; text-transform: uppercase;
+  font-family: var(--font-body); font-weight: 600; font-size: 10.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--fg-3); margin-bottom: 10px;
 }
 .rb-footer-text {

@@ -4,18 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DEPLOY</title>
-  <!-- Inter + JetBrains Mono — same stack as parent site for visual continuity -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script>
+    // Honor OS preference + persisted choice. Parent site may override via postMessage.
+    (function() {
+      try {
+        var stored = localStorage.getItem('theme');
+        var pref = (stored === 'dark' || stored === 'light') ? stored
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.dataset.theme = pref;
+      } catch (e) {
+        document.documentElement.dataset.theme = 'light';
+      }
+    })();
+  </script>
+  <!-- System font stack — matches Paper Map identity, no web fonts loaded -->
   <link rel="stylesheet" href="styles.css" />
 
   <!-- React 18 (UMD, production) -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-  <!-- Babel Standalone — transpiles JSX in the browser. -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Babel Standalone — transpiles JSX in the browser. Pinned to v7 (v8 changed text/babel transpile behaviour). -->
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
 
   <!-- Phaser 3 — game engine. -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
