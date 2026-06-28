@@ -188,7 +188,7 @@
         <strong>Privacy:</strong> we don't run a server for your data. Your PDFs, notes and library stay on your device.
         PaperMap only contacts the services you choose — OpenAlex, CORE, and your own AI provider — to search and summarize.
         Payment and your license key are handled by our checkout provider; we never see your card details.<br />
-        <strong>Contact &amp; support:</strong> <a href="mailto:randdsimba@gmail.com">randdsimba@gmail.com</a>
+        <strong>Contact &amp; support:</strong> <a href="mailto:papermap@adityaparupudi.com">papermap@adityaparupudi.com</a>
       </span>
     </div>
   </footer>
@@ -197,12 +197,15 @@
     // Single place to set your live URLs once, instead of editing each link.
     // Fill these in after your Lemon Squeezy store + GitHub Release exist.
     var PAPERMAP = {
-      checkoutUrl: "",          // e.g. "https://yourstore.lemonsqueezy.com/checkout/buy/XXXX"
-      macDownloadUrl: "",       // e.g. GitHub Release .dmg URL
-      winDownloadUrl: "",       // e.g. GitHub Release .msi URL
+      // Buy stays OFF until Lemon Squeezy approves the store for live payments.
+      // At launch: set buyLive to true and redeploy — the checkout URL is already in place.
+      buyLive: false,
+      checkoutUrl: "https://papermap.lemonsqueezy.com/checkout/buy/534f5fb5-5ec2-49ea-aaf6-47a0901fdb1f",  // Lemon Squeezy checkout
+      macDownloadUrl: "https://github.com/blastadi/aditya-website/releases/download/papermap-downloads/PaperMap-mac.dmg",
+      winDownloadUrl: "https://github.com/blastadi/aditya-website/releases/download/papermap-downloads/PaperMap-windows.msi",
     };
     (function () {
-      var live = !!PAPERMAP.checkoutUrl;
+      var live = PAPERMAP.buyLive && !!PAPERMAP.checkoutUrl;
       var toast;
       function showSoon() {
         if (!toast) { toast = document.createElement("div"); toast.className = "soon-toast"; document.body.appendChild(toast); }
@@ -218,14 +221,17 @@
         el.setAttribute("href", "#"); el.classList.add("soon"); el.setAttribute("aria-disabled", "true"); el.title = "Coming soon";
         el.addEventListener("click", function (e) { e.preventDefault(); showSoon(); });
       }
-      ["buy-nav", "buy-hero", "buy-card"].forEach(function (id) { wire(id, PAPERMAP.checkoutUrl); });
+      ["buy-nav", "buy-hero", "buy-card"].forEach(function (id) { wire(id, live ? PAPERMAP.checkoutUrl : ""); });
       wire("dl-mac", PAPERMAP.macDownloadUrl);
       wire("dl-win", PAPERMAP.winDownloadUrl);
 
-      var ready = live && PAPERMAP.macDownloadUrl;
+      var dlReady = !!PAPERMAP.macDownloadUrl;
+      var ready = live && dlReady;
       if (!ready) {
         var r = document.createElement("div"); r.className = "preview-ribbon";
-        r.innerHTML = "Preview — buying &amp; downloads open soon.";
+        r.innerHTML = (dlReady && !live)
+          ? "Downloads are live — buying opens at launch."
+          : "Preview — buying &amp; downloads open soon.";
         document.body.appendChild(r);
         document.body.style.paddingTop = "34px";
       }
