@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PaperMap — real map (faithful rebuild)</title>
+<style>
+  :root{
+    --bg:#070b11; --panel:#0e141d; --border:#1d2733; --border2:#28323f;
+    --text:#e6edf5; --muted:#93a4b6; --faint:#647387;
+    --teal:#5eead4; --amber:#fbbf24; --gold:#fde68a; --hl:#6ee7b7; --focal:#eaf4ff;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:#04070b;overflow:hidden;}
+  body{display:flex;align-items:center;justify-content:center;font-family:var(--font);}
+  #fit{position:absolute;left:50%;top:50%;transform-origin:center center;}
+  .stage{width:1280px;height:720px;position:relative;overflow:hidden;background:var(--bg);}
+
+  /* header */
+  .hdr{position:absolute;left:0;right:0;top:0;height:54px;background:#0e141d;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;gap:18px;padding:0 22px;z-index:6;}
+  .hdr .lg{width:20px;height:20px;}
+  .hdr .back{color:var(--teal);font-size:14px;font-weight:600;}
+  .hdr .ttl{color:var(--text);font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:560px;}
+  .lenses{margin-left:auto;display:flex;gap:8px;}
+  .lens{font-size:13px;font-weight:600;color:var(--muted);border:1px solid var(--border2);border-radius:999px;padding:6px 15px;background:rgba(255,255,255,.02);}
+
+  /* canvas + side */
+  .canvas{position:absolute;left:0;top:54px;right:392px;bottom:0;overflow:hidden;
+    background:radial-gradient(ellipse 72% 72% at 50% 44%,#12202b 0%,#0a121a 46%,#060a10 100%);}
+  .canvas svg{width:100%;height:100%;display:block;}
+  .edge{stroke:#33485a;stroke-opacity:.28;stroke-width:1;fill:none;transition:stroke .4s,stroke-opacity .4s,stroke-width .4s;}
+  .edge.hot{stroke:var(--hl);stroke-opacity:.92;stroke-width:1.8;}
+  .nd{transition:opacity .45s ease;}
+  .nd.dim{opacity:.14;}
+  .focalLabel{fill:#c8d6e6;font:600 8px var(--font);}
+
+  .controls{position:absolute;top:18px;right:18px;display:flex;flex-direction:column;gap:6px;z-index:5;}
+  .mc{width:40px;height:40px;border-radius:10px;background:rgba(20,28,38,.85);border:1px solid var(--border2);
+    color:#c2d0de;display:flex;align-items:center;justify-content:center;font-size:18px;backdrop-filter:blur(8px);}
+  .legend{position:absolute;top:182px;right:18px;background:rgba(14,20,29,.85);border:1px solid var(--border2);border-radius:12px;
+    padding:14px 16px;display:flex;flex-direction:column;gap:11px;z-index:5;backdrop-filter:blur(8px);}
+  .leg{display:flex;align-items:center;gap:11px;font-size:14px;color:var(--muted);font-weight:500;}
+  .leg i{width:13px;height:13px;border-radius:50%;display:block;}
+  .leg .f{background:var(--focal);} .leg .r{background:var(--teal);} .leg .c{background:var(--amber);}
+  .leg .j{background:transparent;border:2px solid var(--gold);}
+
+  .tip{position:absolute;background:rgba(10,16,24,.94);border:1px solid var(--border2);border-radius:12px;padding:13px 16px;
+    max-width:340px;z-index:7;opacity:0;transition:opacity .35s ease;backdrop-filter:blur(8px);}
+  .tip .t{color:#eaf4ff;font-size:15px;font-weight:600;line-height:1.3;}
+  .tip .m{color:var(--muted);font-size:12px;margin-top:5px;}
+
+  /* side panel */
+  .side{position:absolute;top:54px;right:0;bottom:0;width:392px;background:var(--bg);border-left:1px solid var(--border);padding:26px 28px;z-index:5;}
+  .role{display:inline-block;background:var(--teal);color:#08231e;font-size:12px;font-weight:700;letter-spacing:.04em;padding:5px 13px;border-radius:999px;text-transform:uppercase;}
+  .s-title{color:var(--text);font-size:23px;font-weight:700;line-height:1.25;margin:16px 0 12px;letter-spacing:-.01em;}
+  .s-auth{color:var(--muted);font-size:15px;margin-bottom:6px;}
+  .s-meta{color:var(--muted);font-size:14px;margin-bottom:18px;}
+  .s-abs{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:20px;}
+  .s-open{display:block;text-align:center;background:var(--teal);color:#08231e;font-size:15px;font-weight:700;border-radius:11px;padding:13px;margin-bottom:11px;}
+  .s-rec{display:block;text-align:center;background:transparent;color:var(--text);font-size:15px;font-weight:600;border:1px solid var(--border2);border-radius:11px;padding:13px;}
+</style>
+</head>
+<body>
+<div id="fit"><div class="stage" id="stage">
+  <div class="hdr">
+    <svg class="lg" viewBox="0 0 120 120"><path d="M20 88 L44 58 L66 73 L95 31" fill="none" stroke="#3b82f6" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="88" r="7" fill="#3b82f6"/><circle cx="44" cy="58" r="7" fill="#3b82f6"/><circle cx="66" cy="73" r="7" fill="#3b82f6"/><circle cx="95" cy="31" r="10.5" fill="#5eead4"/></svg>
+    <span class="back">← Back</span>
+    <span class="ttl">Managerial Fads and Fashions: The Diffusion and Rejection of Innovations</span>
+    <span class="lenses"><span class="lens">Most cited</span><span class="lens">Top journals</span><span class="lens">Same field</span></span>
+  </div>
+  <div class="canvas" id="canvas">
+    <div class="controls"><div class="mc">＋</div><div class="mc">－</div><div class="mc">⤢</div></div>
+    <div class="legend">
+      <div class="leg"><i class="f"></i>Focal</div>
+      <div class="leg"><i class="r"></i>References</div>
+      <div class="leg"><i class="c"></i>Citations</div>
+      <div class="leg"><i class="j"></i>Top journal</div>
+    </div>
+    <div class="tip" id="tip"><div class="t">Technological Discontinuities and Organizational Environments</div><div class="m">1986 · 6,123 citations · A* journal (ABS)</div></div>
+  </div>
+  <div class="side">
+    <span class="role" id="role">Focal paper</span>
+    <div class="s-title" id="stitle">Managerial Fads and Fashions: The Diffusion and Rejection of Innovations</div>
+    <div class="s-auth" id="sauth">Eric Abrahamson</div>
+    <div class="s-meta" id="smeta">1991 · Academy of Management Review · 1,980 cites</div>
+    <div class="s-abs" id="sabs">Reviews indicate that the dominant perspective in the diffusion of innovation literature contains proinnovation biases which suggest that innovations and the diffusion of innovations will benefit adopters…</div>
+    <a class="s-open">Open paper page →</a>
+    <a class="s-rec">Recenter map here</a>
+  </div>
+</div></div>
+
+<script>
+(function(){
+  var fit=document.getElementById('fit');
+  function resize(){var s=Math.min(window.innerWidth/1280,window.innerHeight/720);fit.style.transform='translate(-50%,-50%) scale('+s+')';}
+  window.addEventListener('resize',resize);resize();
+  var NS='http://www.w3.org/2000/svg';
+  var canvas=document.getElementById('canvas');
+  var CW=888,CH=666; // canvas size (right:392 of 1280, top 54)
+  var cx=callW()/2-20, cy=CH/2+6;
+  function callW(){return CW;}
+  cx=420; cy=348;
+
+  var svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 '+CW+' '+CH);
+  var gEdges=document.createElementNS(NS,'g'), gNodes=document.createElementNS(NS,'g');
+  svg.appendChild(gEdges);svg.appendChild(gNodes);
+  canvas.insertBefore(svg,canvas.firstChild);
+
+  // build two concentric rings
+  var nodes=[]; // {x,y,role,r,top,el,edge}
+  function ring(count,radius,startA){
+    for(var i=0;i<count;i++){
+      var a=startA+(i/count)*Math.PI*2;
+      var x=cx+Math.cos(a)*radius, y=cy+Math.sin(a)*radius;
+      var role=(i%2===0)?'ref':'cite';            // alternate teal/amber
+      var top=(role==='cite'&&i%5===0);            // a few top-journal
+      var r=8+((i*7)%4)*2 + (radius>180?0:2);
+      nodes.push({x:x,y:y,role:role,r:r,top:top});
+    }
+  }
+  ring(13,150,-Math.PI/2+0.2);
+  ring(21,250,-Math.PI/2);
+
+  // edges focal->node (faint radial spokes)
+  nodes.forEach(function(n){var ln=document.createElementNS(NS,'line');
+    ln.setAttribute('x1',cx);ln.setAttribute('y1',cy);ln.setAttribute('x2',n.x);ln.setAttribute('y2',n.y);
+    ln.setAttribute('class','edge');var len=Math.hypot(n.x-cx,n.y-cy);
+    ln.style.strokeDasharray=len;ln.style.strokeDashoffset=len;ln.style.transition='stroke-dashoffset .9s ease';
+    gEdges.appendChild(ln);n.edge=ln;});
+  // nodes
+  nodes.forEach(function(n,k){
+    if(n.top){var ring2=document.createElementNS(NS,'circle');ring2.setAttribute('cx',n.x);ring2.setAttribute('cy',n.y);
+      ring2.setAttribute('r',n.r+4);ring2.setAttribute('fill','none');ring2.setAttribute('stroke','var(--gold)');ring2.setAttribute('stroke-width','2.5');ring2.setAttribute('class','nd ndr');gNodes.appendChild(ring2);n.ring=ring2;}
+    var c=document.createElementNS(NS,'circle');c.setAttribute('cx',n.x);c.setAttribute('cy',n.y);c.setAttribute('r',n.r);
+    c.setAttribute('fill',n.role==='ref'?'#5eead4':'#fbbf24');c.setAttribute('class','nd');
+    c.style.transformBox='fill-box';c.style.transformOrigin='center';c.style.transform='scale(0)';c.style.transition='transform .55s cubic-bezier(.22,.61,.36,1),opacity .45s';
+    gNodes.appendChild(c);n.el=c;});
+  // focal
+  var halo=document.createElementNS(NS,'circle');halo.setAttribute('cx',cx);halo.setAttribute('cy',cy);halo.setAttribute('r',30);halo.setAttribute('fill','#eaf4ff');halo.setAttribute('opacity','.12');gNodes.appendChild(halo);
+  var focal=document.createElementNS(NS,'circle');focal.setAttribute('cx',cx);focal.setAttribute('cy',cy);focal.setAttribute('r',17);focal.setAttribute('fill','#eaf4ff');gNodes.appendChild(focal);
+  var lbl=document.createElementNS(NS,'text');lbl.setAttribute('x',cx);lbl.setAttribute('y',cy+30);lbl.setAttribute('text-anchor','middle');lbl.setAttribute('class','focalLabel');
+  ['Managerial Fads and','Fashions: The Diffusion','and Rejection…'].forEach(function(t,i){var ts=document.createElementNS(NS,'tspan');ts.setAttribute('x',cx);ts.setAttribute('dy',i?9:0);ts.textContent=t;lbl.appendChild(ts);});
+  gNodes.appendChild(lbl);
+
+  // pick the highlight target (a teal node lower-right, like the reference)
+  var target=nodes[26]||nodes[20];
+
+  var tip=document.getElementById('tip');
+  function focusNode(){
+    nodes.forEach(function(n){if(n!==target){n.el.classList.add('dim');if(n.ring)n.ring.classList.add('dim');n.edge.classList.remove('hot');}});
+    target.el.classList.remove('dim');target.el.setAttribute('fill','#6ee7b7');target.edge.classList.add('hot');target.edge.style.strokeDashoffset='0';
+    // tooltip near target
+    tip.style.left=Math.min(target.x+24,520)+'px';tip.style.top=(54+target.y-70)+'px';tip.style.opacity='1';
+    // side panel -> reference
+    document.getElementById('role').textContent='Reference (cited by focal)';
+    document.getElementById('stitle').textContent='Technological Discontinuities and Organizational Environments';
+    document.getElementById('sauth').textContent='Michael L. Tushman, Philip C. Anderson';
+    document.getElementById('smeta').textContent='1986 · Administrative Science Quarterly · 6,123 cites';
+    document.getElementById('sabs').textContent='Argues that technological change unfolds as long periods of incremental advance punctuated by discontinuities that either enhance or destroy existing competence…';
+  }
+  function reset(){
+    nodes.forEach(function(n){n.el.classList.remove('dim');if(n.ring)n.ring.classList.remove('dim');n.edge.classList.remove('hot');n.edge.style.strokeDashoffset=n.edge.style.strokeDasharray;});
+    target.el.setAttribute('fill','#5eead4');tip.style.opacity='0';
+    document.getElementById('role').textContent='Focal paper';
+    document.getElementById('stitle').textContent='Managerial Fads and Fashions: The Diffusion and Rejection of Innovations';
+    document.getElementById('sauth').textContent='Eric Abrahamson';
+    document.getElementById('smeta').textContent='1991 · Academy of Management Review · 1,980 cites';
+    document.getElementById('sabs').textContent='Reviews indicate that the dominant perspective in the diffusion of innovation literature contains proinnovation biases which suggest that innovations and the diffusion of innovations will benefit adopters…';
+  }
+
+  function bloom(){
+    nodes.forEach(function(n,k){setTimeout(function(){n.el.style.transform='scale(1)';if(n.ring){n.ring.style.transformBox='fill-box';n.ring.style.transformOrigin='center';}},150+k*45);
+      setTimeout(function(){n.edge.style.strokeDashoffset='0';},300+k*45);});
+  }
+
+  // play loop:  bloom -> hold -> focus -> hold -> reset -> loop
+  var qs=new URLSearchParams(location.search);
+  function cycle(){
+    reset();nodes.forEach(function(n){n.el.style.transform='scale(0)';n.edge.style.strokeDashoffset=n.edge.style.strokeDasharray;});
+    setTimeout(bloom,150);
+    setTimeout(focusNode,4200);
+    setTimeout(function(){if(!qs.has('hold'))cycle();},10500);
+  }
+  if(qs.get('state')==='focus'){bloom();setTimeout(focusNode,50);}
+  else if(qs.get('state')==='overview'){bloom();}
+  else cycle();
+})();
+</script>
+</body>
+</html>
